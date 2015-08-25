@@ -177,20 +177,23 @@ N/A
             "user_id": 1,
             "username": "Mr. Wallace",
             "user_image_url": "http://images.pinkpineapple.me/user/1.png",
-            "comment": "Nice Pic!"
+            "comment": "Nice Pic!",
+            "timestamp": 123
         },
         {
             "user_id": 2,
             "username": "USERNAME",
             "user_image_url": "http://images.pinkpineapple.me/user/2.png",
-            "comment": "This picture sucks!"
+            "comment": "This picture sucks!",
+            "timestamp": 234
         }
     ],
     "likes": [
         {
             "user_id": 2,
             "username": "USERNAME",
-            "like": false
+            "like": false,
+            "timestamp": 123
         }
     ]
 }
@@ -214,7 +217,42 @@ like | Boolean indicating a `like`
 
 # activityfeed
 
-Same as userfeed.. TBD
+## GET /activityfeed
+
+```shell
+curl -X GET -u USERNAME:PASSWORD\ 
+    http://instamelb.pinkpineapple.me/activityfeed
+```
+
+```java
+N/A
+```
+
+> Returns activities of JSON structure:
+
+```json
+{
+    "activities": [
+        {
+            "activity_id": 1,
+            "activity_event": "follow",
+            "activity_message": "A is following B"
+        },
+        {
+            "activity_id": 2,
+            "activity_event": "like",
+            "activity_message": "A likes B's photo"
+        },
+        {
+            "activity_id": 3,
+            "activity_id": "comment",
+            "activity_message": "A comments on B's photo"
+        }
+    ]
+}
+```
+
+Activity feed. For stuff thats going on. Pagination may apply.
 
 # discover
 
@@ -253,6 +291,64 @@ Parameter | Default | Description
 --------- | ------- | -----------
 search | null | *OPTIONAL* Search string. Null returns everything. Subject to pagination of course.
 suggested | true | *OPTIONAL* Boolean to indicate that user wishes to view suggested users.
+
+## PUT /discover
+
+```shell
+curl -X PUT -u USERNAME:PASSWORD
+    http://instamelb.pinkpineapple.me/1
+```
+
+```java
+N/A
+```
+
+> On successful follow, return JSON of:
+
+```json
+{
+    "following": true
+}
+```
+
+Start following a user.
+
+### HTTP Request
+`PUT http://instamelb.pinkpineapple.me/:user_id`
+
+### URL Parameters
+Parameter | Description
+--------- | -----------
+user_id | ID of user to follow
+
+## DELETE /discover
+
+```shell
+curl -X DELETE -u USERNAME:PASSWORD\ 
+    http://instamelb.pinkpineapple.me/1
+```
+
+```java
+N/A
+```
+
+> On successful unfollow, return JSON of:
+
+```json
+{
+    "following": false
+}
+```
+
+Stop following a user.
+
+### HTTP Request
+`DELETE http://instamelb.pinkpineapple.me/:user_id`
+
+### URL Parameters
+Parameter | Description
+--------- | -----------
+user_id | ID of user to stop following
 
 
 # profile
@@ -335,9 +431,71 @@ Similar to /profile/photo
 
 Similar to /profile/photo
 
+## PUT /profile
+
+```shell
+curl -X POST -u USERNAME:PASSWORD\ 
+    -d '{
+        "image": "ABsadclkasASDadsl2;lkm3"
+        "status": "Happy, but not too sad"
+    }'
+    http://instamelb.pinkpineapple.me/profile/2
+```
+
+
+Updates user profile settings (eg. curent picture)
+
+### HTTP Request
+`PUT http://instamelb.pinkpineapple.me/profile/:user_id?`
+
+### URL Parameters
+Parameters | Description
+---------- | -----------
+user_id | *OPTIONAL* ID of user profile to be updated.
+
+### Body Paramaters
+Parameters | Description
+---------- | -----------
+image | *OPTIONAL* BASE64 encoded new profile picture.
+status | *OPTIONAL* Text string of status.
+
 # photo
 
 ## POST /photo
+
+```shell
+curl -X POST -u USERNAME:PASSWORD\ 
+    -d '{
+        "image": "ABSM32Dd32kjd39akjk2poiwdkn"
+        "lon": 123,
+        "lat": 234
+    }',
+    http://instamelb.pinkpineapple.me/photo
+```
+
+```java
+N/A
+```
+
+> On successful upload, JSON returned:
+
+```json
+{
+    "image_url": "http://images.pinkpineapple.me/images/8.png"
+}
+```
+
+Posts a photo.
+
+### HTTP Request
+`POST http://instamelb.pinkpineapple.me/photo`
+
+### Body Parameters
+Parameters | Description
+---------- | -----------
+image | BASE64 String Representation of an image.
+
+## PUT /photo
 
 ```shell
 curl -X POST -u USERNAME:PASSWORD\ 
@@ -355,17 +513,52 @@ N/A
 
 ```json
 {
-    "uploaded": true
+    "image_url": "http://images.pinkpineapple.me/images/8.png"
 }
 ```
 
-Posts a photo.
+Edit a photo.
 
 ### HTTP Request
-`POST http://instamelb.pinkpineapple.me/photo`
+`PUT http://instamelb.pinkpineapple.me/photo/:photo_id`
+
+### URL Parameters
+Parameters | Description
+---------- | -----------
+photo_id | ID of photo to be edited.
 
 ### Body Parameters
 Parameters | Description
 ---------- | -----------
-image | BASE64 String Representation of an image.
+image | BASE64 Encoded Image String.
+
+
+## DELETE /photo
+
+```shell
+curl -X DELETE -u USERNAME:PASSWORD\ 
+    http://instamelb.pinkpineapple.me
+```
+
+```java
+N/A
+```
+
+> On successful delete, return JSON of structure:
+
+```json
+{
+    "deleted": true
+}
+```
+
+Delete a photo
+
+### HTTP Request
+`DELETE http://instamelb.pinkpineapple.me/photo/:photo_id`
+
+### URL Parameters
+Parameters | Description
+---------- | -----------
+photo_id | ID of photo to be deleted
 

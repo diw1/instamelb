@@ -15,4 +15,9 @@ module.exports = function (config, app, db, passport) {
         res.send({ "name": "Instamelb REST API" });
     });
 
+    // Auth Test Route
+    app.get('/test', passport.authenticate('basic', { session: false } ),
+            function (req, res) {
+                res.json({"authenticated": true});
+            });
 };
