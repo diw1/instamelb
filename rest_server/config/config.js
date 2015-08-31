@@ -10,10 +10,11 @@ module.exports = {
             port: 3000
         },
         db: {
+            name: 'instamelb',
+            username: 'instamelb',
+            password: 'password',
             host: 'localhost',
-            port: 5984,
-            table: {
-            }
+            port: 3306,
         },
         log: true,
         seed: false
@@ -26,10 +27,11 @@ module.exports = {
             port: 3000
         },
         db: {
+            name: 'instamelb',
+            username: 'instamelb',
+            password: 'password',
             host: 'localhost',
-            port: 5984,
-            table: {
-            }
+            port: 3306,
         },
         log: false,
         seed: true
@@ -42,10 +44,11 @@ module.exports = {
             port: 3000
         },
         db: {
+            name: 'instamelb',
+            username: 'instamelb',
+            password: 'password',
             host: 'localhost',
-            port: 5984,
-            table: {
-            }
+            port: 3306,
         },
         log: true,
         seed: true

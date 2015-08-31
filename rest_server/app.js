@@ -1,60 +1,97 @@
 // app.js Entry point
 
-var http = require('http');
+/* Import Modules */
+
+// General Util Modules
 var path = require('path');
 var async = require('async');
 
+// App Modules
+var http = require('http');
 var passport = require('passport');
 var express = require('express');
 var bodyParser = require('body-parser');
 
+// Sequelize
+var Sequelize = require("sequelize");
+
+// Logging
 var log = require(path.join(__dirname, 'utils', 'log.js'));
 
-module.exports = function (config) {
+module.exports = function (config, done_app) {
+
+    // App wrapper to be returned
+    var app_wrapper;
+
+    // Database object
+    var db;
 
     // Logger
     var logger = log(config);
 
-    // Database Stuff
-    var db = null;
-    logger("[Database] Setup Complete!");
+    // Perform app initialization
+    async.series([
+        // Database Setup
+        function (callback) {
 
-    // App Setup
-    var server;
-    var app = express();
+            // Connect Sequelize to Database
+            logger("[Database] Initializing Sequelize ORM...");
+            var sequelize = new Sequelize(config.db.name,
+                    config.db.username, config.db.password,
+                    { dialect: "mariadb", host: config.db.host,
+                        port: config.db.port, logging: false });
 
-    // PassportJS Strategy Setup
-    require(path.join(__dirname, 'config', 'passport.js'))(config, db, passport)
+            // Import Database Models
+            logger("[Database] Importing ORM Models...");
+            db = require(path.join(__dirname, 'app',
+                        'models', 'models.js'))(sequelize)
 
-    // Body Parsing / CORS
-    app.use(bodyParser.json({ limit: '5mb' }));
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(function(req, res, next) {
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers",
-                "Origin, X-Requested-With, Content-Type, Accept");
-        next();
-    });
-
-    // Set up Routes
-    require(path.join(__dirname, 'routes', 'index.js'))(config, app, db, passport);
-
-    server = http.createServer(app);
-
-    // Export App
-    return {
-        // Start Server
-        start: function () {
-            server.listen(config.server.port, function () {
-                var port = server.address().port;
-                logger("[App] Server Running @ localhost:" + port.toString());
+            // Synchronize Models to DB
+            logger("[Database] Synchronizing Models to Database @ "
+                    + config.db.host + ":" + config.db.port + "...");
+            sequelize.sync({}).then(function(){
+                    logger('[Database] Sequelize synchronized with database!');
+                    return callback(null);
             });
         },
-        // Close Server
-        close: function () {
-            var port = server.address().port;
-            logger("[App] Server Shutting Down..." + port.toString());
-            server.close();
+        // Other stuff i guess
+        function (callback) {
+            return callback(null);
+        }], function (err, results) {
+
+            // App Setup
+            var server;
+            var app = express();
+
+            // PassportJS Strategy Setup
+            require(path.join(__dirname, 'config', 'passport.js'))(config, db, passport)
+
+            // Set up Routes
+            require(path.join(__dirname, 'routes', 'index.js'))(config, app, db, passport);
+
+            // HTTP Server
+            server = http.createServer(app);
+
+            // Export App
+            app_wrapper = {
+                // Start Server
+                start: function () {
+                    server.listen(config.server.port, function () {
+                        var port = server.address().port;
+                        logger("[App] Server Running @ localhost:" + port.toString());
+                    });
+                },
+                // Close Server
+                close: function () {
+                    var port = server.address().port;
+                    logger("[App] Server Shutting Down..." + port.toString());
+                    server.close();
+                }
+            }
+
+            // Return App Wrapper
+            return done_app(app_wrapper);
         }
-    }
+    );
 }
+
