@@ -11,7 +11,8 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'Follows',
             classMethods: {
                 associate: function(models) {
-                    Photos.belongsTo(models.Users, { foreignKey: 'user_id' });
+                    Follows.belongsTo(models.Users, { foreignKey: 'user_id' });
+                    Follows.belongsTo(models.Users, { foreignKey: 'follow_user_id' });
                 }
             }
         }

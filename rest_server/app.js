@@ -35,22 +35,34 @@ module.exports = function (config, done_app) {
         function (callback) {
 
             // Connect Sequelize to Database
-            logger("[Database] Initializing Sequelize ORM...");
+            logger("[Database] Initializing Database @ "
+                    + config.db.host + ":" + config.db.port + "...");
             var sequelize = new Sequelize(config.db.name,
                     config.db.username, config.db.password,
-                    { dialect: "mariadb", host: config.db.host,
-                        port: config.db.port, logging: false });
+                    {
+                        dialect: "mariadb", host: config.db.host,
+                        port: config.db.port, logging: false,
+                        define: { underscored: true }
+                    });
+
 
             // Import Database Models
-            logger("[Database] Importing ORM Models...");
+            logger("[Database] Importing Sequelize ORM Models...");
             db = require(path.join(__dirname, 'app',
                         'models', 'models.js'))(sequelize)
 
             // Synchronize Models to DB
-            logger("[Database] Synchronizing Models to Database @ "
-                    + config.db.host + ":" + config.db.port + "...");
-            sequelize.sync({}).then(function(){
+            logger("[Database] Synchronizing Models to Database");
+            sequelize.sync({ force: config.db.seed }).then(function(){
                     logger('[Database] Sequelize synchronized with database!');
+
+                    // Database Seeding
+                    if (config.db.seed) {
+                        logger("[Database] Seeding Database. Tables have been dropped.");
+                    } else {
+                        logger("[Database] Not Seeding Database.");
+                    }
+
                     return callback(null);
             });
         },

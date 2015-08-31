@@ -15,9 +15,9 @@ module.exports = {
             password: 'password',
             host: 'localhost',
             port: 3306,
+            seed: true
         },
         log: true,
-        seed: false
     },
 
     test: {
@@ -32,9 +32,9 @@ module.exports = {
             password: 'password',
             host: 'localhost',
             port: 3306,
+            seed: true
         },
         log: false,
-        seed: true
     },
 
     production: {
@@ -49,8 +49,8 @@ module.exports = {
             password: 'password',
             host: 'localhost',
             port: 3306,
+            seed: true
         },
         log: true,
-        seed: true
     }
 }

@@ -14,10 +14,10 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'Users',
             classMethods: {
                 associate: function(models) {
-                    Users.hasMany(models.Follows);
-                    Users.hasMany(models.Likes);
-                    Users.hasMany(models.Photos);
-                    Users.hasMany(models.Comments);
+                    Users.hasMany(models.Follows, { foreignKey: 'user_id' });
+                    Users.hasMany(models.Likes), { foreignKey: 'user_id' };
+                    Users.hasMany(models.Photos), { foreignKey: 'user_id' };
+                    Users.hasMany(models.Comments), { foreignKey: 'user_id' };
                 }
             }
         }

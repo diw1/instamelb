@@ -8,7 +8,7 @@ var path = require('path')
 var config = require(path.join(__dirname, 'config', 'config.js'))
 
 // Initialize App (with Config)
-require(path.join(__dirname, 'app.js'))(config.production, function (app) {
+require(path.join(__dirname, 'app.js'))(config.development, function (app) {
     
     // Start
     app.start()
