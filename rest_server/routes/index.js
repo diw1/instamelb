@@ -18,7 +18,7 @@ module.exports = function (config, app, db, passport) {
     // Logger
     var logger = log(config);
 
-    index_controller = index_controller(config);
+    index_controller = index_controller(config, db);
     index_view = index_view(config);
 
     // Root
