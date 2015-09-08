@@ -149,6 +149,42 @@ module.exports = function (config, db) { return {
 
         return done(null, delete_comment_response);
 
+    },
+
+    getLikes: function (photo_id, done) {
+
+        var likes_json = {
+            "likes": [
+                {
+                    "user_id": 1,
+                    "username": "Pheo",
+                    "timestamp": 145234325243324
+                }
+            ]
+        }
+
+        return done(null, likes_json);
+
+    },
+
+    postLike: function (photo_id, done) {
+
+        var post_like_response = {
+            "liked": true
+        }
+
+        return done(null, post_like_response);
+
+    },
+
+    deleteLike: function (photo_id, done) {
+
+        var delete_like_response = {
+            "deleted": true
+        }
+
+        return done(null, delete_like_response);
+
     }
 
 }}

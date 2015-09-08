@@ -122,6 +122,24 @@ module.exports = function (config) { return {
 
         return done(null, delete_comment_response);
 
+    },
+
+    getLikes: function (likes_json, done) {
+
+        return done(null, likes_json);
+
+    },
+
+    postLike: function (post_like_response, done) {
+
+        return done(null, post_like_response);
+
+    },
+
+    deleteLike: function (delete_like_response, done) {
+
+        return done(null, delete_like_response);
+
     }
 
 }}
