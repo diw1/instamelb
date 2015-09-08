@@ -102,6 +102,61 @@ module.exports = function (config, db) { return {
         }
 
         return done(null, feed_json);
+    },
+
+    getFollowsFeed: function (done) {
+
+        var feed_json = {
+            "feed": [
+                {
+                    "event": "comment",
+                    "message": "B commented on A's Photo.",
+                    "user_commenting": {
+                        "user_id": 3,
+                        "username": "B"
+                    },
+                    "user_commented": {
+                        "user_id": 2,
+                        "username": "A"
+                    },
+                    "photo": {
+                        "photo_id": 1,
+                        "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                    }
+                },
+                {
+                    "event": "like",
+                    "message": "B liked A's Photo.",
+                    "user_liking": {
+                        "user_id": 3,
+                        "username": "B"
+                    },
+                    "user_liked": {
+                        "user_id": 2,
+                        "username": "A"
+                    },
+                    "photo": {
+                        "photo_id": 1,
+                        "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                    }
+                },
+                {
+                    "event": "follow",
+                    "message": "B is following A.",
+                    "user_following": {
+                        "user_id": 3,
+                        "username": "B"
+                    },
+                    "user_followed": {
+                        "user_id": 2,
+                        "username": "A"
+                    }
+                }
+            ]
+        } 
+
+        return done(null, feed_json);
     }
+
 }}
 

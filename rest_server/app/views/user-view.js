@@ -22,6 +22,12 @@ module.exports = function (config) { return {
 
         return done(null, feed_json);
     }
+    
+    // GET Follows Feed
+    getFollowsFeed: function (feed_json, done) {
+
+        return done(null, feed_json);
+    }
 
 }}
 

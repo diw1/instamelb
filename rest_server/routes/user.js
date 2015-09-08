@@ -66,5 +66,21 @@ module.exports = function (config, app, db, passport) {
         });
     });
 
+    // Get Follows Feed
+    app.get('/users/follows/feed', function (req, res) {
+        logger("GET /users/follows/feed");
+
+        user_controller.getFollowsFeed(function done (error, result) {
+            if (error) { return res.status(error.status).json(error.body); }
+
+            user_view.getFollowsFeed(result, function done (error, result) {
+                if (error) { return res.status(error.status).json(error.body); }
+                // Response
+                return res.status(200).json(result);
+            });
+        });
+
+    });
+
 }
 
