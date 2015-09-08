@@ -172,6 +172,39 @@ module.exports = function (config, db) { return {
         } 
 
         return done(null, feed_json);
+    },
+
+    // GET User Follows
+    getUserFollows: function (user_id, done) {
+
+        var follows_json = {
+            "follows":  [
+                {
+                    "user_id": 1,
+                    "username": "Pheo",
+                    "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                }
+            ]
+        }
+
+        return done(null, follows_json);
+    },
+
+    // GET User Followers
+    getUserFollowers: function (user_id, done) {
+
+        var followers_json = {
+            "followers":  [
+                {
+                    "user_id": 1,
+                    "username": "Pheo",
+                    "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                }
+            ]
+        }
+
+        return done(null, followers_json);
+
     }
 
 }}

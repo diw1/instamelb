@@ -33,6 +33,18 @@ module.exports = function (config) { return {
     getFollowsFeed: function (feed_json, done) {
 
         return done(null, feed_json);
+    },
+
+    // GET User Follows
+    getUserFollows: function (follows_json, done) {
+
+        return done(null, follows_json);
+    },
+
+    // GET User Followers
+    getUserFollowers: function (followers_json, done) {
+
+        return done(null, followers_json);
     }
 
 }}

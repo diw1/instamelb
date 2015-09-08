@@ -95,7 +95,36 @@ module.exports = function (config, app, db, passport) {
                 return res.status(200).json(result);
             });
         });
+    });
+    
+    // Get User Follows
+    app.get('/users/:user_id/follows', function (req, res) {
+        logger("GET /users/:user_id/follows");
 
+        user_controller.getUserFollows(req.params.user_id, function done (error, result) {
+            if (error) { return res.status(error.status).json(error.body); }
+
+            user_view.getUserFollows(result, function done (error, result) {
+                if (error) { return res.status(error.status).json(error.body); }
+                // Response
+                return res.status(200).json(result);
+            });
+        });
+    });
+
+    // Get User Followers
+    app.get('/users/:user_id/followers', function (req, res) {
+        logger("GET /users/:user_id/followers");
+
+        user_controller.getUserFollowers(req.params.user_id, function done (error, result) {
+            if (error) { return res.status(error.status).json(error.body); }
+
+            user_view.getUserFollowers(result, function done (error, result) {
+                if (error) { return res.status(error.status).json(error.body); }
+                // Response
+                return res.status(200).json(result);
+            });
+        });
     });
 
 }
