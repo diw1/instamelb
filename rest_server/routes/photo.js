@@ -21,6 +21,52 @@ module.exports = function (config, app, db, passport) {
     photo_controller = photo_controller(config, db);
     photo_view = photo_view(config);
 
+    // Get Comments
+    app.get('/photo/:photo_id/comments', function (req, res) {
+        logger("GET /photo/:photo_id/comments");
+
+        photo_controller.getComments(req.param.photo_id, function done (error, result) {
+            if (error) { return res.status(error.status).json(error.body); }
+
+            photo_view.getComments(result, function done (error, result) {
+                if (error) { return res.status(error.status).json(error.body); }
+                // Response
+                return res.status(200).json(result);
+            });
+        });
+    });
+
+    // Post Comment
+    app.post('/photo/:photo_id/comments', function (req, res) {
+        logger("POST /photo/:photo_id/comments");
+
+        photo_controller.postComment(req.param.photo_id, req.body, function done (error, result) {
+            if (error) { return res.status(error.status).json(error.body); }
+
+            photo_view.postComment(result, function done (error, result) {
+                if (error) { return res.status(error.status).json(error.body); }
+                // Response
+                return res.status(200).json(result);
+            });
+        });
+    });
+
+    // Delete Photo
+    app.delete('/photo/:photo_id/comments/:comment_id', function (req, res) {
+        logger("DELETE /photo/:photo_id/comments/:comment_id");
+
+        photo_controller.deleteComment(req.param.photo_id, req.param.comment_id,
+                function done (error, result) {
+            if (error) { return res.status(error.status).json(error.body); }
+
+            photo_view.deleteComment(result, function done (error, result) {
+                if (error) { return res.status(error.status).json(error.body); }
+                // Response
+                return res.status(200).json(result);
+            });
+        });
+    });
+
     // Get Photo
     app.get('/photo/:photo_id', function (req, res) {
         logger("GET /photo/:photo_id");

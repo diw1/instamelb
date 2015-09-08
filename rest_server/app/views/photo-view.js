@@ -10,7 +10,7 @@ module.exports = function (config) { return {
 
         // Photo Response JSON Structure
         var validatePhotoResponseJSON = validator({
-            require: true,
+            required: true,
             type: 'object',
             properties: {
                 uploaded: {
@@ -47,7 +47,7 @@ module.exports = function (config) { return {
 
         // Photo Response JSON Structure
         var validatePhotoResponseJSON = validator({
-            require: true,
+            required: true,
             type: 'object',
             properties: {
                 photo_id: {
@@ -66,6 +66,62 @@ module.exports = function (config) { return {
         }
 
         return done(null, photo_json);
+    },
+
+    getComments: function (comments_json, done) {
+
+        return done(null, comments_json);
+
+    },
+
+    postComment: function (post_comment_response, done) {
+
+        var validatePostCommentResponseJSON = validator({
+            required: true,
+            type: 'object',
+            properties: {
+                posted: {
+                    required: true,
+                    type: 'boolean'
+                }
+            }
+        });
+
+        // JSON Invalid?
+        var json_valid = validatePostCommentResponseJSON(post_comment_response);
+        if (!json_valid) {
+            var error_json = { "status": 500,
+                "body": { "error": "Server response JSON invalid." } }
+            return done(error_json);
+        }
+
+        return done(null, post_comment_response);
+
+    },
+
+    deleteComment: function (delete_comment_response, done) {
+
+        var validateDeleteCommentResponseJSON = validator({
+            required: true,
+            type: 'object',
+            properties: {
+                deleted: {
+                    required: true,
+                    type: 'boolean'
+                }
+            }
+        });
+
+        // JSON Invalid?
+        var json_valid = validateDeleteCommentResponseJSON(delete_comment_response);
+        if (!json_valid) {
+            var error_json = { "status": 500,
+                "body": { "error": "Server response JSON invalid." } }
+            return done(error_json);
+        }
+
+        return done(null, delete_comment_response);
+
     }
 
 }}

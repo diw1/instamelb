@@ -37,7 +37,7 @@ module.exports = function (config, db) { return {
         
         // New Photo JSON Structure
         var validatePhotoRequestJSON = validator({
-            require: true,
+            required: true,
             type: 'object',
             properties: {
                 caption: {
@@ -45,11 +45,11 @@ module.exports = function (config, db) { return {
                     type: 'string'
                 },
                 image: {
-                    require: true,
+                    required: true,
                     type: 'string'
                 },
                 longitude: {
-                    require: false,
+                    required: false,
                     type: 'number'
                 },
                 latitude: {
@@ -84,6 +84,70 @@ module.exports = function (config, db) { return {
         }
 
         return done(null, photo_json);
+
+    },
+
+    getComments: function (photo_id, done) {
+
+        var comments_json = {
+            "comments": [
+                {
+                    "comment_id": 1,
+                    "created_at": 1280780324,
+                    "updated_at": 1234124096,
+                    "location": {
+                        "longitude": 123.45,
+                        "latitude": 123.45
+                    },
+                    "text": "Really amazing photo!",
+                    "from": {
+                        "user_id": 1,
+                        "username": "Pheo",
+                        "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                    }
+                }
+            ]
+        }
+
+        return done(null, comments_json);
+    },
+
+    postComment: function (photo_id, new_comment_json, done) {
+
+        var validatePostCommentJSON = validator({
+            required: true,
+            type: 'object',
+            properties: {
+                text: {
+                    required: true,
+                    type: 'string'
+                }
+            }
+        });
+
+        // JSON Invalid?
+        var json_valid = validatePostCommentJSON(new_comment_json);
+        if (!json_valid) {
+            var error_json = { "status": 400,
+                "body": { "error": "Request JSON invalid." } }
+            return done(error_json);
+        }
+
+        var post_comment_reponse = {
+            "posted": true
+        }
+
+        return done(null, post_comment_reponse);
+
+    },
+
+    deleteComment: function (photo_id, comment_id, done) {
+
+        var delete_comment_response = {
+            "deleted": true
+        }
+
+        return done(null, delete_comment_response);
 
     }
 
