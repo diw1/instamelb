@@ -205,7 +205,19 @@ module.exports = function (config, db) { return {
 
         return done(null, followers_json);
 
-    }
+    },
+
+    // POST Relationship
+    postRelationship: function (user_id, action_json, done) {
+        
+        var response_json = {
+            "modified": true,
+            "action": "follow"
+        }
+
+        return done(null, response_json);
+
+    },
 
 }}
 

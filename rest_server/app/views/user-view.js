@@ -45,6 +45,12 @@ module.exports = function (config) { return {
     getUserFollowers: function (followers_json, done) {
 
         return done(null, followers_json);
+    },
+
+    // POST Relationship
+    postRelationship: function (response_json, done) {
+        
+        return done(null, response_json);
     }
 
 }}

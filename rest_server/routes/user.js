@@ -127,5 +127,21 @@ module.exports = function (config, app, db, passport) {
         });
     });
 
+    // Modify User Relationship
+    app.post('/users/:user_id/relationship', function (req, res) {
+        logger("POST /users/:user_id/relationship");
+
+        user_controller.postRelationship(req.params.user_id, req.body, 
+                function done (error, result) {
+            if (error) { return res.status(error.status).json(error.body); }
+
+            user_view.postRelationship(result, function done (error, result) {
+                if (error) { return res.status(error.status).json(error.body); }
+                // Response
+                return res.status(200).json(result);
+            });
+        });
+    });
+
 }
 
