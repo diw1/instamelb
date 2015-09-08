@@ -85,6 +85,7 @@ module.exports = function (config, done_app) {
             // Set up Routes
             require(path.join(__dirname, 'routes', 'index.js'))(config, app, db, passport);
             require(path.join(__dirname, 'routes', 'photo.js'))(config, app, db, passport);
+            require(path.join(__dirname, 'routes', 'user.js'))(config, app, db, passport);
 
             // HTTP Server
             server = http.createServer(app);
