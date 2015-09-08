@@ -49,6 +49,22 @@ module.exports = function (config, db) { return {
         return done(null, photos_json);
     },
 
+    // GET Search Users
+    getSearchUsers: function (query_string, is_suggested, done) {
+        
+        var users_json = {
+            "result": [
+                {
+                    "user_id": 1,
+                    "username": "Pheo",
+                    "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                }
+            ]
+        }
+
+        return done(null, users_json);
+    },
+
     // GET Self Feed
     getSelfFeed: function (done) {
 

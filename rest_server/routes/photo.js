@@ -25,7 +25,7 @@ module.exports = function (config, app, db, passport) {
     app.get('/photo/:photo_id/comments', function (req, res) {
         logger("GET /photo/:photo_id/comments");
 
-        photo_controller.getComments(req.param.photo_id, function done (error, result) {
+        photo_controller.getComments(req.params.photo_id, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             photo_view.getComments(result, function done (error, result) {
@@ -40,7 +40,7 @@ module.exports = function (config, app, db, passport) {
     app.post('/photo/:photo_id/comments', function (req, res) {
         logger("POST /photo/:photo_id/comments");
 
-        photo_controller.postComment(req.param.photo_id, req.body, function done (error, result) {
+        photo_controller.postComment(req.params.photo_id, req.body, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             photo_view.postComment(result, function done (error, result) {
@@ -55,7 +55,7 @@ module.exports = function (config, app, db, passport) {
     app.delete('/photo/:photo_id/comments/:comment_id', function (req, res) {
         logger("DELETE /photo/:photo_id/comments/:comment_id");
 
-        photo_controller.deleteComment(req.param.photo_id, req.param.comment_id,
+        photo_controller.deleteComment(req.params.photo_id, req.params.comment_id,
                 function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
@@ -71,7 +71,7 @@ module.exports = function (config, app, db, passport) {
     app.get('/photo/:photo_id/likes', function (req, res) {
         logger("GET /photo/:photo_id/likes");
 
-        photo_controller.getLikes(req.param.photo_id, function done (error, result) {
+        photo_controller.getLikes(req.params.photo_id, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             photo_view.getLikes(result, function done (error, result) {
@@ -86,7 +86,7 @@ module.exports = function (config, app, db, passport) {
     app.post('/photo/:photo_id/likes', function (req, res) {
         logger("POST /photo/:photo_id/likes");
 
-        photo_controller.postLike(req.param.photo_id, function done (error, result) {
+        photo_controller.postLike(req.params.photo_id, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             photo_view.postLike(result, function done (error, result) {
@@ -101,7 +101,7 @@ module.exports = function (config, app, db, passport) {
     app.delete('/photo/:photo_id/likes', function (req, res) {
         logger("DELETE /photo/:photo_id/likes");
 
-        photo_controller.deleteLike(req.param.photo_id, function done (error, result) {
+        photo_controller.deleteLike(req.params.photo_id, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             photo_view.deleteLike(result, function done (error, result) {
@@ -116,7 +116,7 @@ module.exports = function (config, app, db, passport) {
     app.get('/photo/:photo_id', function (req, res) {
         logger("GET /photo/:photo_id");
 
-        photo_controller.getPhoto(req.param.photo_id, function done (error, result) {
+        photo_controller.getPhoto(req.params.photo_id, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             photo_view.getPhoto(result, function done (error, result) {

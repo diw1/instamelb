@@ -17,6 +17,12 @@ module.exports = function (config) { return {
         return done(null, photos_json);
     },
 
+    // GET Search Users
+    getSearchUsers: function (users_json, done) {
+        
+        return done(null, users_json);
+    },
+
     // GET Self Feed
     getSelfFeed: function (feed_json, done) {
 

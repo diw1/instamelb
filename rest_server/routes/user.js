@@ -25,7 +25,7 @@ module.exports = function (config, app, db, passport) {
     app.get('/users/:user_id', function (req, res) {
         logger("GET /users/:user_id");
 
-        user_controller.getUser(req.param.user_id, function done (error, result) {
+        user_controller.getUser(req.params.user_id, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             user_view.getUser(result, function done (error, result) {
@@ -40,10 +40,26 @@ module.exports = function (config, app, db, passport) {
     app.get('/users/:user_id/photos', function (req, res) {
         logger("GET /users/:user_id/photos");
 
-        user_controller.getUserPhotos(req.param.user_id, function done (error, result) {
+        user_controller.getUserPhotos(req.params.user_id, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             user_view.getUserPhotos(result, function done (error, result) {
+                if (error) { return res.status(error.status).json(error.body); }
+                // Response
+                return res.status(200).json(result);
+            });
+        });
+    });
+
+    // Search Users
+    app.get('/users/search', function (req, res) {
+        logger("GET /users/search");
+
+        user_controller.getSearchUsers(req.query.q, req.query.suggested, 
+                function done (error, result) {
+            if (error) { return res.status(error.status).json(error.body); }
+
+            user_view.getSearchUsers(result, function done (error, result) {
                 if (error) { return res.status(error.status).json(error.body); }
                 // Response
                 return res.status(200).json(result);
