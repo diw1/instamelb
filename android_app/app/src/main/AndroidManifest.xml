@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="unimelb.edu.instamelb.materialtest" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Always required on api < 21, needed to keep a wake lock while your job is running -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Required on api < 21 if you are using setRequiredNetworkType(int) -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Required on all api levels if you are using setPersisted(true) -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application
+        android:name="unimelb.edu.instamelb.materialtest.MyApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityMain"
+            android:label="@string/title_activity_main" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityTouchEvent"
+            android:label="@string/title_activity_sub" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="unimelb.edu.instamelb.activities.ActivityMain" />
+        </activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivitySlidingTabLayout"
+            android:label="@string/title_activity_activity_using_tab_library" >
+        </activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityVectorDrawable"
+            android:label="@string/title_activity_vector_test" >
+        </activity>
+
+        <service
+            android:name="unimelb.edu.instamelb.services.ServiceMoviesBoxOffice"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityDynamicTabs"
+            android:label="@string/title_activity_dynamic_tabs" >
+        </activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityRecylerAnimators"
+            android:label="@string/title_activity_recycler_item_animations" >
+        </activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityA"
+            android:label="@string/title_activity_activity_calling" >
+        </activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityB"
+            android:label="@string/title_activity_activity_called" >
+        </activity>
+        <activity android:name="unimelb.edu.instamelb.activities.LoginActivity" android:theme="@style/AppTheme.Dark.Dialog" />
+        <activity android:name="unimelb.edu.instamelb.activities.SignupActivity" android:theme="@style/AppTheme.Dark.Dialog" />
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivitySharedA"
+            android:label="@string/title_activity_activity_shared"></activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivitySharedB"
+            android:label="@string/title_activity_activity_shared_b"></activity>
+    </application>
+
+</manifest>
