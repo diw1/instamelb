@@ -9,7 +9,7 @@ module.exports = function (config, db) { return {
     getUser: function (user_id, done) {
 
         var user_json = {
-            "user_id": user_id,
+            "user_id": 1,
             "username": "Pheo",
             "email": "pheo@email.com",
             "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
