@@ -6,7 +6,7 @@ var validator = require('is-my-json-valid')
 module.exports = function (config, db) { return {
 
     // GET User
-    getUser: function (user_id, done) {
+    getUser: function (auth_user_id, user_id, done) {
 
         var user_json = {
             "user_id": 1,

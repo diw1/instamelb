@@ -13,9 +13,15 @@ module.exports = function (config, db, passport) {
             }).then(function(user) {
                 // Check that user account exists
                 if (user) {
-                    return done(null, true); // Successful Authentication
+
+                    var user_json = {}
+                    user_json.id = user.dataValues.id;
+                    user_json.username = user.dataValues.username;
+                    user_json.email = user.dataValues.email;
+
+                    return done(null, user_json); // Successful Authentication
                 } else {
-                    return done(null, false); // Unsuccessful Authentication
+                    return done(null, null); // Unsuccessful Authentication
                 }
             })
         }

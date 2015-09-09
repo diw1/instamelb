@@ -38,10 +38,10 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Get User Profile
-    app.get('/users/:user_id', function (req, res) {
+    app.get('/users/:user_id', auth(passport), function (req, res) {
         logger("GET /users/:user_id");
 
-        user_controller.getUser(req.params.user_id, function done (error, result) {
+        user_controller.getUser(req.user.id, req.params.user_id, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             user_view.getUser(result, function done (error, result) {

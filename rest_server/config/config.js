@@ -15,7 +15,7 @@ module.exports = {
             password: 'password',
             host: 'localhost',
             port: 3306,
-            seed: true
+            seed: false
         },
         log: true,
     },
