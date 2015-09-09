@@ -41,7 +41,8 @@ module.exports = function (config, app, db, passport) {
     app.get('/users/:user_id', auth(passport), function (req, res) {
         logger("GET /users/:user_id");
 
-        user_controller.getUser(req.user.id, req.params.user_id, function done (error, result) {
+        user_controller.getUser(req.user.id, req.params.user_id, 
+               function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             user_view.getUser(result, function done (error, result) {
@@ -53,10 +54,11 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Get User Photos
-    app.get('/users/:user_id/photos', function (req, res) {
+    app.get('/users/:user_id/photos', auth(passport), function (req, res) {
         logger("GET /users/:user_id/photos");
 
-        user_controller.getUserPhotos(req.params.user_id, function done (error, result) {
+        user_controller.getUserPhotos(req.user.id, req.params.user_id, 
+                function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             user_view.getUserPhotos(result, function done (error, result) {

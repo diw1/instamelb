@@ -61,6 +61,26 @@ module.exports = function (config) { return {
     // GET User Photos
     getUserPhotos: function (photos_json, done) {
 
+        var validateUserPhotosJSON = validator({
+            required: true,
+            type: 'object',
+            properties: {
+                photos: {
+                    required: true,
+                    type: 'array'
+                }
+            }
+
+        });
+
+        // JSON Invalid?
+        var json_valid = validateUserPhotosJSON(photos_json);
+        if (!json_valid) {
+            var error_json = { "status": 500,
+                "body": { "error": "Server response JSON invalid." } }
+            return done(error_json);
+        }
+
         return done(null, photos_json);
     },
 

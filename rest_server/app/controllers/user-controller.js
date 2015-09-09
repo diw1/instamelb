@@ -54,29 +54,53 @@ module.exports = function (config, db) { return {
     },
 
     // Get User Photos
-    getUserPhotos: function (user_id, done) {
+    getUserPhotos: function (auth_user_id, user_id, done) {
 
-        var photos_json = {
-            "photos": [
-                {
-                    "photo_id": 1,
-                    "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
-                    "photo_caption": "Good Photo",
-                    "comments": {
-                        "count": 127
-                    },
-                    "likes": {
-                        "count": 2045
-                    },
-                    "location": {
-                        "longitude": 123.45,
-                        "latitude": 234.56
-                    }
-                }
-            ]
+        if (user_id == "self") {
+            user_id = auth_user_id;
         }
 
-        return done(null, photos_json);
+        // Cast to Number
+        user_id = Number(user_id);
+
+        // if NaN
+        if (isNaN(user_id)) {
+                var error = {"status":400,"body":{"message":"user_id invalid."}}
+                return done(error);
+        }
+
+        db.Photos.findAll({
+            where: {user_id: user_id}
+        }).then(function(result) {
+
+            var photos_json = { "photos": [] }
+
+            // If there are results, add to photos
+            if (result) {
+
+                for (var i=0;i < result.length;i++) {
+
+                    var photo_object = result[i].dataValues;
+
+                    var photo_json = {}
+                    photo_json.photo_id = photo_object.id;
+                    photo_json.photo_image = photo_object.url;
+                    photo_json.photo_caption = "";
+                    photo_json.comments = { count: 0 };
+                    photo_json.likes = { count: 0 };
+                    photo_json.location = { longitude: 0, latitude: 0 };
+
+                    photos_json.photos.push(photo_json);
+                }
+            }
+    
+            return done(null, photos_json);
+
+        }).catch(function(error) {
+                var error = {"status": 500,"body":{ message:"Internal Server Error."}}
+                return done(error);
+        });
+
     },
 
     // GET Search Users
