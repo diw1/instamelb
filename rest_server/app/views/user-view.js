@@ -8,6 +8,53 @@ module.exports = function (config) { return {
     // GET User
     getUser: function (user_json, done) {
 
+        var validateUserJSON = validator({
+            required: true,
+            type: 'object',
+            properties: {
+                user_id: {
+                    required: true,
+                    type: 'number'
+                },
+                username: {
+                    required: true,
+                    type: 'string'
+                },
+                email: {
+                    required: true,
+                    type: 'string'
+                },
+                profile_image: {
+                    required: true,
+                    type: 'string'
+                },
+                counts: {
+                    properties: {
+                        photos: {
+                            required: true,
+                            type: 'number'
+                        },
+                        follows: {
+                            required: true,
+                            type: 'number'
+                        },
+                        followed_by: {
+                            required: true,
+                            type: 'number'
+                        }
+                    }
+                }
+            }
+        });
+
+        // JSON Invalid?
+        var json_valid = validateUserJSON(user_json);
+        if (!json_valid) {
+            var error_json = { "status": 500,
+                "body": { "error": "Server response JSON invalid." } }
+            return done(error_json);
+        }
+
         return done(null, user_json);
     },
 

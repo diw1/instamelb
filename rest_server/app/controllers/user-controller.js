@@ -8,19 +8,49 @@ module.exports = function (config, db) { return {
     // GET User
     getUser: function (auth_user_id, user_id, done) {
 
-        var user_json = {
-            "user_id": 1,
-            "username": "Pheo",
-            "email": "pheo@email.com",
-            "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
-            "counts": {
-                "photos": 1320,
-                "follows": 420,
-                "followed_by": 3410
-            }
+        if (user_id == "self") {
+            user_id = auth_user_id;
         }
 
-        return done(null, user_json);
+        // Cast to Number
+        user_id = Number(user_id);
+
+        // if NaN
+        if (isNaN(user_id)) {
+                var error = {"status":400,"body":{"message":"user_id invalid."}}
+                return done(error);
+        }
+
+        db.Users.findOne({
+            where: {id: user_id}
+        }).then(function(result) {
+
+            // No result found
+            if (!result) {
+                var error = {"status": 403,"body":{"message":"User not found."}}
+                return done(error);
+            }
+
+            var user = result.dataValues;
+
+            var user_json = {}
+            user_json.user_id = user.id;
+            user_json.username = user.username;
+            user_json.email = user.email;
+            user_json.profile_image = "";
+            user_json.counts = {
+                "photos": 0,
+                "follows": 0,
+                "followed_by": 0
+            }
+
+            return done(null, user_json);
+
+        }).catch(function(error) {
+                var error = {"status": 500,"body":{ message:"Internal Server Error."}}
+                return done(error);
+        });
+
     },
 
     // Get User Photos
