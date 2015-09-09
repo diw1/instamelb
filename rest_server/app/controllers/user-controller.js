@@ -82,7 +82,7 @@ module.exports = function (config, db) { return {
 
                     var photo_object = result[i].dataValues;
 
-                    var photo_json = {}
+                    var photo_json = {};
                     photo_json.photo_id = photo_object.id;
                     photo_json.photo_image = photo_object.url;
                     photo_json.photo_caption = "";
@@ -105,18 +105,35 @@ module.exports = function (config, db) { return {
 
     // GET Search Users
     getSearchUsers: function (query_string, is_suggested, done) {
-        
-        var users_json = {
-            "result": [
-                {
-                    "user_id": 1,
-                    "username": "Pheo",
-                    "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
-                }
-            ]
-        }
 
-        return done(null, users_json);
+        search_str = "%" + query_string + "%"
+
+        db.Users.findAll({
+            where: {username: {like: search_str}}
+        }).then(function(result) {
+
+            var result_json = { "result": [] }
+
+            if (result) {
+
+                for (var i=0;i < result.length;i++) {
+                    
+                    var user_object = result[i].dataValues;
+
+                    var user_json = {};
+                    user_json.user_id = user_object.id;
+                    user_json.username = user_object.username;
+                    user_json.profile_image = "http://images.instamelb.pinkpineapple.me/1.jpg";
+
+                    result_json.result.push(user_json);
+                }
+                
+
+            }
+
+            return done(null, result_json);
+        });
+        
     },
 
     // GET Self Feed

@@ -70,7 +70,6 @@ module.exports = function (config) { return {
                     type: 'array'
                 }
             }
-
         });
 
         // JSON Invalid?
@@ -85,9 +84,28 @@ module.exports = function (config) { return {
     },
 
     // GET Search Users
-    getSearchUsers: function (users_json, done) {
+    getSearchUsers: function (result_json, done) {
+
+        var validateResultJSON = validator({
+            required: true,
+            type: 'object',
+            properties: {
+                result: {
+                    required: true,
+                    type: 'array'
+                }
+            }
+        });
+
+        // JSON Invalid?
+        var json_valid = validateResultJSON(result_json);
+        if (!json_valid) {
+            var error_json = { "status": 500,
+                "body": { "error": "Server response JSON invalid." } }
+            return done(error_json);
+        }
         
-        return done(null, users_json);
+        return done(null, result_json);
     },
 
     // GET Self Feed

@@ -22,7 +22,7 @@ module.exports = function (config, app, db, passport) {
     user_view = user_view(config);
 
     // Search Users
-    app.get('/users/search', function (req, res) {
+    app.get('/users/search', auth(passport), function (req, res) {
         logger("GET /users/search");
 
         user_controller.getSearchUsers(req.query.q, req.query.suggested, 
