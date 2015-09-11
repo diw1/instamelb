@@ -37,7 +37,7 @@ module.exports = function (config, db) { return {
             user_json.user_id = user.id;
             user_json.username = user.username;
             user_json.email = user.email;
-            user_json.profile_image = "";
+            user_json.profile_image = "http://images.instamelb.pinkpineapple.me/1.jpg";
             user_json.counts = {
                 "photos": 0,
                 "follows": 0,
@@ -109,6 +109,11 @@ module.exports = function (config, db) { return {
     // GET Search Users
     getSearchUsers: function (query_string, is_suggested, done) {
 
+        // Turn to empty string if null/undefined
+        if (!query_string) {
+            query_string = ""
+        }
+
         search_str = "%" + query_string + "%"
 
         db.Users.findAll({
@@ -130,8 +135,6 @@ module.exports = function (config, db) { return {
 
                     result_json.result.push(user_json);
                 }
-                
-
             }
 
             return done(null, result_json);
