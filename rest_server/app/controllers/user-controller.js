@@ -85,10 +85,13 @@ module.exports = function (config, db) { return {
                     var photo_json = {};
                     photo_json.photo_id = photo_object.id;
                     photo_json.photo_image = photo_object.url;
-                    photo_json.photo_caption = "";
+                    photo_json.photo_caption = photo_object.caption;
                     photo_json.comments = { count: 0 };
                     photo_json.likes = { count: 0 };
-                    photo_json.location = { longitude: 0, latitude: 0 };
+                    photo_json.location = {
+                        longitude: photo_object.longitude,
+                        latitude: photo_object.latitude
+                    };
 
                     photos_json.photos.push(photo_json);
                 }
