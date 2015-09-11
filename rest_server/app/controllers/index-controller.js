@@ -9,8 +9,13 @@ var ValidationError = require("sequelize").ValidationError;
 module.exports = function (config, db) { return {
 
     // GET Login
-    getLogin: function (done) {
+    getLogin: function (user_object, done) {
         var auth_success = { "authenticated": true };
+        auth_success.user = {}
+        auth_success.user.user_id = user_object.id;
+        auth_success.user.username = user_object.username;
+        auth_success.user.email = user_object.email;
+
         return done(null, auth_success);
     },
     
@@ -52,7 +57,14 @@ module.exports = function (config, db) { return {
             password: register_json.password,
             email: register_json.email
         }).then(function(new_user) {
+            var user_object = new_user.dataValues;
+
             var register_response = { "registered": true };
+            register_response.user = {};
+            register_response.user.user_id = user_object.id;
+            register_response.user.username = user_object.username;
+            register_response.user.email = user_object.email;
+
             return done(null, register_response);
         }).catch(function(errors) {
             // Validation Error (Non-unique username/email)

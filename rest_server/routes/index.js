@@ -31,7 +31,7 @@ module.exports = function (config, app, db, passport) {
     app.get('/login', auth(passport), function (req, res) {
         logger("GET /login");
 
-        index_controller.getLogin(function done (error, result) {
+        index_controller.getLogin(req.user, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             index_view.getLogin(result, function done (error, result) {
