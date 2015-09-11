@@ -100,10 +100,11 @@ module.exports = function (config, app, db, passport) {
     });
     
     // Get User Follows
-    app.get('/users/:user_id/follows', function (req, res) {
+    app.get('/users/:user_id/follows', auth(passport), function (req, res) {
         logger("GET /users/:user_id/follows");
 
-        user_controller.getUserFollows(req.params.user_id, function done (error, result) {
+        user_controller.getUserFollows(req.user.id, req.params.user_id,
+                function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             user_view.getUserFollows(result, function done (error, result) {
@@ -115,10 +116,11 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Get User Followers
-    app.get('/users/:user_id/followers', function (req, res) {
+    app.get('/users/:user_id/followers', auth(passport), function (req, res) {
         logger("GET /users/:user_id/followers");
 
-        user_controller.getUserFollowers(req.params.user_id, function done (error, result) {
+        user_controller.getUserFollowers(req.user.id, req.params.user_id, 
+                function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             user_view.getUserFollowers(result, function done (error, result) {

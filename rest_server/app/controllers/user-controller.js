@@ -252,35 +252,63 @@ module.exports = function (config, db) { return {
     },
 
     // GET User Follows
-    getUserFollows: function (user_id, done) {
+    getUserFollows: function (auth_user_id, user_id, done) {
 
-        var follows_json = {
-            "follows":  [
-                {
-                    "user_id": 1,
-                    "username": "Pheo",
-                    "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
-                }
-            ]
+        if (user_id == "self") {
+            user_id = auth_user_id;
         }
 
-        return done(null, follows_json);
+        db.Follows.findAll({
+            include: [{model: db.Users, as: 'user_followed'}],
+            where: {user_id: user_id}
+        }).then(function(result) {
+
+            var follows_json = { "follows": [] };
+
+            for (var i=0;i < result.length;i++) {
+                var followed_user_object = result[i].user_followed.dataValues;
+                var followed_user = {}
+
+                followed_user.user_id = followed_user_object.id;
+                followed_user.username = followed_user_object.username;
+                followed_user.profile_image = "http://images.instamelb.pinkpineapple.me/1.jpg";
+
+                follows_json.follows.push(followed_user);
+            }
+
+            return done(null, follows_json);
+
+        });
     },
 
     // GET User Followers
-    getUserFollowers: function (user_id, done) {
+    getUserFollowers: function (auth_user_id, user_id, done) {
 
-        var followers_json = {
-            "followers":  [
-                {
-                    "user_id": 1,
-                    "username": "Pheo",
-                    "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
-                }
-            ]
+        if (user_id == "self") {
+            user_id = auth_user_id;
         }
 
-        return done(null, followers_json);
+        db.Follows.findAll({
+            include: [{model: db.Users, as: 'user_following'}],
+            where: {follow_user_id: user_id}
+        }).then(function(result) {
+
+            var followers_json = { "followers": [] };
+
+            for (var i=0;i < result.length;i++) {
+                var follower_user_object = result[i].user_following.dataValues;
+                var follower_user = {}
+
+                follower_user.user_id = follower_user_object.id;
+                follower_user.username = follower_user_object.username;
+                follower_user.profile_image = "http://images.instamelb.pinkpineapple.me/1.jpg";
+
+                followers_json.followers.push(follower_user);
+            }
+
+            return done(null, followers_json);
+
+        });
 
     },
 
