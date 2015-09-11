@@ -258,6 +258,15 @@ module.exports = function (config, db) { return {
             user_id = auth_user_id;
         }
 
+        // Cast to Number
+        user_id = Number(user_id);
+
+        // if NaN
+        if (isNaN(user_id)) {
+                var error = {"status":400,"body":{"message":"user_id invalid."}}
+                return done(error);
+        }
+
         db.Follows.findAll({
             include: [{model: db.Users, as: 'user_followed'}],
             where: {user_id: user_id}
@@ -286,6 +295,15 @@ module.exports = function (config, db) { return {
 
         if (user_id == "self") {
             user_id = auth_user_id;
+        }
+
+        // Cast to Number
+        user_id = Number(user_id);
+
+        // if NaN
+        if (isNaN(user_id)) {
+                var error = {"status":400,"body":{"message":"user_id invalid."}}
+                return done(error);
         }
 
         db.Follows.findAll({
