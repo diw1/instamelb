@@ -132,10 +132,10 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Modify User Relationship
-    app.post('/users/:user_id/relationship', function (req, res) {
+    app.post('/users/:user_id/relationship', auth(passport), function (req, res) {
         logger("POST /users/:user_id/relationship");
 
-        user_controller.postRelationship(req.params.user_id, req.body, 
+        user_controller.postRelationship(req.user.id, req.params.user_id, req.body, 
                 function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 

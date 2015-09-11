@@ -16,7 +16,14 @@ module.exports = function(sequelize, DataTypes) {
                     Follows.belongsTo(models.Users,
                             { foreignKey: 'follow_user_id', as: 'user_followed' });
                 }
-            }
+            },
+            indexes: [
+                {
+                    name: 'follower_followed_index',
+                    unique: true,
+                    fields: ['user_id', 'follow_user_id']
+                }
+            ]
         }
     );
     return Follows;

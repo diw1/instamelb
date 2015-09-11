@@ -3,6 +3,9 @@
 
 var validator = require('is-my-json-valid')
 
+// Specific Error messages
+var ValidationError = require("sequelize").ValidationError;
+
 module.exports = function (config, db) { return {
 
     // GET User
@@ -331,16 +334,90 @@ module.exports = function (config, db) { return {
     },
 
     // POST Relationship
-    postRelationship: function (user_id, action_json, done) {
+    postRelationship: function (auth_user_id, user_id, action_json, done) {
+
+        // Cast to Number
+        user_id = Number(user_id);
+
+        // if NaN
+        if (isNaN(user_id)) {
+                var error = {"status":400,"body":{"message":"user_id invalid."}}
+                return done(error);
+        }
         
-        var response_json = {
-            "modified": true,
-            "action": "follow"
+        var validateActionJSON = validator({
+            required: true,
+            type: 'object',
+            properties: {
+                action: {
+                    required: true,
+                    type: 'string'
+                }
+            }
+        });
+
+        // JSON Invalid?
+        var json_valid = validateActionJSON(action_json);
+        if (!json_valid) {
+            var error_json = { "status": 500,
+                "body": { "error": "Server response JSON invalid." } }
+            return done(error_json);
         }
 
-        return done(null, response_json);
+        // Follow User
+        if (action_json.action == "follow") {
 
-    },
+            db.Follows.upsert({
+                user_id: auth_user_id,
+                follow_user_id: user_id,
+            }, {}).then(function(result) {
+                console.log(result);
+
+                var response_json = { "action": action_json.action };
+                
+                if (result) {
+                    // True, so started following
+                    response_json.modified = true;
+                } else {
+                    // False, so already exists
+                    response_json.modified = false;
+                    response_json.message = "Already following User";
+                }
+
+                return done(null, response_json);
+
+            });
+
+        // Unfollow User
+        } else if (action_json.action == "unfollow") {
+            
+            db.Follows.destroy({
+                where: {
+                    user_id: auth_user_id,
+                    follow_user_id: user_id
+                }
+            }).then(function(result) {
+
+                var response_json = { "action": action_json.action };
+        
+                if (result > 0) {
+                    // Something was deleted
+                    response_json.modified = true;
+                } else {
+                    // Nothing was deleted
+                    response_json.modified = false;
+                    response_json.message = "No relationship Exists";
+                }
+
+                return done(null, response_json);
+
+            });
+        } else {
+            var error_json = { "status": 400,
+                "body": { "error": "Unrecognized action '"+action_json.action+"'"} }
+            return done(error_json);
+        }
+    }
 
 }}
 
