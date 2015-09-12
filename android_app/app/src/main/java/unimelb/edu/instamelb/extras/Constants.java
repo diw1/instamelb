@@ -5,4 +5,5 @@ package unimelb.edu.instamelb.extras;
  */
 public interface Constants {
     String NA = "NA";
+    public static final String API_BASE_URL = "http://instamelb.pinkpineapple.me";
 }

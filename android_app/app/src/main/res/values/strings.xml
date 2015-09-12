@@ -47,4 +47,15 @@
     <string name="title_activity_activity_shared_b">Shared B</string>
     <string name="action_shared_transitions">SharedElementsTransition</string>
 
+    <string name="action_follow">Follow</string>
+    <string name="action_unfollow">Unfollow</string>
+    <string name="details">DETAILS</string>
+    <string name="friends_count">Following</string>
+    <string name="following_count">Followers</string>
+    <string name="favorites_count">Likes</string>
+    <string name="location">LOCATION</string>
+    <string name="action_change">Change Image</string>
+    <string name="status_count">Photos</string>
+    <string name="loading">Loading</string>
+
 </resources>
