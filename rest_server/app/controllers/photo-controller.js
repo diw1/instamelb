@@ -23,10 +23,13 @@ module.exports = function (config, db) { return {
             var photo_object = result.dataValues;
             var photo_owner_object = result.photo_owner.dataValues;
 
+            var timestamp = new Date(photo_object.created_at).getTime();
+
             var photo_json = {
                 "photo_id": photo_object.id,
                 "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
                 "photo_caption": photo_object.caption,
+                "timestamp": timestamp,
                 "location": {
                     "longitude": photo_object.longitude,
                     "latitude": photo_object.latitude
@@ -98,11 +101,14 @@ module.exports = function (config, db) { return {
             db.Users.findById(photo_object.user_id).then(function(result) {
                 var photo_owner_object = result.dataValues;
 
+                var timestamp = new Date(photo_object.created_at).getTime();
+
                 var photo_json = {
                     "uploaded": true,
                     "photo_id": photo_object.id,
                     "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
                     "photo_caption": photo_object.caption,
+                    "timestamp": timestamp,
                     "user": {
                         "user_id": photo_owner_object.id,
                         "username": photo_owner_object.username,

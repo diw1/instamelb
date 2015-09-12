@@ -85,6 +85,8 @@ module.exports = function (config, db) { return {
 
                     var photo_object = result[i].dataValues;
 
+                    var timestamp = new Date(photo_object.created_at).getTime();
+
                     var photo_json = {};
                     photo_json.photo_id = photo_object.id;
                     photo_json.photo_image = photo_object.url;
@@ -151,47 +153,19 @@ module.exports = function (config, db) { return {
         var feed_json = {
             "feed": [
                 {
-                    "event": "comment",
-                    "message": "Pheo commented on A's Photo.",
-                    "user_commenting": {
-                        "user_id": 1,
-                        "username": "Pheo"
+                    "photo_id": 1,
+                    "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
+                    "photo_caption": "Good Photo",
+                    "timestamp": 123456,
+                    "comments": {
+                        "count": 127
                     },
-                    "user_commented": {
-                        "user_id": 2,
-                        "username": "A"
+                    "likes": {
+                        "count": 2045
                     },
-                    "photo": {
-                        "photo_id": 1,
-                        "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
-                    }
-                },
-                {
-                    "event": "like",
-                    "message": "Pheo liked A's Photo.",
-                    "user_liking": {
-                        "user_id": 1,
-                        "username": "Pheo"
-                    },
-                    "user_liked": {
-                        "user_id": 2,
-                        "username": "A"
-                    },
-                    "photo": {
-                        "photo_id": 1,
-                        "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
-                    }
-                },
-                {
-                    "event": "follow",
-                    "message": "Pheo is following A.",
-                    "user_following": {
-                        "user_id": 1,
-                        "username": "Pheo"
-                    },
-                    "user_followed": {
-                        "user_id": 2,
-                        "username": "A"
+                    "location": {
+                        "longitude": 123.45,
+                        "latitude": 234.56
                     }
                 }
             ]
