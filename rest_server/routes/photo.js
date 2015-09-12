@@ -22,7 +22,7 @@ module.exports = function (config, app, db, passport) {
     photo_view = photo_view(config);
 
     // Get Comments
-    app.get('/photo/:photo_id/comments', function (req, res) {
+    app.get('/photo/:photo_id/comments', auth(passport), function (req, res) {
         logger("GET /photo/:photo_id/comments");
 
         photo_controller.getComments(req.params.photo_id, function done (error, result) {
@@ -37,10 +37,11 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Post Comment
-    app.post('/photo/:photo_id/comments', function (req, res) {
+    app.post('/photo/:photo_id/comments', auth(passport), function (req, res) {
         logger("POST /photo/:photo_id/comments");
 
-        photo_controller.postComment(req.params.photo_id, req.body, function done (error, result) {
+        photo_controller.postComment(req.user.id, req.params.photo_id, req.body,
+                function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             photo_view.postComment(result, function done (error, result) {

@@ -161,7 +161,7 @@ module.exports = function (config, db) { return {
         });
     },
 
-    postComment: function (photo_id, new_comment_json, done) {
+    postComment: function (auth_user_id, photo_id, new_comment_json, done) {
 
         var validatePostCommentJSON = validator({
             required: true,
@@ -182,11 +182,19 @@ module.exports = function (config, db) { return {
             return done(error_json);
         }
 
-        var post_comment_reponse = {
-            "posted": true
-        }
+        db.Comments.create({
+            text: new_comment_json.text,
+            user_id: auth_user_id,
+            photo_id: photo_id
+        }).then(function(result) {
 
-        return done(null, post_comment_reponse);
+            var post_comment_reponse = {
+                "posted": true
+            }
+
+            return done(null, post_comment_reponse);
+
+        });
 
     },
 

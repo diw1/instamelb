@@ -18,8 +18,6 @@ module.exports = function(sequelize, DataTypes) {
                             { foreignKey: 'user_id' });
                     Comments.belongsTo(models.Photos,
                             { foreignKey: 'photo_id' });
-                    Comments.belongsTo(Comments,
-                            { foreignKey: 'reply_comment_id' });
                 }
             }
         }
