@@ -100,10 +100,8 @@ public class FragmentProfile extends Fragment implements SortListener{
 
         if (loggedInUserFollows == null) {
             mFollowButton.setVisibility(View.GONE);
-            mFollowDivider.setVisibility(View.GONE);
         } else {
             mFollowButton.setVisibility(View.VISIBLE);
-            mFollowDivider.setVisibility(View.VISIBLE);
             mFollowButton
                     .setText(loggedInUserFollows ? R.string.action_unfollow
                             : R.string.action_follow);
@@ -198,7 +196,6 @@ public class FragmentProfile extends Fragment implements SortListener{
                     .findViewById(R.id.friendship_button);
             mChangeImageButton = (Button) mProfileView.
                     findViewById(R.id.change_button);
-            mFollowDivider = mProfileView.findViewById(R.id.friendship_divider);
 
             if (mUser != null) {
                 ImageView avatar = (ImageView) mProfileView
