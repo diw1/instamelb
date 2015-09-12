@@ -13,10 +13,6 @@ module.exports = function (config) { return {
             required: true,
             type: 'object',
             properties: {
-                uploaded: {
-                    required: true,
-                    type: 'boolean'
-                },
                 photo_id: {
                     required: true,
                     type: 'number'
@@ -28,6 +24,48 @@ module.exports = function (config) { return {
                 photo_caption: {
                     required: true,
                     type: 'string'
+                },
+                location: {
+                    required: true,
+                    type: 'object',
+                },
+                user: {
+                    required: true,
+                    type: 'object',
+                    properties: {
+                        user_id: {
+                            required: true,
+                            type: 'number'
+                        },
+                        username: {
+                            required: true,
+                            type: 'string'
+                        },
+                        profile_image: {
+                            required: true,
+                            type: 'string'
+                        },
+                    }
+                },
+                comments: {
+                    required: true,
+                    type: 'object',
+                    properties: {
+                        count: {
+                            required: true,
+                            type: 'number'
+                        }
+                    }
+                },
+                likes: {
+                    required: true,
+                    type: 'object',
+                    properties: {
+                        count: {
+                            required: true,
+                            type: 'number'
+                        }
+                    }
                 }
             }
         });

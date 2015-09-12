@@ -8,28 +8,44 @@ module.exports = function (config, db) { return {
     // GET Photo
     getPhoto: function (photo_id, done) {
 
-        var photo_json = {
-            "photo_id": 1,
-            "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
-            "photo_caption": "Good Photo",
-            "location": {
-                "longitude": 123.45,
-                "latitude": 234.56
-            },
-            "user": {
-                "user_id": 1,
-                "username": "Pheo",
-                "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
-            },
-            "comments": {
-                "count": 127
-            },
-            "likes": {
-                "count": 2045
-            }
-        }
+        // Grab photo from database
+        db.Photos.findOne({
+            include: [{model: db.Users, as: 'photo_owner'}],
+            where: { id: photo_id }
+        }).then(function(result) {
 
-        return done(null, photo_json);
+            // If nothing found
+            if (!result) {
+                var error = {"status":404,"body":{"message":"Photo not found."}}
+                return done(error);
+            }
+
+            var photo_object = result.dataValues;
+            var photo_owner_object = result.photo_owner.dataValues;
+
+            var photo_json = {
+                "photo_id": photo_object.id,
+                "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
+                "photo_caption": photo_object.caption,
+                "location": {
+                    "longitude": photo_object.longitude,
+                    "latitude": photo_object.latitude
+                },
+                "user": {
+                    "user_id": photo_owner_object.id,
+                    "username": photo_owner_object.username,
+                    "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                },
+                "comments": {
+                    "count": 0
+                },
+                "likes": {
+                    "count": 0
+                }
+            }
+
+            return done(null, photo_json);
+        });
     },
 
     // POST Photo

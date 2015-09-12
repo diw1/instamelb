@@ -113,7 +113,7 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Get Photo
-    app.get('/photo/:photo_id', function (req, res) {
+    app.get('/photo/:photo_id', auth(passport), function (req, res) {
         logger("GET /photo/:photo_id");
 
         photo_controller.getPhoto(req.params.photo_id, function done (error, result) {

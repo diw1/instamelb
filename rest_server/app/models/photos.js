@@ -15,7 +15,8 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'Photos',
             classMethods: {
                 associate: function(models) {
-                    Photos.belongsTo(models.Users, { foreignKey: 'user_id' });
+                    Photos.belongsTo(models.Users,
+                            { foreignKey: 'user_id', as: 'photo_owner' });
 
                     Photos.hasMany(models.Comments, { foreignKey: 'photo_id' });
                     Photos.hasMany(models.Likes, { foreignKey: 'photo_id' });
