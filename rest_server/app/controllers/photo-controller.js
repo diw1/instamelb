@@ -121,27 +121,44 @@ module.exports = function (config, db) { return {
 
     getComments: function (photo_id, done) {
 
-        var comments_json = {
-            "comments": [
-                {
-                    "comment_id": 1,
-                    "created_at": 1280780324,
-                    "updated_at": 1234124096,
-                    "location": {
-                        "longitude": 123.45,
-                        "latitude": 123.45
-                    },
-                    "text": "Really amazing photo!",
-                    "from": {
-                        "user_id": 1,
-                        "username": "Pheo",
-                        "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
-                    }
-                }
-            ]
-        }
+        db.Comments.findAll({
+            include: [db.Users],
+            where: {photo_id: photo_id}
+        }).then(function(result) {
 
-        return done(null, comments_json);
+            var comments_json = { "comments": [] };
+
+            if (result) {
+
+                for (var i=0;i < result.length;i++) {
+
+                    var comment_object = result[i].dataValues;
+                    var comment_owner_object = result[i].User.dataValues;
+
+                    var timestamp = new Date(comment_object.created_at).getTime();
+
+                    var comment_json = {
+                        "comment_id": comment_object.id,
+                        "timestamp": timestamp,
+                        "location": {
+                            "longitude": comment_object.longitude,
+                            "latitude": comment_object.latitude
+                        },
+                        "text": comment_object.text,
+                        "from": {
+                            "user_id": comment_owner_object.id,
+                            "username": comment_owner_object.username,
+                            "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                        }
+                    }
+
+                    comments_json.comments.push(comment_json);
+                }
+            }
+
+            return done(null, comments_json);
+
+        });
     },
 
     postComment: function (photo_id, new_comment_json, done) {
