@@ -221,8 +221,6 @@ module.exports = function (config, db) { return {
             return done(null, delete_comment_response);
 
         });
-
-
     },
 
     getLikes: function (photo_id, done) {
@@ -251,14 +249,28 @@ module.exports = function (config, db) { return {
 
     },
 
-    deleteLike: function (photo_id, done) {
+    deleteLike: function (auth_user_id, photo_id, done) {
 
-        var delete_like_response = {
-            "deleted": true
-        }
+        db.Likes.destroy({
+            where: {
+                photo_id: photo_id,
+                user_id: auth_user_id
+            }
+        }).then(function(result) {
 
-        return done(null, delete_like_response);
+            var delete_like_response = {};
 
+            if (result > 0) {
+                // Something was deleted
+                delete_like_response.deleted = true;
+            } else {
+                delete_like_response.deleted = false;
+                delete_like_response.error = "Photo not already liked.";
+            } 
+
+            return done(null, delete_like_response);
+
+        });
     }
 
 }}

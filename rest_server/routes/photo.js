@@ -69,7 +69,7 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Get Likes
-    app.get('/photo/:photo_id/likes', function (req, res) {
+    app.get('/photo/:photo_id/likes', auth(passport), function (req, res) {
         logger("GET /photo/:photo_id/likes");
 
         photo_controller.getLikes(req.params.photo_id, function done (error, result) {
@@ -84,7 +84,7 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Like Photo
-    app.post('/photo/:photo_id/likes', function (req, res) {
+    app.post('/photo/:photo_id/likes', auth(passport), function (req, res) {
         logger("POST /photo/:photo_id/likes");
 
         photo_controller.postLike(req.params.photo_id, function done (error, result) {
@@ -99,10 +99,11 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Delete Like
-    app.delete('/photo/:photo_id/likes', function (req, res) {
+    app.delete('/photo/:photo_id/likes', auth(passport), function (req, res) {
         logger("DELETE /photo/:photo_id/likes");
 
-        photo_controller.deleteLike(req.params.photo_id, function done (error, result) {
+        photo_controller.deleteLike(req.user.id, req.params.photo_id,
+                function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             photo_view.deleteLike(result, function done (error, result) {
