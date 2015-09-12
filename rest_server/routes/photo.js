@@ -87,7 +87,7 @@ module.exports = function (config, app, db, passport) {
     app.post('/photo/:photo_id/likes', auth(passport), function (req, res) {
         logger("POST /photo/:photo_id/likes");
 
-        photo_controller.postLike(req.params.photo_id, function done (error, result) {
+        photo_controller.postLike(req.user.id, req.params.photo_id, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             photo_view.postLike(result, function done (error, result) {

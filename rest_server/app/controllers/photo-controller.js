@@ -119,6 +119,7 @@ module.exports = function (config, db) { return {
         });
     },
 
+    // GET comments
     getComments: function (photo_id, done) {
 
         db.Comments.findAll({
@@ -161,6 +162,7 @@ module.exports = function (config, db) { return {
         });
     },
 
+    // POST comment
     postComment: function (auth_user_id, photo_id, new_comment_json, done) {
 
         var validatePostCommentJSON = validator({
@@ -198,6 +200,7 @@ module.exports = function (config, db) { return {
 
     },
 
+    // DELETE comment
     deleteComment: function (auth_user_id, photo_id, comment_id, done) {
 
         db.Comments.destroy({
@@ -223,32 +226,62 @@ module.exports = function (config, db) { return {
         });
     },
 
+    // GET likes
     getLikes: function (photo_id, done) {
 
-        var likes_json = {
-            "likes": [
-                {
-                    "user_id": 1,
-                    "username": "Pheo",
-                    "timestamp": 145234325243324
+        db.Likes.findAll({
+            include: [db.Users],
+            where: {photo_id: photo_id}
+        }).then(function(result) {
+
+            var likes_json = { "likes": [] };
+
+            if (result) {
+
+                for (var i=0;i < result.length;i++) {
+
+                    var like_object = result[i].dataValues;
+                    var like_owner_object = result[i].User.dataValues;
+
+                    var timestamp = new Date(like_object.created_at).getTime();
+
+                    var like_json = {
+                        "user_id": like_owner_object.id,
+                        "username": like_owner_object.username,
+                        "timestamp": timestamp,
+                    }
+                    likes_json.likes.push(like_json);
                 }
-            ]
-        }
+            }
 
-        return done(null, likes_json);
+            return done(null, likes_json);
 
+        });
     },
 
-    postLike: function (photo_id, done) {
+    // POST likes
+    postLike: function (auth_user_id, photo_id, done) {
 
-        var post_like_response = {
-            "liked": true
-        }
+        db.Likes.upsert({
+            user_id: auth_user_id,
+            photo_id: photo_id
+        }, {}).then(function(result) {
 
-        return done(null, post_like_response);
+            var like_photo_response = {};
 
+            if (result) {
+                like_photo_response.liked = true;
+            } else {
+                like_photo_response.liked = false;
+                like_photo_response.error = "Already liked photo."
+            }
+
+            return done(null, like_photo_response);
+
+        });
     },
 
+    // DELETE likes
     deleteLike: function (auth_user_id, photo_id, done) {
 
         db.Likes.destroy({

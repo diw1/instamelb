@@ -14,7 +14,14 @@ module.exports = function(sequelize, DataTypes) {
                     Likes.belongsTo(models.Users, { foreignKey: 'user_id' });
                     Likes.belongsTo(models.Photos, { foreignKey: 'photo_id' });
                 }
-            }
+            },
+            indexes: [
+                {
+                    // User may like same photo only once
+                    unique: true,
+                    fields: ['user_id', 'photo_id']
+                }
+            ]
         }
     );
     return Likes;

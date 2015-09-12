@@ -371,7 +371,6 @@ module.exports = function (config, db) { return {
                 user_id: auth_user_id,
                 follow_user_id: user_id,
             }, {}).then(function(result) {
-                console.log(result);
 
                 var response_json = { "action": action_json.action };
                 
