@@ -23,9 +23,14 @@ import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
+import java.util.HashMap;
+
 import it.neokree.materialtabs.MaterialTab;
 import it.neokree.materialtabs.MaterialTabHost;
 import it.neokree.materialtabs.MaterialTabListener;
+import me.tatarka.support.job.JobInfo;
+import me.tatarka.support.job.JobScheduler;
+import unimelb.edu.instamelb.database.DatabaseHandler;
 import unimelb.edu.instamelb.extras.SortListener;
 import unimelb.edu.instamelb.fragments.FragmentActivity;
 import unimelb.edu.instamelb.fragments.FragmentDiscover;
@@ -36,8 +41,6 @@ import unimelb.edu.instamelb.fragments.FragmentProfile;
 import unimelb.edu.instamelb.logging.L;
 import unimelb.edu.instamelb.materialtest.R;
 import unimelb.edu.instamelb.services.ServiceMoviesBoxOffice;
-import me.tatarka.support.job.JobInfo;
-import me.tatarka.support.job.JobScheduler;
 
 
 public class ActivityMain extends AppCompatActivity implements MaterialTabListener, View.OnClickListener {
@@ -74,11 +77,15 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
     private FloatingActionButton mFAB;
     private FloatingActionMenu mFABMenu;
     private FragmentDrawer mDrawerFragment;
+    private DatabaseHandler db;
+    private HashMap loginUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initialization();
         setupFAB();
         setupTabs();
         setupJob();
@@ -87,6 +94,11 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         //AnimationUtils.animateToolbarDroppingDown(mContainerToolbar);
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+    }
+
+    private void initialization() {
+        db=new DatabaseHandler(getApplicationContext());
+        loginUser=db.getUserDetails();
     }
 
     private void setupDrawer() {
@@ -223,6 +235,10 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         }
         if (R.id.action_logout == id) {
             L.t(this.getBaseContext(), "Logout");
+            db.resetTables();
+            Intent login = new Intent(getApplicationContext(), LoginActivity.class);
+            login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(login);
         }
         if (R.id.action_about == id) {
             L.t(this.getBaseContext(), "About");
