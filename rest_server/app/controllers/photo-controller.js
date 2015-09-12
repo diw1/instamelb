@@ -49,7 +49,7 @@ module.exports = function (config, db) { return {
     },
 
     // POST Photo
-    postPhoto: function (new_photo_json, done) {
+    postPhoto: function (auth_user_id, new_photo_json, done) {
         
         // New Photo JSON Structure
         var validatePhotoRequestJSON = validator({
@@ -83,24 +83,40 @@ module.exports = function (config, db) { return {
             return done(error_json);
         }
 
-        var photo_json = {
-            "uploaded": true,
-            "photo_id": 1,
-            "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
-            "photo_caption": "Good Photo",
-            "user": {
-                "user_id": 1,
-                "username": "Pheo",
-                "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
-            },
-            "location": {
-                "longitude": 123.45,
-                "latitude": 234.56
-            }
-        }
+        // Create Photo
+        db.Photos.create({
+            user_id: auth_user_id,
+            url: "http://images.instamelb.pinkpineapple.me/1.jpg",
+            caption: new_photo_json.caption,
+            longitude: new_photo_json.longitude,
+            latitude: new_photo_json.latitude
+        },{
+        }).then(function(result) {
+            var photo_object = result.dataValues;
+            
+            // Get User Info
+            db.Users.findById(photo_object.user_id).then(function(result) {
+                var photo_owner_object = result.dataValues;
 
-        return done(null, photo_json);
+                var photo_json = {
+                    "uploaded": true,
+                    "photo_id": photo_object.id,
+                    "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
+                    "photo_caption": photo_object.caption,
+                    "user": {
+                        "user_id": photo_owner_object.id,
+                        "username": photo_owner_object.username,
+                        "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                    },
+                    "location": {
+                        "longitude": photo_object.longitude,
+                        "latitude": photo_object.latitude
+                    }
+                }
 
+                return done(null, photo_json);
+            });
+        });
     },
 
     getComments: function (photo_id, done) {

@@ -128,10 +128,10 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Post Photo
-    app.post('/photo', function (req, res) {
+    app.post('/photo', auth(passport), function (req, res) {
         logger("POST /photo");
 
-        photo_controller.postPhoto(req.body, function done (error, result) {
+        photo_controller.postPhoto(req.user.id, req.body, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             photo_view.postPhoto(result, function done (error, result) {
