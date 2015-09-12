@@ -50,25 +50,10 @@
                     android:id="@+id/change_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:text="@string/action_change"
-                    android:textColor="#fff"
-                    android:layout_alignParentTop="true"
-                    android:layout_toEndOf="@+id/username" />
-
-                <Button
-                    android:id="@+id/friendship_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="?android:attr/selectableItemBackground"
                     android:text="@string/action_unfollow"
                     android:textColor="#fff"
-                    android:layout_below="@+id/change_button"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignBottom="@+id/profileImage"
-                    android:layout_alignLeft="@+id/change_button"
-                    android:layout_alignStart="@+id/change_button" />
+                    android:layout_alignParentEnd="true"/>
 
 
             </RelativeLayout>

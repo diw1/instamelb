@@ -32,7 +32,6 @@ import me.tatarka.support.job.JobInfo;
 import me.tatarka.support.job.JobScheduler;
 import unimelb.edu.instamelb.database.DatabaseHandler;
 import unimelb.edu.instamelb.extras.SortListener;
-import unimelb.edu.instamelb.fragments.FragmentActivity;
 import unimelb.edu.instamelb.fragments.FragmentDiscover;
 import unimelb.edu.instamelb.fragments.FragmentDrawer;
 import unimelb.edu.instamelb.fragments.FragmentHome;
@@ -67,6 +66,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
     private static final String TAG_SORT_RATINGS = "sortRatings";
     //Run the JobSchedulerService every 2 minutes
     private static final long POLL_FREQUENCY = 28800000;
+    private static final String SELF = "self";
     private JobScheduler mJobScheduler;
     private Toolbar mToolbar;
     //a layout grouping the toolbar and the tabs together
@@ -79,13 +79,14 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
     private FragmentDrawer mDrawerFragment;
     private DatabaseHandler db;
     private HashMap loginUser;
+    private String mUsername;
+    private String mPassword;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initialization();
         setupFAB();
         setupTabs();
         setupJob();
@@ -94,11 +95,15 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         //AnimationUtils.animateToolbarDroppingDown(mContainerToolbar);
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+        initialization();
     }
 
     private void initialization() {
         db=new DatabaseHandler(getApplicationContext());
         loginUser=db.getUserDetails();
+        mUsername=(String)loginUser.get("uname");
+        mPassword=(String)loginUser.get("upassword");
+
     }
 
     private void setupDrawer() {
@@ -342,10 +347,11 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
                     fragment = FragmentPhoto.newInstance("", "");
                     break;
                 case TAB_ACTIVITY:
-                    fragment = FragmentActivity.newInstance("", "");
+                    //fragment = FragmentActivity.newInstance("", "");
+                    fragment = FragmentProfile.newInstance(mUsername,mPassword,"1");//just for test propose;
                     break;
                 case TAB_PROFILE:
-                    fragment = FragmentProfile.newInstance("", "");
+                    fragment = FragmentProfile.newInstance(mUsername,mPassword,SELF);
                     break;
             }
             return fragment;

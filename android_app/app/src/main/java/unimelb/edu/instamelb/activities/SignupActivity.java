@@ -168,7 +168,7 @@ public class SignupActivity extends AppCompatActivity {
 
                     db.resetTables();
                     object=object.getJSONObject("user");
-                    db.addUser(object.getString("email"),object.getString("username"),object.getString("user_id"));
+                    db.addUser(object.getString("email"),object.getString("username"),password,object.getString("user_id"));
                     /**
                      * Stores registered data in SQlite Database
                      * Launch Registered screen

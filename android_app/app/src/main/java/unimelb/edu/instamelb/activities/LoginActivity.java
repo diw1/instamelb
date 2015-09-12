@@ -31,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
     private DatabaseHandler db;
+    private HashMap user;
 
     @InjectView(R.id.input_email)
     EditText _usernameText;
@@ -47,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
         db= new DatabaseHandler(getApplicationContext());
-        HashMap user = new HashMap();
+
         user = db.getUserDetails();
         //Log.d("USER:", (String) user.get("uid"));
         if (user.get("uid")!=null){
@@ -190,7 +191,7 @@ public class LoginActivity extends AppCompatActivity {
                      * Clear all previous data in SQlite database.
                      **/
                     db.resetTables();
-                    db.addUser(object.getString("email"), object.getString("username"), object.getString("user_id"));
+                    db.addUser(object.getString("email"), object.getString("username"),password,object.getString("user_id"));
                     /**
                      *If JSON array details are stored in SQlite it launches the User Panel.
                      **/
