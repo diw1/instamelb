@@ -198,13 +198,30 @@ module.exports = function (config, db) { return {
 
     },
 
-    deleteComment: function (photo_id, comment_id, done) {
+    deleteComment: function (auth_user_id, photo_id, comment_id, done) {
 
-        var delete_comment_response = {
-            "deleted": true
-        }
+        db.Comments.destroy({
+            where: {
+                id: comment_id,
+                photo_id: photo_id,
+                user_id: auth_user_id
+            }
+        }).then(function(result) {
 
-        return done(null, delete_comment_response);
+            var delete_comment_response = {};
+
+            if (result > 0) {
+                // Something was deleted
+                delete_comment_response.deleted = true;
+            } else {
+                delete_comment_response.deleted = false;
+                delete_comment_response.error = "Comment not found.";
+            } 
+
+            return done(null, delete_comment_response);
+
+        });
+
 
     },
 

@@ -53,10 +53,10 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Delete Comment
-    app.delete('/photo/:photo_id/comments/:comment_id', function (req, res) {
+    app.delete('/photo/:photo_id/comments/:comment_id', auth(passport), function (req, res) {
         logger("DELETE /photo/:photo_id/comments/:comment_id");
 
-        photo_controller.deleteComment(req.params.photo_id, req.params.comment_id,
+        photo_controller.deleteComment(req.user.id, req.params.photo_id, req.params.comment_id,
                 function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
