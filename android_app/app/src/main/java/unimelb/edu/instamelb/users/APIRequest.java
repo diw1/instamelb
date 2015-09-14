@@ -190,14 +190,14 @@ public class APIRequest {
 
             Log.i("POST " , requestUrl);
             byte[] pair= (mUsername + ":" + mPassword).getBytes();
-            String encoding = Base64.encodeToString(pair,Base64.DEFAULT);
+            String encoding = Base64.encodeToString(pair,Base64.NO_WRAP);
             HttpClient httpClient 	= new DefaultHttpClient();
             HttpPost httpPost 		= new HttpPost(requestUrl);
             if (mUsername != ""){
                 httpPost.setHeader("Authorization", "Basic " + encoding);
             }
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
 
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
             HttpResponse httpResponse 	= httpClient.execute(httpPost);
             HttpEntity httpEntity 		= httpResponse.getEntity();
 

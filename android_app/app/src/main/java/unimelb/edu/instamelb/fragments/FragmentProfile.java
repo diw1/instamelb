@@ -48,13 +48,11 @@ import unimelb.edu.instamelb.widget.urlimageviewhelper.UrlImageViewHelper;
  */
 public class FragmentProfile extends Fragment implements SortListener{
     private static final String TAG = "ProfileFragment";
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String USERID = "userid";
 
-    // TODO: Rename and change types of parameters
     private String mUsername;
     private String mPassword;
     private String mUserid;
@@ -101,7 +99,7 @@ public class FragmentProfile extends Fragment implements SortListener{
 
     private void configureFollowButton(Boolean loggedInUserFollows) {
         mChangeImageButton.setText(loggedInUserFollows ? R.string.action_unfollow
-                        : R.string.action_follow);
+                : R.string.action_follow);
         mChangeImageButton.setOnClickListener(mFollowButtonListener);
     }
 
@@ -228,6 +226,7 @@ public class FragmentProfile extends Fragment implements SortListener{
                     mChangeImageButton.setOnClickListener(mChangeImageButtonListener);
                 }else {
                     mLoggedInUserFollows= mFollows.getmId().contains(Long.valueOf(mUserid).longValue()) ? true : false;
+                    Log.d("Follows?",mLoggedInUserFollows.toString());
                     configureFollowButton(mLoggedInUserFollows);
                 }
 
@@ -277,6 +276,7 @@ public class FragmentProfile extends Fragment implements SortListener{
             String result = "";
             try {
                 List<NameValuePair> params = new ArrayList<>(1);
+                Log.d(strings[2],strings[3]);
                 params.add(new BasicNameValuePair(strings[2], strings[3]));
                 APIRequest request = new APIRequest(strings[0], strings[1]);
                 String endpoint="/users/"+mUser.getmId()+"/relationship";
@@ -294,8 +294,17 @@ public class FragmentProfile extends Fragment implements SortListener{
             try {
                 JSONObject object = new JSONObject(result);
                 if (object.getBoolean("modified")) {
-                    final boolean willCreateFriendship = mLoggedInUserFollows != null && !mLoggedInUserFollows;
-                    configureFollowButton(willCreateFriendship);
+                    mLoggedInUserFollows = mLoggedInUserFollows != null && !mLoggedInUserFollows;
+                    configureFollowButton(mLoggedInUserFollows);
+                    TextView followingCount = (TextView) mProfileView
+                            .findViewById(R.id.followingCountLabel);
+                    if (mLoggedInUserFollows){
+                        followingCount.setText(getPrettyCount(mUser.getmFollowingCount()+1));
+                        mUser.setmFollowingCount(mUser.getmFollowingCount()+1);
+                    }else{
+                        followingCount.setText(getPrettyCount(mUser.getmFollowingCount()-1));
+                        mUser.setmFollowingCount(mUser.getmFollowingCount()-1);
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
