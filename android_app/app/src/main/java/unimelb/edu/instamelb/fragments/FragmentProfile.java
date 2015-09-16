@@ -1,6 +1,5 @@
 package unimelb.edu.instamelb.fragments;
 
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -10,6 +9,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridView;
@@ -23,6 +23,8 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +36,7 @@ import unimelb.edu.instamelb.extras.SortListener;
 import unimelb.edu.instamelb.logging.L;
 import unimelb.edu.instamelb.materialtest.R;
 import unimelb.edu.instamelb.users.APIRequest;
+import unimelb.edu.instamelb.users.Follows;
 import unimelb.edu.instamelb.users.User;
 import unimelb.edu.instamelb.users.UserPhotos;
 import unimelb.edu.instamelb.widget.urlimageviewhelper.UrlImageViewHelper;
@@ -45,14 +48,14 @@ import unimelb.edu.instamelb.widget.urlimageviewhelper.UrlImageViewHelper;
  */
 public class FragmentProfile extends Fragment implements SortListener{
     private static final String TAG = "ProfileFragment";
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String USERID = "userid";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String mUsername;
+    private String mPassword;
+    private String mUserid;
 
 
     public FragmentProfile() {
@@ -63,28 +66,26 @@ public class FragmentProfile extends Fragment implements SortListener{
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param username Parameter 1.
+     * @param password Parameter 2.
      * @return A new instance of fragment FragmentSearch.
      */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentProfile newInstance(String param1, String param2) {
+    public static FragmentProfile newInstance(String username, String password, String userid) {
         FragmentProfile fragment = new FragmentProfile();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(USERNAME, username);
+        args.putString(PASSWORD, password);
+        args.putString(USERID, userid);
         fragment.setArguments(args);
         return fragment;
     }
     private Context mContext;
     private User mUser;
     private UserPhotos mUserPhotos;
+    private Follows mFollows;
     private View mProfileView;
-    private Boolean mFollowsLoggedInUser;
     private Boolean mLoggedInUserFollows;
-    private Button mFollowButton;
     private Button mChangeImageButton;
-    private View mFollowDivider;
     private ProgressBar mLoadingPb;
     private GridView mGridView;
 
@@ -96,41 +97,41 @@ public class FragmentProfile extends Fragment implements SortListener{
         return Integer.toString(count).replaceAll(regex, "$1,");
     }
 
-    private void configureFollowButtonVisibility(Boolean loggedInUserFollows) {
-
-        if (loggedInUserFollows == null) {
-            mFollowButton.setVisibility(View.GONE);
-        } else {
-            mFollowButton.setVisibility(View.VISIBLE);
-            mFollowButton
-                    .setText(loggedInUserFollows ? R.string.action_unfollow
-                            : R.string.action_follow);
-           // mFollowButton.setOnClickListener(mFollowButtonListener);
-        }
-    }
-
-    private void configureChangeButtonVisibility(User mUser) {
-        if (mUser.getmId()==1){
-            mChangeImageButton.setVisibility(View.VISIBLE);
-            mChangeImageButton.setOnClickListener(mChangeImageButtonListener);
-        } else {
-            mChangeImageButton.setVisibility(View.GONE);
-        }
+    private void configureFollowButton(Boolean loggedInUserFollows) {
+        mChangeImageButton.setText(loggedInUserFollows ? R.string.action_unfollow
+                : R.string.action_follow);
+        mChangeImageButton.setOnClickListener(mFollowButtonListener);
     }
 
     private final View.OnClickListener mChangeImageButtonListener = new View.OnClickListener() {
 
         @Override
         public void onClick(View v) {
+
         }
 
     };
+
+    private final OnClickListener mFollowButtonListener = new OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+
+            if (mUser != null && mLoggedInUserFollows != null) {
+                String action = mLoggedInUserFollows?"unfollow":"follow";
+                String[] args={mUsername, mPassword,"action", action};
+                new FollowAction().execute(args);
+                    }
+                };
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mUsername = getArguments().getString(USERNAME);
+            mPassword = getArguments().getString(PASSWORD);
+            mUserid =getArguments().getString(USERID);
         }
 
 
@@ -152,27 +153,33 @@ public class FragmentProfile extends Fragment implements SortListener{
             }
         }
     }
-    public class DownloadTask extends AsyncTask<String, Integer, String[]> {
+    public class DownloadTask extends AsyncTask<String, Integer, List<String>> {
         ArrayList<String> photoList;
         @Override
-        protected String[] doInBackground(String... strings) {
-            String result[] = {"",""};
+        protected List doInBackground(String... strings) {
+            List<String> result =new ArrayList();
             try {
                 List<NameValuePair> params = new ArrayList<NameValuePair>(1);
                 params.add(new BasicNameValuePair(strings[2], strings[3]));
                 APIRequest request = new APIRequest(strings[0],strings[1]);
-                result[0] = request.createRequest("GET", "/", params);
+                result.add(request.createRequest("GET", "/", params));
                 params.add(new BasicNameValuePair("photos",""));
-                result[1] = request.createRequest("GET", "/", params);
+                result.add( request.createRequest("GET", "/", params));
+                List<NameValuePair> follows = new ArrayList<NameValuePair>(1);
+                follows.add(new BasicNameValuePair(strings[2],"self"));
+                follows.add(new BasicNameValuePair("follows",""));
+                result.add(request.createRequest("GET","/",follows));
+
             } catch (Exception e){
                 e.printStackTrace();
             }
             return result;
         }
         @Override
-        protected void onPostExecute(String... result) {
-            mUser = new User(result[0]);
-            mUserPhotos = new UserPhotos(result[1]);
+        protected void onPostExecute(List<String>  result) {
+            mUser = new User(result.get(0));
+            mUserPhotos = new UserPhotos(result.get(1));
+            mFollows=new Follows(result.get(2));
             photoList = mUserPhotos.getmPhotoList();
 
             Log.d(TAG, mUser.getmEmail());
@@ -192,8 +199,6 @@ public class FragmentProfile extends Fragment implements SortListener{
                     .findViewById(R.id.pb_loading);
             GridView mGridView = (GridView) mProfileView
                     .findViewById(R.id.gridView);
-            mFollowButton = (Button) mProfileView
-                    .findViewById(R.id.friendship_button);
             mChangeImageButton = (Button) mProfileView.
                     findViewById(R.id.change_button);
 
@@ -215,15 +220,21 @@ public class FragmentProfile extends Fragment implements SortListener{
                         .setText(getPrettyCount(mUser.getmFollowingCount()));
                 followersCount.setText(getPrettyCount(mUser
                         .getmFollowersCount()));
+                if (mUserid=="self"){
+                    mLoggedInUserFollows=null;
+                    mChangeImageButton.setText("Change Avatar");
+                    mChangeImageButton.setOnClickListener(mChangeImageButtonListener);
+                }else {
+                    mLoggedInUserFollows= mFollows.getmId().contains(Long.valueOf(mUserid).longValue()) ? true : false;
+                    Log.d("Follows?",mLoggedInUserFollows.toString());
+                    configureFollowButton(mLoggedInUserFollows);
+                }
 
-                configureFollowButtonVisibility(mLoggedInUserFollows);
-                configureChangeButtonVisibility(mUser);
 
             } else {
                 usernameTextView.setText(null);
                 detailsLayout.setVisibility(View.GONE);
-                mFollowButton.setVisibility(View.GONE);
-                mFollowDivider.setVisibility(View.GONE);
+                mChangeImageButton.setVisibility(View.GONE);
             }
             mLoadingPb.setVisibility(View.GONE);
 
@@ -259,6 +270,47 @@ public class FragmentProfile extends Fragment implements SortListener{
 
     }
 
+    public class FollowAction extends AsyncTask<String, Integer,String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            String result = "";
+            try {
+                List<NameValuePair> params = new ArrayList<>(1);
+                Log.d(strings[2],strings[3]);
+                params.add(new BasicNameValuePair(strings[2], strings[3]));
+                APIRequest request = new APIRequest(strings[0], strings[1]);
+                String endpoint="/users/"+mUser.getmId()+"/relationship";
+                result = request.createRequest("POST", endpoint, params);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            try {
+                JSONObject object = new JSONObject(result);
+                if (object.getBoolean("modified")) {
+                    mLoggedInUserFollows = mLoggedInUserFollows != null && !mLoggedInUserFollows;
+                    configureFollowButton(mLoggedInUserFollows);
+                    TextView followingCount = (TextView) mProfileView
+                            .findViewById(R.id.followingCountLabel);
+                    if (mLoggedInUserFollows){
+                        followingCount.setText(getPrettyCount(mUser.getmFollowingCount()+1));
+                        mUser.setmFollowingCount(mUser.getmFollowingCount()+1);
+                    }else{
+                        followingCount.setText(getPrettyCount(mUser.getmFollowingCount()-1));
+                        mUser.setmFollowingCount(mUser.getmFollowingCount()-1);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public void onClickPhoto(View v){
     //TODO
     }
@@ -268,7 +320,8 @@ public class FragmentProfile extends Fragment implements SortListener{
         // Inflate the layout for this fragment
         mContext=container.getContext();
         mProfileView=inflater.inflate(R.layout.fragment_profile, container, false);
-        String[] args={"di","123456","users","1"};
+        String[] args={mUsername, mPassword,"users", mUserid};
+        Log.d("username/password", mUsername +","+ mPassword);
         new DownloadTask().execute(args);
         return mProfileView;
     }

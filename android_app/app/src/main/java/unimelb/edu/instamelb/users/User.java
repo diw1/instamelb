@@ -92,4 +92,6 @@ public class User {
     public void setmProfileImageUrl(String mProfileImageUrl) {
         this.mProfileImageUrl = mProfileImageUrl;
     }
+
+
 }
