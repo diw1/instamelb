@@ -166,6 +166,11 @@ module.exports = function (config, db) { return {
                     "location": {
                         "longitude": 123.45,
                         "latitude": 234.56
+                    },
+                    "user": {
+                        "user_id": 1,
+                        "username": "Pheo",
+                        "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
                     }
                 }
             ]
