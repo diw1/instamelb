@@ -284,6 +284,12 @@ module.exports = function (config, db) { return {
 
             return done(null, like_photo_response);
 
+        }).catch(function(error) {
+            console.log(error)
+
+            var error = {"status":404,"body":{"message":"Photo id does not exist."}}
+
+            return done(error);
         });
     },
 
