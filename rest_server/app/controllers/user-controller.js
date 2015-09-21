@@ -156,7 +156,49 @@ module.exports = function (config, db) { return {
                     "photo_id": 1,
                     "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
                     "photo_caption": "Good Photo",
-                    "timestamp": 123456,
+                    "timestamp": 1442805159890,
+                    "comments": {
+                        "count": 127
+                    },
+                    "likes": {
+                        "count": 2045
+                    },
+                    "location": {
+                        "longitude": 123.45,
+                        "latitude": 234.56
+                    },
+                    "user": {
+                        "user_id": 1,
+                        "username": "Pheo",
+                        "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                    }
+                },
+                {
+                    "photo_id": 1,
+                    "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
+                    "photo_caption": "Shit Photo",
+                    "timestamp": 1442805159890,
+                    "comments": {
+                        "count": 127
+                    },
+                    "likes": {
+                        "count": 2045
+                    },
+                    "location": {
+                        "longitude": 123.45,
+                        "latitude": 234.56
+                    },
+                    "user": {
+                        "user_id": 1,
+                        "username": "Pheo",
+                        "profile_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                    }
+                },
+                {
+                    "photo_id": 1,
+                    "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
+                    "photo_caption": "Okay Photo",
+                    "timestamp": 1442805159890,
                     "comments": {
                         "count": 127
                     },
