@@ -1,6 +1,5 @@
 package unimelb.edu.instamelb.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -145,9 +144,6 @@ public class LoginActivity extends AppCompatActivity {
      * Async Task to get and send data to My Sql database through JSON respone.
      **/
     private class ProcessLogin extends AsyncTask<String,String,String> {
-
-        private ProgressDialog pDialog;
-
         String user, password;
 
         @Override
@@ -156,12 +152,7 @@ public class LoginActivity extends AppCompatActivity {
 
             user = _usernameText.getText().toString();
             password = _passwordText.getText().toString();
-            pDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Base);
-            pDialog.setTitle("Contacting Servers");
-            pDialog.setMessage("Logging in ...");
-            pDialog.setIndeterminate(true);
-            pDialog.setCancelable(true);
-            pDialog.show();
+
         }
 
         @Override
@@ -184,8 +175,7 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 JSONObject object = new JSONObject(string);
                 if (object.getString("user_id") != null) {
-                    pDialog.setMessage("Loading User Space");
-                    pDialog.setTitle("Getting Data");
+
                     DatabaseHandler db = new DatabaseHandler(getApplicationContext());
                     /**
                      * Clear all previous data in SQlite database.
@@ -205,7 +195,6 @@ public class LoginActivity extends AppCompatActivity {
                      **/
                 } else {
                     _loginButton.setEnabled(true);
-                    pDialog.dismiss();
                     Toast.makeText(getBaseContext(), "Incorrect username/password", Toast.LENGTH_LONG).show();
                 }
             } catch (JSONException e) {

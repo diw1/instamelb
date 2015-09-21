@@ -10,14 +10,14 @@ import java.util.ArrayList;
  * Created by Kevin on 2015/9/10.
  */
 public class UserPhotos {
-    public ArrayList<Long> mPhotoId=new ArrayList<>();
-    public ArrayList<String> mPhotoUrl= new ArrayList<>();
-    public ArrayList<String> mPhotoCaption= new ArrayList<>();
-    public ArrayList<Integer> mCommentsCount= new ArrayList<>();
-    public ArrayList<Integer> mLikeCount= new ArrayList<>();
-    public ArrayList<Double> mLongitude= new ArrayList<>();
-    public ArrayList<Double> mLatitude= new ArrayList<>();
-    public ArrayList<String> mPhotoList= new ArrayList<>();
+    private ArrayList<Long> mPhotoId=new ArrayList<>();
+    private ArrayList<String> mPhotoUrl= new ArrayList<>();
+    private ArrayList<String> mPhotoCaption= new ArrayList<>();
+    private ArrayList<Integer> mCommentsCount= new ArrayList<>();
+    private ArrayList<Integer> mLikeCount= new ArrayList<>();
+    private ArrayList<Double> mLongitude= new ArrayList<>();
+    private ArrayList<Double> mLatitude= new ArrayList<>();
+    private ArrayList<String> mPhotoList= new ArrayList<>();
     public UserPhotos(String jsonAsString) {
         try {
             JSONObject object = new JSONObject(jsonAsString);

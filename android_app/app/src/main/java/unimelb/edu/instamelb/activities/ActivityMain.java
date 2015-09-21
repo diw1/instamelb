@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -105,7 +106,12 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         mPassword=(String)loginUser.get("upassword");
 
     }
-
+    public void switchContent(int id, Fragment fragment) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(id, fragment, fragment.toString());
+        ft.addToBackStack(null);
+        ft.commit();
+    }
     private void setupDrawer() {
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         mContainerToolbar = (ViewGroup) findViewById(R.id.container_app_bar);
@@ -338,7 +344,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
             //L.m("getItem called for " + num);
             switch (num) {
                 case TAB_HOME:
-                    fragment = FragmentHome.newInstance("", "");
+                    fragment = FragmentHome.newInstance(mUsername,mPassword);
                     break;
                 case TAB_DISCOVER:
                     fragment = FragmentDiscover.newInstance("", "");
@@ -371,5 +377,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         private Drawable getIcon(int position) {
             return getResources().getDrawable(icons[position]);
         }
+
+
     }
 } 

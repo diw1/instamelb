@@ -1,15 +1,33 @@
 package unimelb.edu.instamelb.fragments;
 
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import unimelb.edu.instamelb.adapters.RecyclerViewAdapter;
 import unimelb.edu.instamelb.extras.SortListener;
 import unimelb.edu.instamelb.logging.L;
 import unimelb.edu.instamelb.materialtest.R;
+import unimelb.edu.instamelb.users.APIRequest;
+import unimelb.edu.instamelb.users.Comment;
+import unimelb.edu.instamelb.users.Photo;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,15 +35,21 @@ import unimelb.edu.instamelb.materialtest.R;
  * create an instance of this fragment.
  */
 public class FragmentHome extends Fragment implements SortListener{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "HomeFragment";
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    public static String mUsername;
+    public static String mPassword;
+    private View mHomeView;
+    private Context mContext;
+    private RecyclerView recyclerView;
+    private ArrayList<Photo> feedsList=new ArrayList<>();
 
+    private RecyclerViewAdapter adapter;
+    private LinearLayoutManager layoutManager;
+    private FragmentManager manager;
+    private ViewGroup mGroup;
 
     public FragmentHome() {
         // Required empty public constructor
@@ -35,16 +59,16 @@ public class FragmentHome extends Fragment implements SortListener{
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param username Parameter 1.
+     * @param password Parameter 2.
      * @return A new instance of fragment FragmentSearch.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentHome newInstance(String param1, String param2) {
+    public static FragmentHome newInstance(String username, String password) {
         FragmentHome fragment = new FragmentHome();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(USERNAME, username);
+        args.putString(PASSWORD, password);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,9 +76,10 @@ public class FragmentHome extends Fragment implements SortListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        manager = getActivity().getSupportFragmentManager();
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mUsername = getArguments().getString(USERNAME);
+            mPassword = getArguments().getString(PASSWORD);
         }
     }
     public void onSortByName(){
@@ -75,6 +100,88 @@ public class FragmentHome extends Fragment implements SortListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        Log.d("home",String.valueOf(container.getId()));
+        mContext=container.getContext();
+        mHomeView =inflater.inflate(R.layout.fragment_home, container, false);
+        mGroup=container;
+        recyclerView= (RecyclerView) mHomeView.findViewById(R.id.recyclerView);
+        layoutManager=new LinearLayoutManager(mContext);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
+        initFeedData();
+
+        return mHomeView;
+    }
+
+    private void initFeedData() {
+        String[] args={mUsername, mPassword,"users","self","feed"};
+        new DownloadTask().execute(args);
+    }
+
+    private class DownloadTask extends AsyncTask<String, Integer, List<String>> {
+
+        @Override
+        protected List doInBackground(String... strings) {
+            List<String> result = new ArrayList();
+            try {
+                List<NameValuePair> params = new ArrayList<NameValuePair>(1);
+                params.add(new BasicNameValuePair(strings[2], strings[3]));
+                params.add(new BasicNameValuePair(strings[4], ""));
+                APIRequest request = new APIRequest(strings[0], strings[1]);
+                JSONObject object = new JSONObject(request.createRequest("GET", "/", params));
+                if (object.has("feed")) {
+                    JSONArray feedList = object.getJSONArray("feed");
+                    int length = feedList.length();
+                    for (int i = 0; i < length; i++) {
+                        ArrayList<Comment> oneCommentList=new ArrayList<>();
+                        ArrayList<String> likeList=new ArrayList<>();
+                        Photo photo =new Photo((JSONObject)feedList.get(i));
+                        params = new ArrayList<>(1);
+                        params.add(new BasicNameValuePair("photo",String.valueOf(photo.getPhoto_id())));
+                        params.add(new BasicNameValuePair("comments", ""));
+                        object = new JSONObject(request.createRequest("GET", "/", params));
+
+                        if (object.has("comments")) {
+                            JSONArray commentList = object.getJSONArray("comments");
+                            int commlength = commentList.length();
+                            for (int j = 0; j < commlength; j++) {
+                                oneCommentList.add(new Comment((JSONObject) commentList.get(j)));
+                            }
+                        }
+                        photo.setComment_list(oneCommentList);
+                        params=new ArrayList<>();
+                        params.add(new BasicNameValuePair("photo",String.valueOf(photo.getPhoto_id() )));
+                        params.add(new BasicNameValuePair("likes", ""));
+                        object = new JSONObject(request.createRequest("GET", "/", params));
+                        if (object.has("likes")) {
+                            JSONArray likesList = object.getJSONArray("likes");
+                            int likelength = likesList.length();
+                            for (int j = 0; j < likelength; j++) {
+                                JSONObject oneLike= (JSONObject)likesList.get(j);
+                                likeList.add(oneLike.getString("username"));
+                                Log.d(mUsername,oneLike.getString("username"));
+                                if (mUsername.equals(oneLike.getString("username"))) {
+                                    photo.setUser_has_liked(true);
+                                }
+                            }
+                        }
+                        Log.d(mUsername,String.valueOf(photo.isUser_has_liked()));
+                        photo.setLiker_list(likeList);
+                        feedsList.add(photo);
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> result) {
+            adapter=new RecyclerViewAdapter(feedsList,mContext);
+
+            recyclerView.setAdapter(adapter);
+        }
     }
 }
