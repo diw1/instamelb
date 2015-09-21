@@ -147,10 +147,6 @@ module.exports = function (config, db) { return {
                     var comment_json = {
                         "comment_id": comment_object.id,
                         "timestamp": timestamp,
-                        "location": {
-                            "longitude": comment_object.longitude,
-                            "latitude": comment_object.latitude
-                        },
                         "text": comment_object.text,
                         "from": {
                             "user_id": comment_owner_object.id,
