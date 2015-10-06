@@ -6,6 +6,7 @@ module.exports = function(sequelize, DataTypes) {
     var Photos =  sequelize.define('Photos',
         {
             url: { type: DataTypes.STRING, allowNull: false },
+            url_thumbnail: { type: DataTypes.STRING, allowNull: false },
             caption: DataTypes.STRING,
             longitude: DataTypes.DECIMAL(9, 6),
             latitude: DataTypes.DECIMAL(9, 6)

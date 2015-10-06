@@ -2,6 +2,9 @@
 // Photos controller, for photo routes
 
 var validator = require('is-my-json-valid')
+var fs = require('fs')
+var path = require('path')
+var uuid = require('node-uuid')
 
 module.exports = function (config, db) { return {
 
@@ -67,6 +70,10 @@ module.exports = function (config, db) { return {
                     required: true,
                     type: 'string'
                 },
+                image_thumbnail: {
+                    required: true,
+                    type: 'string'
+                },
                 longitude: {
                     required: false,
                     type: 'number'
@@ -86,10 +93,37 @@ module.exports = function (config, db) { return {
             return done(error_json);
         }
 
+        // Image uuid
+        var image_uuid = uuid.v4()
+
+        // Image path/url
+        var image_file_name = image_uuid + '.bmp'
+        var image_path = path.join(__dirname, '..', '..', 'images', image_file_name)
+        var image_url = config.server.image_server + image_file_name
+
+        // Image thumbnail path/url
+        var image_thumbnail_file_name = image_uuid + '.thumb.bmp'
+        var image_thumbnail_path = path.join(__dirname, '..', '..', 'images',
+                image_thumbnail_file_name)
+        var image_thumbnail_url = config.server.image_server +
+                image_thumbnail_file_name
+
+        // Write image to file
+        fs.writeFile(image_path, new_photo_json.image, 'base64', function(err) {
+            console.log("IMAGE:" + image_path);
+        });
+
+        // Write thumbnail image to file
+        fs.writeFile(image_thumbnail_path, new_photo_json.image_thumbnail,
+                'base64', function(err) {
+            console.log("THUMB:" + image_thumbnail_path);
+        });
+
         // Create Photo
         db.Photos.create({
             user_id: auth_user_id,
-            url: "http://images.instamelb.pinkpineapple.me/1.jpg",
+            url: image_url,
+            url_thumbnail: image_thumbnail_url,
             caption: new_photo_json.caption,
             longitude: new_photo_json.longitude,
             latitude: new_photo_json.latitude
@@ -106,7 +140,7 @@ module.exports = function (config, db) { return {
                 var photo_json = {
                     "uploaded": true,
                     "photo_id": photo_object.id,
-                    "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
+                    "photo_image": photo_object.url,
                     "photo_caption": photo_object.caption,
                     "timestamp": timestamp,
                     "user": {

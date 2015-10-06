@@ -6,6 +6,7 @@ module.exports = {
     development: {
         name: 'Dev. REST Server',
         server: {
+            image_server: 'http://images.instamelb.pinkpineapple.me/',
             host: 'localhost',
             port: 3000
         },
@@ -23,6 +24,7 @@ module.exports = {
     test: {
         name: 'Test. REST Server',
         server: {
+            image_server: 'http://images.instamelb.pinkpineapple.me/',
             host: 'localhost',
             port: 3000
         },
@@ -40,6 +42,7 @@ module.exports = {
     production: {
         name: 'Prod. REST Server',
         server: {
+            image_server: 'http://images.instamelb.pinkpineapple.me/',
             host: 'localhost',
             port: 3000
         },
