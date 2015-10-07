@@ -9,6 +9,7 @@
     "express": "^4.13.3",
     "is-my-json-valid": "^2.12.2",
     "mysql": "^2.9.0",
+    "node-uuid": "^1.4.3",
     "passport": "^0.3.0",
     "passport-http": "^0.3.0",
     "sequelize": "^3.6.0"
