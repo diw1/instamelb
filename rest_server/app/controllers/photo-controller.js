@@ -5,6 +5,7 @@ var validator = require('is-my-json-valid')
 var fs = require('fs')
 var path = require('path')
 var uuid = require('node-uuid')
+var imageType = require('image-type')
 
 module.exports = function (config, db) { return {
 
@@ -93,16 +94,34 @@ module.exports = function (config, db) { return {
             return done(error_json);
         }
 
+        // Generate buffers from images sent
+        var image_buffer = new Buffer(new_photo_json.image, 'base64');
+        var image_thumbnail_buffer =
+                new Buffer(new_photo_json.image_thumbnail, 'base64');
+
+        // Calculate image type
+        var image_buffer_type = imageType(image_buffer)
+        var image_thumbnail_buffer_type = imageType(image_thumbnail_buffer)
+
+        // Either aren't an image, fuck them
+        if (image_buffer_type == null || image_thumbnail_buffer_type == null) {
+            var error_json = { "status": 400,
+                "body": { "error": "Image or Thumbnail string is not an image"}}
+            return done(error_json)
+        }
+
         // Image uuid
         var image_uuid = uuid.v4()
 
         // Image path/url
-        var image_file_name = image_uuid + '.bmp'
-        var image_path = path.join(__dirname, '..', '..', 'images', image_file_name)
+        var image_file_name = image_uuid + '.' + image_buffer_type.ext
+        var image_path = path.join(__dirname, '..', '..', 'images',
+                image_file_name)
         var image_url = config.server.image_server + image_file_name
 
         // Image thumbnail path/url
-        var image_thumbnail_file_name = image_uuid + '.thumb.bmp'
+        var image_thumbnail_file_name = image_uuid + '.thumb.' +
+                image_thumbnail_buffer_type.ext
         var image_thumbnail_path = path.join(__dirname, '..', '..', 'images',
                 image_thumbnail_file_name)
         var image_thumbnail_url = config.server.image_server +
@@ -114,7 +133,7 @@ module.exports = function (config, db) { return {
         });
 
         // Write thumbnail image to file
-        fs.writeFile(image_thumbnail_path, new_photo_json.image_thumbnail,
+        fs.writeFile(image_thumbnail_path, image_thumbnail_buffer,
                 'base64', function(err) {
             console.log("THUMB:" + image_thumbnail_path);
         });
