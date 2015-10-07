@@ -30,7 +30,7 @@ module.exports = function (config, db) { return {
 
             var photo_json = {
                 "photo_id": photo_object.id,
-                "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
+                "photo_image": photo_object.url,
                 "photo_caption": photo_object.caption,
                 "timestamp": timestamp,
                 "location": {

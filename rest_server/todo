@@ -1,0 +1,29 @@
+GET /users/:user_id
+=> Return correct profile image
+
+GET /users/search
+=> Utilize is_suggested (search by params)
+
+GET /users/self/feed
+=> Complete self feed implementation
+
+GET /users/follows/feed
+=> Complete activity feed implementation
+
+GET /users/:user_id/follows
+=> Return correct profile image
+
+GET /users/:user_id/followers
+=> Return correct profile image
+
+GET /photo/:photo_id
+=> Return correct profile image
+
+POST /photo
+=> Return correct profile image
+
+Also, tinker with config.server.image_server
+
+GET /photo/:photo_id/comments
+=> Return correct profile image
+
