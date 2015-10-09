@@ -57,5 +57,7 @@
     <string name="action_change">Change Image</string>
     <string name="status_count">Photos</string>
     <string name="loading">Loading</string>
+    <string name="title_activity_activity_profile">ActivityProfile</string>
+    <string name="title_activity_activity_detail">ActivityDetail</string>
 
 </resources>

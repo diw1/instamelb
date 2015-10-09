@@ -11,11 +11,12 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:name="unimelb.edu.instamelb.materialtest.MyApplication"
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:windowSoftInputMode="adjustPan">
         <activity
             android:name="unimelb.edu.instamelb.activities.ActivityMain"
             android:label="@string/title_activity_main" >
@@ -62,14 +63,26 @@
             android:name="unimelb.edu.instamelb.activities.ActivityB"
             android:label="@string/title_activity_activity_called" >
         </activity>
-        <activity android:name="unimelb.edu.instamelb.activities.LoginActivity" android:theme="@style/AppTheme.Dark.Dialog" />
-        <activity android:name="unimelb.edu.instamelb.activities.SignupActivity" android:theme="@style/AppTheme.Dark.Dialog" />
+        <activity
+            android:name="unimelb.edu.instamelb.activities.LoginActivity"
+            android:theme="@style/AppTheme.Dark.Dialog" />
+        <activity
+            android:name="unimelb.edu.instamelb.activities.SignupActivity"
+            android:theme="@style/AppTheme.Dark.Dialog" />
         <activity
             android:name="unimelb.edu.instamelb.activities.ActivitySharedA"
-            android:label="@string/title_activity_activity_shared"></activity>
+            android:label="@string/title_activity_activity_shared" />
         <activity
             android:name="unimelb.edu.instamelb.activities.ActivitySharedB"
-            android:label="@string/title_activity_activity_shared_b"></activity>
+            android:label="@string/title_activity_activity_shared_b" />
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityProfile"
+            android:label="@string/title_activity_activity_profile" >
+        </activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityDetail"
+            android:label="@string/title_activity_activity_detail" >
+        </activity>
     </application>
 
 </manifest>

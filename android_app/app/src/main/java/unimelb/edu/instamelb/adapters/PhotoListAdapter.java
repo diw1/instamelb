@@ -1,6 +1,7 @@
 package unimelb.edu.instamelb.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -13,23 +14,25 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
 
+import unimelb.edu.instamelb.activities.ActivityDetail;
+import unimelb.edu.instamelb.fragments.FragmentHome;
 import unimelb.edu.instamelb.fragments.FragmentProfile;
 import unimelb.edu.instamelb.materialtest.R;
+import unimelb.edu.instamelb.users.Photo;
 
-public class PhotoListAdapter extends BaseAdapter {
+public class PhotoListAdapter extends BaseAdapter{
 	private Context mContext;
 	
 	private ImageLoader mImageLoader;
 	private FragmentProfile.AnimateFirstDisplayListener mAnimator;
-	
-	private ArrayList<String> mPhotoList;
-	
+
 	private int mWidth;
 	private int mHeight;
-	
+	private Intent mIntent;
+	private ArrayList<Photo> mPhotoList;
+
 	public PhotoListAdapter(Context context) {
-		mContext = context;
-		
+		this.mContext = context;
 		DisplayImageOptions displayOptions = new DisplayImageOptions.Builder()
 				.showImageOnLoading(R.drawable.ic_launcher_web)
 				.showImageForEmptyUri(R.drawable.ic_launcher_web)
@@ -49,11 +52,11 @@ public class PhotoListAdapter extends BaseAdapter {
 
 		mAnimator  = new FragmentProfile.AnimateFirstDisplayListener();
 	}
-	
-	public void setData(ArrayList<String> data) {
+
+	public void setData(ArrayList<Photo> data) {
 		mPhotoList = data;
 	}
-	
+
 	public void setLayoutParam(int width, int height) {
 		mWidth 	= width;
 		mHeight = height;
@@ -75,7 +78,7 @@ public class PhotoListAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		ImageView imageIv;
 		
 		if (convertView == null) {
@@ -83,12 +86,22 @@ public class PhotoListAdapter extends BaseAdapter {
 			
 			imageIv.setLayoutParams(new GridView.LayoutParams(mWidth, mHeight));
             imageIv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            imageIv.setPadding(0, 0, 0, 0); 
+            imageIv.setPadding(0, 0, 0, 0);
+			imageIv.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					mIntent =new Intent(mContext, ActivityDetail.class);
+					mIntent.putExtra("username", FragmentHome.mUsername);
+					mIntent.putExtra("password",FragmentHome.mPassword);
+					mIntent.putExtra("photo",mPhotoList.get(position));
+					mContext.startActivity(mIntent);
+				}
+			});
 		} else {
 			imageIv = (ImageView) convertView;
 		}
 		
-		mImageLoader.displayImage(mPhotoList.get(position), imageIv, mAnimator);
+		mImageLoader.displayImage(mPhotoList.get(position).getPhoto_image(), imageIv, mAnimator);
 		
 		return imageIv;
 	}
