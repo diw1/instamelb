@@ -2,6 +2,10 @@
 // Photos controller, for photo routes
 
 var validator = require('is-my-json-valid')
+var fs = require('fs')
+var path = require('path')
+var uuid = require('node-uuid')
+var imageType = require('image-type')
 
 module.exports = function (config, db) { return {
 
@@ -27,7 +31,7 @@ module.exports = function (config, db) { return {
 
             var photo_json = {
                 "photo_id": photo_object.id,
-                "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
+                "photo_image": photo_object.url,
                 "photo_caption": photo_object.caption,
                 "timestamp": timestamp,
                 "location": {
@@ -67,6 +71,10 @@ module.exports = function (config, db) { return {
                     required: true,
                     type: 'string'
                 },
+                image_thumbnail: {
+                    required: true,
+                    type: 'string'
+                },
                 longitude: {
                     required: false,
                     type: 'number'
@@ -86,10 +94,55 @@ module.exports = function (config, db) { return {
             return done(error_json);
         }
 
+        // Generate buffers from images sent
+        var image_buffer = new Buffer(new_photo_json.image, 'base64');
+        var image_thumbnail_buffer =
+                new Buffer(new_photo_json.image_thumbnail, 'base64');
+
+        // Calculate image type
+        var image_buffer_type = imageType(image_buffer)
+        var image_thumbnail_buffer_type = imageType(image_thumbnail_buffer)
+
+        // Either aren't an image, fuck them
+        if (image_buffer_type == null || image_thumbnail_buffer_type == null) {
+            var error_json = { "status": 400,
+                "body": { "error": "Image or Thumbnail string is not an image"}}
+            return done(error_json)
+        }
+
+        // Image uuid
+        var image_uuid = uuid.v4()
+
+        // Image path/url
+        var image_file_name = image_uuid + '.' + image_buffer_type.ext
+        var image_path = path.join(__dirname, '..', '..', 'images',
+                image_file_name)
+        var image_url = config.server.image_server + image_file_name
+
+        // Image thumbnail path/url
+        var image_thumbnail_file_name = image_uuid + '.thumb.' +
+                image_thumbnail_buffer_type.ext
+        var image_thumbnail_path = path.join(__dirname, '..', '..', 'images',
+                image_thumbnail_file_name)
+        var image_thumbnail_url = config.server.image_server +
+                image_thumbnail_file_name
+
+        // Write image to file
+        fs.writeFile(image_path, new_photo_json.image, 'base64', function(err) {
+            console.log("IMAGE:" + image_path);
+        });
+
+        // Write thumbnail image to file
+        fs.writeFile(image_thumbnail_path, image_thumbnail_buffer,
+                'base64', function(err) {
+            console.log("THUMB:" + image_thumbnail_path);
+        });
+
         // Create Photo
         db.Photos.create({
             user_id: auth_user_id,
-            url: "http://images.instamelb.pinkpineapple.me/1.jpg",
+            url: image_url,
+            url_thumbnail: image_thumbnail_url,
             caption: new_photo_json.caption,
             longitude: new_photo_json.longitude,
             latitude: new_photo_json.latitude
@@ -106,7 +159,7 @@ module.exports = function (config, db) { return {
                 var photo_json = {
                     "uploaded": true,
                     "photo_id": photo_object.id,
-                    "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg",
+                    "photo_image": photo_object.url,
                     "photo_caption": photo_object.caption,
                     "timestamp": timestamp,
                     "user": {
@@ -147,10 +200,6 @@ module.exports = function (config, db) { return {
                     var comment_json = {
                         "comment_id": comment_object.id,
                         "timestamp": timestamp,
-                        "location": {
-                            "longitude": comment_object.longitude,
-                            "latitude": comment_object.latitude
-                        },
                         "text": comment_object.text,
                         "from": {
                             "user_id": comment_owner_object.id,
@@ -284,6 +333,12 @@ module.exports = function (config, db) { return {
 
             return done(null, like_photo_response);
 
+        }).catch(function(error) {
+            console.log(error)
+
+            var error = {"status":404,"body":{"message":"Photo id does not exist."}}
+
+            return done(error);
         });
     },
 

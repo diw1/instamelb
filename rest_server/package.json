@@ -7,8 +7,10 @@
     "async": "^1.4.2",
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
+    "image-type": "^2.0.2",
     "is-my-json-valid": "^2.12.2",
     "mysql": "^2.9.0",
+    "node-uuid": "^1.4.3",
     "passport": "^0.3.0",
     "passport-http": "^0.3.0",
     "sequelize": "^3.6.0"
