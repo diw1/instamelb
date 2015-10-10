@@ -38,9 +38,11 @@ public class FragmentHome extends Fragment implements SortListener{
     private static final String TAG = "HomeFragment";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
+    private static final String EMAIL = "email";
 
     public static String mUsername;
     public static String mPassword;
+    public static String mEmail;
     private View mHomeView;
     private Context mContext;
     private RecyclerView recyclerView;
@@ -64,11 +66,12 @@ public class FragmentHome extends Fragment implements SortListener{
      * @return A new instance of fragment FragmentSearch.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentHome newInstance(String username, String password) {
+    public static FragmentHome newInstance(String username, String password,String email) {
         FragmentHome fragment = new FragmentHome();
         Bundle args = new Bundle();
         args.putString(USERNAME, username);
         args.putString(PASSWORD, password);
+        args.putString(EMAIL, email);
         fragment.setArguments(args);
         return fragment;
     }
@@ -80,6 +83,7 @@ public class FragmentHome extends Fragment implements SortListener{
         if (getArguments() != null) {
             mUsername = getArguments().getString(USERNAME);
             mPassword = getArguments().getString(PASSWORD);
+            mEmail=getArguments().getString(EMAIL);
         }
     }
     public void onSortByName(){

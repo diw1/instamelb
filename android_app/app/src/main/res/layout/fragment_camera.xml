@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@color/colorPrimaryDark">
+
+
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="CAMERA"
+            android:id="@+id/current_selection"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/colorAccent"
+            android:gravity="center_vertical|center_horizontal" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CHOOSE FROM LIBRARY"
+            android:id="@+id/button_library"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorAccent"
+            android:clickable="true"
+            android:layout_margin="2dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:enabled="true"
+            android:focusable="true" />
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:background="@color/colorPrimaryDark"
+        android:layout_height="40dp"
+        style="@style/Widget.AppCompat.ButtonBar">
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="FLASH AUTO"
+            android:id="@+id/button_flash"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorAccent"
+            android:clickable="true"
+            android:layout_margin="2dp"
+            android:layout_gravity="center"
+            style="@style/Widget.AppCompat.Button" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="GRID OFF"
+            android:id="@+id/button_gridlines"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorAccent"
+            android:clickable="true"
+            android:layout_gravity="center"
+            android:layout_margin="2dp"
+            style="@style/Widget.AppCompat.Button" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/imageViewFullSized"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_action_photo" />
+
+        <ImageView
+            android:id="@+id/grid"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_horizontal"/>
+
+        <SurfaceView
+            android:id="@+id/camerapreview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/imageViewThumbnail"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_action_photo" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:layout_weight="1">
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="TAKE PHOTO"
+            android:id="@+id/button_takePhoto"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorAccent"
+            android:clickable="true"
+            android:layout_margin="2dp"
+            android:layout_gravity="center_horizontal"
+            android:elegantTextHeight="false"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline" />
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

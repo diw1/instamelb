@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.apache.http.NameValuePair;
@@ -64,6 +65,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         ImageView comment_photo;
         TextView comment_username;
         TextView comment_text;
+        LinearLayout comments;
 
         public userFeedViewHolder(final View itemView) {
             super(itemView);
@@ -78,6 +80,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             comment_photo=(ImageView) itemView.findViewById(R.id.comment_photo);
             photo_desc = (TextView) itemView.findViewById(R.id.photo_desc);
             load_more = (Button) itemView.findViewById(R.id.load_more);
+            comments=(LinearLayout) itemView.findViewById(R.id.comments);
             post_profile.setOnClickListener(this);
             post_username.setOnClickListener(this);
             like_icon.setOnClickListener(this);
@@ -143,7 +146,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     mIntent.putExtra("password",FragmentHome.mPassword);
                     mIntent.putExtra("photo",currentPhoto);
                     mContext.startActivity(mIntent);
-
+                    break;
+                case R.id.load_more:
+                    mIntent =new Intent(mContext, ActivityProfile.class);
+                    mIntent.putExtra("username", FragmentHome.mUsername);
+                    mIntent.putExtra("password",FragmentHome.mPassword);
+                    mIntent.putExtra("photo",currentPhoto);
+                    mIntent.putExtra("userid", String.valueOf(currentPhoto.getComment_list().get(0).getUser_id()));
+                    options = ActivityOptionsCompat .makeSceneTransitionAnimation((Activity) mContext, holder.comment_photo, "avatar");
+                    mContext.startActivity(mIntent, options.toBundle());
+                    break;
             }
         }
     }
@@ -162,6 +174,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         photo = photosList.get(i);
         holder.post_username.setText(photo.getUsername());
         holder.post_timestamp.setText(Util.getDateTime(photo.getTimestamp()));
+        if (photo.getPhoto_caption().isEmpty()){
+            holder.photo_desc.setVisibility(View.GONE);
+        }else{
+            holder.photo_desc.setText(photo.getPhoto_caption());
+        }
         UrlImageViewHelper.setUrlDrawable(holder.post_profile, photo.getUser_avatar(),
                 R.drawable.ic_action_photo);
         if (!photo.isUser_has_liked()){
@@ -171,10 +188,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         UrlImageViewHelper.setUrlDrawable(holder.feed_photo, photo.getPhoto_image(),
                 R.drawable.ic_action_photo);
         if( !photo.getComment_list().isEmpty()) {
-            holder.comment_username.setText(photo.getComment_list().get(0).getUsername());
-            holder.comment_text.setText(photo.getComment_list().get(0).getText());
-            UrlImageViewHelper.setUrlDrawable(holder.comment_photo, photo.getComment_list().get(0).getUser_avatar(),
-                    R.drawable.ic_action_photo);
+            if (photo.getComment_list().size()>1) {
+                holder.comment_username.setText(photo.getComment_list().get(0).getUsername());
+                holder.comment_text.setText(photo.getComment_list().get(0).getText());
+                UrlImageViewHelper.setUrlDrawable(holder.comment_photo, photo.getComment_list().get(0).getUser_avatar(),
+                        R.drawable.ic_action_photo);
+            }else {
+                holder.load_more.setVisibility(View.GONE);
+            }
+        }else{
+            holder.comments.setVisibility(View.GONE);
         }
 
     }

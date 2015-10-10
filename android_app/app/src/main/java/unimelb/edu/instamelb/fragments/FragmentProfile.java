@@ -85,6 +85,7 @@ public class FragmentProfile extends Fragment implements SortListener{
         return fragment;
     }
     private Context mContext;
+    private DisplayMetrics dm;
     private User mUser;
     private Photo mPhoto;
     private Follows mFollows;
@@ -248,9 +249,7 @@ public class FragmentProfile extends Fragment implements SortListener{
                 mChangeImageButton.setVisibility(View.GONE);
             }
             mLoadingPb.setVisibility(View.GONE);
-            DisplayMetrics dm = new DisplayMetrics();
 
-            getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
 
             int width = (int) Math.ceil((double) dm.widthPixels / 2);
             width = width - 50;
@@ -382,6 +381,8 @@ public class FragmentProfile extends Fragment implements SortListener{
         // Inflate the layout for this fragment
         mContext=container.getContext();
         mProfileView=inflater.inflate(R.layout.fragment_profile, container, false);
+        dm = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         String[] args={mUsername, mPassword,"users", mUserid};
         new DownloadTask().execute(args);
         Log.d("FP","FINISHDOWNLOAD");
