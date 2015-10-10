@@ -1,12 +1,22 @@
 package unimelb.edu.instamelb.fragments;
 
-
-import android.os.Bundle;
+import android.content.Context;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.content.Intent;
+import android.os.Bundle;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
+import butterknife.InjectView;
+import unimelb.edu.instamelb.activities.ActivityCamera;
+import unimelb.edu.instamelb.activities.ActivityPhoto;
 import unimelb.edu.instamelb.extras.SortListener;
 import unimelb.edu.instamelb.logging.L;
 import unimelb.edu.instamelb.materialtest.R;
@@ -17,6 +27,7 @@ import unimelb.edu.instamelb.materialtest.R;
  * create an instance of this fragment.
  */
 public class FragmentPhoto extends Fragment implements SortListener{
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -26,6 +37,18 @@ public class FragmentPhoto extends Fragment implements SortListener{
     private String mParam1;
     private String mParam2;
 
+    private Context mContext;
+    private View mPhotoView;
+
+
+//    @InjectView(R.id.current_selection)
+//    TextView _currentSelection;
+//    @InjectView(R.id.button_library)
+//    Button _libraryButton;
+//    @InjectView(R.id.button_photo)
+    Button _photoButton;
+//    Button _photoButton = (Button) findViewById(R.id.button_photo);
+//    @InjectView(R.id.button_video)
 
     public FragmentPhoto() {
         // Required empty public constructor
@@ -52,11 +75,15 @@ public class FragmentPhoto extends Fragment implements SortListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+//        Button _photoButton = (Button) findViewById(R.id.button_photo);
+//        Button _libraryButton = (Button) findViewById(R.id.button_library);
+//        final TextView _currentSelection = (TextView) findViewById(R.id.current_selection);
+
+
     }
+
+
     public void onSortByName(){
         L.t(getActivity(), "sort name search");
     }
@@ -74,7 +101,14 @@ public class FragmentPhoto extends Fragment implements SortListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_photo, container, false);
+
+        mContext=container.getContext();
+        mPhotoView=inflater.inflate(R.layout.fragment_photo, container, false);
+        Intent intent = new Intent(getActivity(), ActivityPhoto.class);
+        startActivity(intent);
+        Log.d("FP", "CREATED PHOTO VIEW");
+        return mPhotoView;
+
+
     }
 }

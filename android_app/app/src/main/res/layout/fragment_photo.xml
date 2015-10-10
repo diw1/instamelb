@@ -1,15 +1,177 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="unimelb.edu.instamelb.fragments.FragmentPhoto">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="This is the photo fragment" />
 
-</FrameLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/colorPrimaryDark"
+        android:layout_gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="EDIT PHOTO"
+            android:id="@+id/current_selection"
+            android:layout_weight="50"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/colorAccent" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UPLOAD"
+            android:id="@+id/upload_button"
+            android:layout_weight="1"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/abc_text_size_large_material" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/colorPrimary"
+        android:layout_gravity="top">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="BRIGHTNESS"
+            android:id="@+id/brightnessText"
+            android:layout_weight="50"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/colorAccent" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/brightnessSeekBar"
+            android:max="510"
+            android:progress="255"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="CONTRAST"
+            android:id="@+id/contrastText"
+            android:layout_weight="50"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/colorAccent" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/contrastSeekBar"
+            android:max="510"
+            android:progress="255"
+            android:layout_gravity="center_vertical" />
+
+        <!--<Button-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/video"-->
+            <!--android:id="@+id/button_video"-->
+            <!--android:layout_weight="1"-->
+            <!--android:singleLine="true"-->
+            <!--android:background="@color/colorPrimaryDark"-->
+            <!--android:textColor="@color/colorAccent"-->
+            <!--android:clickable="true" />-->
+    </LinearLayout>
+
+    <Gallery
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gallery" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/photoThumbnail"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_action_photo"
+            android:clickable="true"
+            android:layout_weight="0.25" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/thumbnailFilter1"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_action_photo"
+            android:clickable="true"
+            android:layout_weight="0.25" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/thumbnailFilter2"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_action_photo"
+            android:clickable="true"
+            android:layout_weight="0.25" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/thumbnailFilter3"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_action_photo"
+            android:clickable="true"
+            android:layout_weight="0.25" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/photoPreview"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/sonic2" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></LinearLayout>
+
+
+</LinearLayout>
+

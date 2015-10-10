@@ -10,13 +10,19 @@
     <!-- Required on all api levels if you are using setPersisted(true) -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.hardware.camera"
+        android:required="true"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <application
-        android:name=".MyApplication"
+        android:name="unimelb.edu.instamelb.materialtest.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:windowSoftInputMode="adjustPan">
+        android:theme="@style/AppTheme" >
         <activity
             android:name="unimelb.edu.instamelb.activities.ActivityMain"
             android:label="@string/title_activity_main" >
@@ -63,26 +69,27 @@
             android:name="unimelb.edu.instamelb.activities.ActivityB"
             android:label="@string/title_activity_activity_called" >
         </activity>
-        <activity
-            android:name="unimelb.edu.instamelb.activities.LoginActivity"
-            android:theme="@style/AppTheme.Dark.Dialog" />
-        <activity
-            android:name="unimelb.edu.instamelb.activities.SignupActivity"
-            android:theme="@style/AppTheme.Dark.Dialog" />
+        <activity android:name="unimelb.edu.instamelb.activities.LoginActivity" android:theme="@style/AppTheme.Dark.Dialog" />
+        <activity android:name="unimelb.edu.instamelb.activities.SignupActivity" android:theme="@style/AppTheme.Dark.Dialog" />
         <activity
             android:name="unimelb.edu.instamelb.activities.ActivitySharedA"
-            android:label="@string/title_activity_activity_shared" />
+            android:label="@string/title_activity_activity_shared"></activity>
         <activity
             android:name="unimelb.edu.instamelb.activities.ActivitySharedB"
-            android:label="@string/title_activity_activity_shared_b" />
+            android:label="@string/title_activity_activity_shared_b"/>
         <activity
-            android:name="unimelb.edu.instamelb.activities.ActivityProfile"
-            android:label="@string/title_activity_activity_profile" >
-        </activity>
+            android:name="unimelb.edu.instamelb.activities.ActivityTakePhoto"
+            android:label="activity_take_photo"/>
         <activity
-            android:name="unimelb.edu.instamelb.activities.ActivityDetail"
-            android:label="@string/title_activity_activity_detail" >
-        </activity>
+            android:name="unimelb.edu.instamelb.sensors.CameraSensor"
+            android:label="Camera Sensor" ></activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityPhoto"
+            android:label="activity_photo" ></activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityCamera"
+            android:label="activity_camera" ></activity>
+
     </application>
 
 </manifest>

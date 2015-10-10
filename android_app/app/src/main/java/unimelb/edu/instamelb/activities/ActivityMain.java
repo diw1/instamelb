@@ -350,7 +350,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
                     fragment = FragmentDiscover.newInstance("", "");
                     break;
                 case TAB_PHOTO:
-                    fragment = FragmentPhoto.newInstance("", "");
+                    fragment = FragmentCamera.newInstance("", "");
                     break;
                 case TAB_ACTIVITY:
                     //fragment = FragmentActivity.newInstance("", "");
