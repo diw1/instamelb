@@ -1,16 +1,8 @@
 package unimelb.edu.instamelb.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-//import android.support.Fragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,25 +12,12 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import unimelb.edu.instamelb.activities.ActivityCamera;
 import unimelb.edu.instamelb.extras.SortListener;
 import unimelb.edu.instamelb.materialtest.R;
 
-import unimelb.edu.instamelb.adapters.PhotoListAdapter;
-import unimelb.edu.instamelb.extras.SortListener;
-import unimelb.edu.instamelb.extras.Util;
-import unimelb.edu.instamelb.logging.L;
-import unimelb.edu.instamelb.users.APIRequest;
-import unimelb.edu.instamelb.widget.urlimageviewhelper.UrlImageViewHelper;
+//import android.support.Fragment;
 /**
  * Created by bboyce on 12/09/15.
  */
@@ -82,8 +61,9 @@ public class FragmentCamera extends Fragment implements SortListener, View.OnCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mContext=container.getContext();
+
         mCameraView=inflater.inflate(R.layout.fragment_camera, container, false);
+        mContext=container.getContext();
         Intent intent = new Intent(getActivity(), ActivityCamera.class);
         startActivity(intent);
         Log.d("FP", "CREATED CAMERA VIEW");

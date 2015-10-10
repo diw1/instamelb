@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,7 +37,6 @@ import unimelb.edu.instamelb.extras.SortListener;
 import unimelb.edu.instamelb.fragments.FragmentDiscover;
 import unimelb.edu.instamelb.fragments.FragmentDrawer;
 import unimelb.edu.instamelb.fragments.FragmentHome;
-import unimelb.edu.instamelb.fragments.FragmentPhoto;
 import unimelb.edu.instamelb.fragments.FragmentProfile;
 import unimelb.edu.instamelb.logging.L;
 import unimelb.edu.instamelb.materialtest.R;
@@ -82,6 +82,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
     private HashMap loginUser;
     private String mUsername;
     private String mPassword;
+    private String mEmail;
 
 
     @Override
@@ -104,6 +105,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         loginUser=db.getUserDetails();
         mUsername=(String)loginUser.get("uname");
         mPassword=(String)loginUser.get("upassword");
+        mEmail=(String)loginUser.get("email");
 
     }
     public void switchContent(int id, Fragment fragment) {
@@ -344,17 +346,20 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
             //L.m("getItem called for " + num);
             switch (num) {
                 case TAB_HOME:
-                    fragment = FragmentHome.newInstance(mUsername,mPassword);
+                    fragment = FragmentHome.newInstance(mUsername,mPassword,mEmail);
                     break;
                 case TAB_DISCOVER:
                     fragment = FragmentDiscover.newInstance("", "");
+                    Log.d("Fragment", "Discover");
                     break;
                 case TAB_PHOTO:
-                    fragment = FragmentCamera.newInstance("", "");
+                    //fragment = FragmentCamera.newInstance("", "");
+                    fragment = FragmentDiscover.newInstance("", "");
+                    Log.d("Fragment", "Photo");
                     break;
                 case TAB_ACTIVITY:
-                    //fragment = FragmentActivity.newInstance("", "");
-                    fragment = FragmentProfile.newInstance(mUsername,mPassword,"1");//just for test propose;
+                    fragment = FragmentDiscover.newInstance("", "");
+                    Log.d("Fragment", "Activity");
                     break;
                 case TAB_PROFILE:
                     fragment = FragmentProfile.newInstance(mUsername,mPassword,SELF);

@@ -89,6 +89,10 @@
         <activity
             android:name="unimelb.edu.instamelb.activities.ActivityCamera"
             android:label="activity_camera" ></activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityLibrary"
+            android:label="activity_library" ></activity>
+
 
     </application>
 
