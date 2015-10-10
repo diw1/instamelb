@@ -37,6 +37,7 @@ public class AdapterDrawer extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if(viewType==TYPE_HEADER){
             View view=inflater.inflate(R.layout.drawer_header, parent,false);
+            //final TextView mTextView = (TextView) view.findViewById(R.id.userDrawer);
             HeaderHolder holder=new HeaderHolder(view);
             return holder;
         }

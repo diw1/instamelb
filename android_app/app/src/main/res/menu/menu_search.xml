@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="unimelb.edu.instamelb.fragments.FragmentDiscover">
+
+    <item
+        android:id="@+id/grid_default_search"
+        android:icon="@drawable/ic_action_search"
+        android:title="search"
+        app:showAsAction="always"
+        android:actionViewClass="android.widget.SearchView"
+        />
+</menu>

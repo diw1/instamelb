@@ -5,6 +5,11 @@
     tools:context="unimelb.edu.instamelb.fragments.FragmentDiscover">
 
     <!-- TODO: Update blank fragment layout -->
+    <SearchView
+        android:id="@+id/searchText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></SearchView>
+    
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

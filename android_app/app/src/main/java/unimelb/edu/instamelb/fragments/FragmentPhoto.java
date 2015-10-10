@@ -6,7 +6,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
+
+import unimelb.edu.instamelb.activities.ActivityMain;
 import unimelb.edu.instamelb.extras.SortListener;
 import unimelb.edu.instamelb.logging.L;
 import unimelb.edu.instamelb.materialtest.R;

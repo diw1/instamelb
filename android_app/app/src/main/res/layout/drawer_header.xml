@@ -38,6 +38,7 @@
             style="@style/TextAppearance.AppCompat.Large" />
 
         <TextView
+            android:id="@+id/userDrawer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="User"
@@ -51,6 +52,7 @@
             android:background="@color/colorAccent" />
 
         <TextView
+            android:id="@+id/userMail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="user@gmail.com"

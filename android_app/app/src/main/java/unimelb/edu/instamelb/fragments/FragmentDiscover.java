@@ -4,8 +4,11 @@ package unimelb.edu.instamelb.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import unimelb.edu.instamelb.extras.SortListener;
 import unimelb.edu.instamelb.logging.L;
@@ -74,7 +77,27 @@ public class FragmentDiscover extends Fragment implements SortListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //setHasOptionsMenu(true);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_discover, container, false);
     }
+
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        inflater.inflate(R.menu.menu_search, menu);
+//        SearchView searchView = (SearchView)menu.findItem(R.id.grid_default_search).getActionView();
+//        searchView.setOnQueryTextListener(queryListener);
+//    }
+//
+//    final private SearchView.OnQueryTextListener queryListener = new SearchView.OnQueryTextListener() {
+//        @Override
+//        public boolean onQueryTextSubmit(String query) {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean onQueryTextChange(String newText) {
+//            return false;
+//        }
+//    };
 }

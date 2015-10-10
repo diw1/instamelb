@@ -1,11 +1,9 @@
 package unimelb.edu.instamelb.activities;
 
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -29,7 +27,6 @@ import java.util.HashMap;
 import it.neokree.materialtabs.MaterialTab;
 import it.neokree.materialtabs.MaterialTabHost;
 import it.neokree.materialtabs.MaterialTabListener;
-import me.tatarka.support.job.JobInfo;
 import me.tatarka.support.job.JobScheduler;
 import unimelb.edu.instamelb.database.DatabaseHandler;
 import unimelb.edu.instamelb.extras.SortListener;
@@ -40,7 +37,6 @@ import unimelb.edu.instamelb.fragments.FragmentPhoto;
 import unimelb.edu.instamelb.fragments.FragmentProfile;
 import unimelb.edu.instamelb.logging.L;
 import unimelb.edu.instamelb.materialtest.R;
-import unimelb.edu.instamelb.services.ServiceMoviesBoxOffice;
 
 
 public class ActivityMain extends AppCompatActivity implements MaterialTabListener, View.OnClickListener {
@@ -90,7 +86,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         setContentView(R.layout.activity_main);
         setupFAB();
         setupTabs();
-        setupJob();
+        //setupJob();
         setupDrawer();
         //animate the Toolbar when it comes into the picture
         //AnimationUtils.animateToolbarDroppingDown(mContainerToolbar);
@@ -155,7 +151,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         }
     }
 
-    private void setupJob() {
+    /*private void setupJob() {
         mJobScheduler = JobScheduler.getInstance(this);
         //set an initial delay with a Handler so that the data loading by the JobScheduler does not clash with the loading inside the Fragment
         new Handler().postDelayed(new Runnable() {
@@ -175,7 +171,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
                 .setPersisted(true);
         mJobScheduler.schedule(builder.build());
-    }
+    }*/
 
     private void setupFAB() {
         //define the icon for the main floating action button
@@ -187,7 +183,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
                 .setContentView(iconFAB)
                 .setBackgroundDrawable(R.drawable.selector_button_red)
                 .build();
-
+        //mFAB.setOnClickListener(new View.OnClickListener(){});
         //define the icons for the sub action buttons
         ImageView iconSortName = new ImageView(this);
         iconSortName.setImageResource(R.drawable.ic_action_alphabets);
@@ -222,6 +218,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
                 .addSubActionView(buttonSortRatings)
                 .attachTo(mFAB)
                 .build();
+
     }
 
     @Override
