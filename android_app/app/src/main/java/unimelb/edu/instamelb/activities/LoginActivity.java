@@ -172,35 +172,39 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String string) {
-            try {
-                JSONObject object = new JSONObject(string);
-                if (object.getString("user_id") != null) {
+            if (!string.isEmpty()) {
+                try {
+                    JSONObject object = new JSONObject(string);
+                    if (object.getString("user_id") != null) {
 
-                    DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-                    /**
-                     * Clear all previous data in SQlite database.
-                     **/
-                    db.resetTables();
-                    db.addUser(object.getString("email"), object.getString("username"),password,object.getString("user_id"));
-                    /**
-                     *If JSON array details are stored in SQlite it launches the User Panel.
-                     **/
-                    finish();
+                        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+                        /**
+                         * Clear all previous data in SQlite database.
+                         **/
+                        db.resetTables();
+                        db.addUser(object.getString("email"), object.getString("username"), password, object.getString("user_id"));
+                        /**
+                         *If JSON array details are stored in SQlite it launches the User Panel.
+                         **/
+                        finish();
 //                    Intent home = new Intent(getApplicationContext(), ActivityMain.class);
 //                    home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //                    pDialog.dismiss();
 //                    startActivity(home);
-                    /**
-                     * Close Login Screen
-                     **/
-                } else {
-                    _loginButton.setEnabled(true);
-                    Toast.makeText(getBaseContext(), "Incorrect username/password", Toast.LENGTH_LONG).show();
+                        /**
+                         * Close Login Screen
+                         **/
+                    } else {
+                        _loginButton.setEnabled(true);
+                        Toast.makeText(getBaseContext(), "Incorrect username/password", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            }else{
+                _loginButton.setEnabled(true);
+                Toast.makeText(getBaseContext(), "Incorrect username/password", Toast.LENGTH_LONG).show();
             }
-
         }
     }
     public void NetAsync(View view) {
