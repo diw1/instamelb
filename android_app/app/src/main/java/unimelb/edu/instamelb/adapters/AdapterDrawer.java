@@ -109,7 +109,7 @@ public class AdapterDrawer extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             header_email=(TextView) itemView.findViewById(R.id.header_email);
             header_username=(TextView) itemView.findViewById(R.id.header_username);
             String[] args={FragmentHome.mUsername, FragmentHome.mPassword,"users", "self"};
-            //new DownloadTask().execute(args);
+            new DownloadTask().execute(args);
 
         }
         private class DownloadTask extends AsyncTask<String, Integer, List<String>> {
