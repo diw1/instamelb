@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,7 +103,6 @@ public class FragmentHome extends Fragment implements SortListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.d("home",String.valueOf(container.getId()));
         mContext=container.getContext();
         mHomeView =inflater.inflate(R.layout.fragment_home, container, false);
         mGroup=container;
@@ -163,13 +161,11 @@ public class FragmentHome extends Fragment implements SortListener{
                             for (int j = 0; j < likelength; j++) {
                                 JSONObject oneLike= (JSONObject)likesList.get(j);
                                 likeList.add(oneLike.getString("username"));
-                                Log.d(mUsername,oneLike.getString("username"));
                                 if (mUsername.equals(oneLike.getString("username"))) {
                                     photo.setUser_has_liked(true);
                                 }
                             }
                         }
-                        Log.d(mUsername,String.valueOf(photo.isUser_has_liked()));
                         photo.setLiker_list(likeList);
                         feedsList.add(photo);
                     }
