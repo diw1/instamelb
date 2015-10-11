@@ -29,6 +29,7 @@ import it.neokree.materialtabs.MaterialTabListener;
 import unimelb.edu.instamelb.database.DatabaseHandler;
 import unimelb.edu.instamelb.extras.SortListener;
 import unimelb.edu.instamelb.fragments.FragmentCamera;
+import unimelb.edu.instamelb.fragments.FragmentChoosePhoto;
 import unimelb.edu.instamelb.fragments.FragmentDiscover;
 import unimelb.edu.instamelb.fragments.FragmentDrawer;
 import unimelb.edu.instamelb.fragments.FragmentHome;
@@ -302,7 +303,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
                     Log.d("Fragment", "Discover");
                     break;
                 case TAB_PHOTO:
-                    fragment = FragmentCamera.newInstance("", "");
+                    fragment = FragmentChoosePhoto.newInstance("", "");
                     Log.d("Fragment", "Photo");
                     break;
                 case TAB_ACTIVITY:
