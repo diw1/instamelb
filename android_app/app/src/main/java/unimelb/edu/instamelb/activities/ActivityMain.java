@@ -77,23 +77,30 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setupFAB();
-        setupTabs();
-        setupDrawer();
+        initialization();
+
         //animate the Toolbar when it comes into the picture
         //AnimationUtils.animateToolbarDroppingDown(mContainerToolbar);
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        initialization();
+
+
     }
 
     private void initialization() {
+
         db=new DatabaseHandler(getApplicationContext());
         loginUser=db.getUserDetails();
         mUsername=(String)loginUser.get("uname");
         mPassword=(String)loginUser.get("upassword");
         mEmail=(String)loginUser.get("email");
+        if (mUsername==null){
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }else {
+            setContentView(R.layout.activity_main);
+            setupFAB();
+            setupTabs();
+            setupDrawer();
+        }
 
     }
     private void setupDrawer() {
