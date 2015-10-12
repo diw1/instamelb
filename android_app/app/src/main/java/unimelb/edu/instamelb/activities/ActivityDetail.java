@@ -133,7 +133,7 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
     public String getLikeList(){
         String likeList="❤";
         ArrayList<String> currentList;
-        if (mPhoto.getLiker_list().isEmpty()){
+        if (mPhoto.getLiker_list().isEmpty()||mPhoto.getLiker_list()==null){
             currentList=new ArrayList<>();
         }else{
             currentList=mPhoto.getLiker_list();

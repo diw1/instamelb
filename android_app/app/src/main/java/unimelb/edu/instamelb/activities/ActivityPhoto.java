@@ -3,7 +3,6 @@ package unimelb.edu.instamelb.activities;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -29,7 +28,6 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +60,7 @@ public class ActivityPhoto extends AppCompatActivity {
     final int THUMBSIZE = 64;
     Bitmap originalPhoto, editedPhoto, newImage;
     Bitmap originalThumbnail, grayThumbnail, warmThumbnail, coolThumbnail;
-    private String mComment;
+    private String mComment="NO CAPTION";
     private double longitude = 0;
     private double latitude = 0;
 
@@ -301,24 +299,17 @@ public class ActivityPhoto extends AppCompatActivity {
             public void onClick(View v) {
 
                 setButtons(false);
-//                String imageBase64 = convertToBase64(newImage);
-//                String thumbnailBase64=convertToBase64(imageThumbnail);
-                Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.button_action_red);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.PNG, 100, baos); //bm is the bitmap object
-                byte[] b = baos.toByteArray();
-                String imageBase64 = Base64.encodeToString(b, Base64.NO_WRAP);
-                //String imageBase64="Qk12AQAAAAAAADYAAAAoAAAACgAAAAoAAAABABgAAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AAAAav8Aav8Aav8Aav8Aav8Aav8Aav8Aav8Aav8Aav9saQBq/wBq/wBq/wBq/wBq/wBq/wBq/wBq/wBq/wBq/2QgAGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AAAAav8Aav8Aav8Aav8Aav8Aav8Aav8Aav8Aav8Aav8AAABq/wBq/wBq/wBq/wBq/wBq/wBq/wBq/wBq/wBq/wAAAGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AAAAav8Aav8Aav8Aav8Aav8Aav8Aav8Aav8Aav8Aav8AAABq/wBq/wBq/wBq/wBq/wBq/wBq/wBq/wBq/wBq/wAAAGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AGr/AAA=";
-                String thumbnailBase64=imageBase64;
+                String imageBase64 = convertToBase64(newImage);
+                String thumbnailBase64=convertToBase64(imageThumbnail);
                 Util.Locations location=Util.getLocation(getBaseContext());
                 latitude=location.getLatitude();
                 longitude=location.getLongitude();
                 String[] argu={FragmentHome.mUsername,FragmentHome.mPassword,
-                "caption","WTFFFFFFFFFFFF",
+                "caption",mComment,
                 "image",imageBase64,
                 "image_thumbnail",thumbnailBase64,
-                "longitude","123.45",
-                "latitude","234.3"};
+                "longitude",String.valueOf(longitude),
+                "latitude",String.valueOf(latitude)};
                 Log.d("BASE64",imageBase64);
                 new UploadPhoto().execute(argu);
 
@@ -409,17 +400,11 @@ public class ActivityPhoto extends AppCompatActivity {
     }
 
     private String convertToBase64(Bitmap image) {
-        String b64Image = null;
 
-        // Convert image to byte[]
-        int bytes = image.getByteCount();
-        ByteBuffer buffer = ByteBuffer.allocate(bytes);
-        image.copyPixelsToBuffer(buffer);
-        byte[] b = buffer.array();
-
-        b64Image = Base64.encodeToString(b, Base64.DEFAULT);
-        Log.d("FP", "CONVERTED IMAGE TO BASE64 STRING");
-
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, baos); //bm is the bitmap object
+        byte[] b = baos.toByteArray();
+        String b64Image = Base64.encodeToString(b, Base64.NO_WRAP);
         return b64Image;
     }
 
@@ -442,7 +427,7 @@ public class ActivityPhoto extends AppCompatActivity {
         @Override
         protected JSONObject doInBackground(String... strings) {
             JSONObject object=new JSONObject();
-            String endpoint="/photo";
+            String endpoint="/photo/";
             try {
                 List<NameValuePair> params = new ArrayList<NameValuePair>(1);
                 APIRequest request = new APIRequest(strings[0], strings[1]);
