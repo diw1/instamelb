@@ -172,10 +172,12 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.wifi_icon:
                 // TODO: 2015/10/12 Add wifi swipe function here.
+                break;
             case R.id.send_comment:
                 sendComment.setEnabled(false);
                 String[] commentargs={mUsername,mPassword,"text",message.getText().toString()};
                 new PostComment(mPhoto).execute(commentargs);
+                break;
 
         }
     }
