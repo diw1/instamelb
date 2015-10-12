@@ -253,13 +253,15 @@
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#010101">
 
         <ImageView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/photoPreview"
             android:layout_gravity="center_horizontal"
+            android:scaleType="center"
             android:clickable="true" />
 
     </FrameLayout>
