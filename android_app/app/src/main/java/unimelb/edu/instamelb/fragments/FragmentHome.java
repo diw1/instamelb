@@ -6,11 +6,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -40,16 +43,20 @@ public class FragmentHome extends Fragment implements SortListener{
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String EMAIL = "email";
+    private static final String SORTBYDATE="Set to 'sort by date'";
+    private static final String SORTBYLOCATION="Set to 'sort by location'";
 
     public static String mUsername;
     public static String mPassword;
     public static String mEmail;
+    public static boolean sort_by_date=true;
     private View mHomeView;
     private Context mContext;
     private RecyclerView recyclerView;
+    private static SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<Photo> feedsList=new ArrayList<>();
 
-    private RecyclerViewAdapter adapter;
+    private  RecyclerViewAdapter adapter;
     private LinearLayoutManager layoutManager;
     private FragmentManager manager;
     private ViewGroup mGroup;
@@ -92,8 +99,28 @@ public class FragmentHome extends Fragment implements SortListener{
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // TODO Add your menu entries here
+        inflater.inflate(R.menu.menu_feed, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case  R.id.menu_feed_sort:
+                if (item.getTitle().toString().equals(SORTBYLOCATION)){
+                    item.setTitle(SORTBYDATE);
+                }else{
+                    item.setTitle(SORTBYLOCATION);
+                }
+                sort_by_date=!sort_by_date;
+                feedsList.clear();
+                adapter.notifyDataSetChanged();
+                initFeedData();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public void onSortByName(){
         L.t(getActivity(), "sort name search");
     }
@@ -119,13 +146,31 @@ public class FragmentHome extends Fragment implements SortListener{
         layoutManager=new LinearLayoutManager(mContext);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
+
+        adapter=new RecyclerViewAdapter(feedsList,mContext);
+        recyclerView.setAdapter(adapter);
         initFeedData();
+
+        swipeRefreshLayout=(SwipeRefreshLayout) mHomeView.findViewById(R.id.swipe_container);
+        TypedValue typed_value = new TypedValue();
+        getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+        swipeRefreshLayout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                feedsList.clear();
+                adapter.notifyDataSetChanged();
+                initFeedData();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
 
         return mHomeView;
     }
 
     private void initFeedData() {
-        String[] args={mUsername, mPassword,"users","self","feed"};
+        String[] args={mUsername, mPassword,"users","self","feed","sort_date",String.valueOf(sort_by_date),"sort_location",String.valueOf(!sort_by_date)};
         new DownloadTask().execute(args);
     }
 
@@ -136,10 +181,10 @@ public class FragmentHome extends Fragment implements SortListener{
             List<String> result = new ArrayList();
             try {
                 List<NameValuePair> params = new ArrayList<NameValuePair>(1);
-                params.add(new BasicNameValuePair(strings[2], strings[3]));
-                params.add(new BasicNameValuePair(strings[4], ""));
+                params.add(new BasicNameValuePair(strings[5], strings[6]));
+                params.add(new BasicNameValuePair(strings[7], strings[8]));
                 APIRequest request = new APIRequest(strings[0], strings[1]);
-                JSONObject object = new JSONObject(request.createRequest("GET", "/", params));
+                JSONObject object = new JSONObject(request.createRequest("GETQUERY", "/"+strings[2]+"/"+strings[3]+"/"+strings[4], params));
                 if (object.has("feed")) {
                     JSONArray feedList = object.getJSONArray("feed");
                     int length = feedList.length();
@@ -188,9 +233,10 @@ public class FragmentHome extends Fragment implements SortListener{
 
         @Override
         protected void onPostExecute(List<String> result) {
-            adapter=new RecyclerViewAdapter(feedsList,mContext);
 
-            recyclerView.setAdapter(adapter);
+
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+           adapter.notifyDataSetChanged();
         }
     }
 }
