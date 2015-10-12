@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -78,12 +80,19 @@ public class FragmentHome extends Fragment implements SortListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         manager = getActivity().getSupportFragmentManager();
         if (getArguments() != null) {
             mUsername = getArguments().getString(USERNAME);
             mPassword = getArguments().getString(PASSWORD);
             mEmail=getArguments().getString(EMAIL);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // TODO Add your menu entries here
+        super.onCreateOptionsMenu(menu, inflater);
     }
     public void onSortByName(){
         L.t(getActivity(), "sort name search");
