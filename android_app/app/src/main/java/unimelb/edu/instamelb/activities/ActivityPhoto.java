@@ -70,8 +70,10 @@ public class ActivityPhoto extends AppCompatActivity {
     SeekBar _contrastSeekBar;
     @InjectView(R.id.photoPreview)
     ImageView _editPhoto;
-    @InjectView(R.id.back_button)
-    Button _backButton;
+    @InjectView(R.id.edit_button)
+    Button _editButton;
+    @InjectView(R.id.caption_button)
+    Button _captionButton;
 
     @InjectView(R.id.upload_button)
     Button _uploadButton;
@@ -162,20 +164,21 @@ public class ActivityPhoto extends AppCompatActivity {
         _editPhoto.setImageBitmap(bitmap);
         originalPhoto = bitmap;
         editedPhoto = bitmap;
+        newImage = bitmap;
 
 //        originalPhoto = ((BitmapDrawable) _editPhoto.getDrawable()).getBitmap();
 //        editedPhoto = ((BitmapDrawable) _editPhoto.getDrawable()).getBitmap();
 
         // Return to Choose Library/Camera Screen
-        _backButton.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("FP", "CANCEL EDIT - TAKE NEW PHOTO");
-                Intent intent = new Intent(getApplicationContext(), ActivityCamera.class);
-                startActivity(intent);
-
-            }
-        });
+//        _backButton.setOnClickListener(new Button.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d("FP", "CANCEL EDIT - TAKE NEW PHOTO");
+//                Intent intent = new Intent(getApplicationContext(), ActivityCamera.class);
+//                startActivity(intent);
+//
+//            }
+//        });
         _brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -290,6 +293,10 @@ public class ActivityPhoto extends AppCompatActivity {
 
                 setButtons(false);
                 String s = convertToBase64(newImage);
+                Log.d("FP", "IMAGE UPLOADED");
+                Intent intent = new Intent(getBaseContext(), ActivityCamera.class);
+                startActivity(intent);
+
 
                 setButtons(true);
 
@@ -387,6 +394,7 @@ public class ActivityPhoto extends AppCompatActivity {
         byte[] b = buffer.array();
 
         b64Image = Base64.encodeToString(b, Base64.DEFAULT);
+        Log.d("FP", "CONVERTED IMAGE TO BASE64 STRING");
 
         return b64Image;
     }
