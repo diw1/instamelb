@@ -40,16 +40,17 @@
                 android:value="unimelb.edu.instamelb.activities.ActivityMain" />
         </activity>
 
-        <service
-            android:name="unimelb.edu.instamelb.services.ServiceMoviesBoxOffice"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <activity android:name="unimelb.edu.instamelb.activities.LoginActivity" android:theme="@style/AppTheme.Dark.Dialog" />
         <activity android:name="unimelb.edu.instamelb.activities.SignupActivity" android:theme="@style/AppTheme.Dark.Dialog" />
         <activity
             android:name="unimelb.edu.instamelb.activities.ActivityTakePhoto"
             android:label="activity_take_photo"/>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityDetail"
+            android:label="activity_photo_detail"/>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityProfile"
+            android:label="activity_user_detail"/>
         <activity
             android:name="unimelb.edu.instamelb.sensors.CameraSensor"
             android:label="Camera Sensor" ></activity>
