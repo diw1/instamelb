@@ -53,6 +53,9 @@ public class ActivityPhoto extends AppCompatActivity {
     final int THUMBSIZE = 64;
     Bitmap originalPhoto, editedPhoto, newImage;
     Bitmap originalThumbnail, grayThumbnail, warmThumbnail, coolThumbnail;
+    private String mComment;
+    private double longitude = 0;
+    private double latitude = 0;
 
     public Uri mImageUri;
     public File mImageFile;
