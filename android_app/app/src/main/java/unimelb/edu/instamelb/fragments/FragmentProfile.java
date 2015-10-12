@@ -237,7 +237,7 @@ public class FragmentProfile extends Fragment implements SortListener{
                 if (mUserid == "self" || mUserid == String.valueOf(mUser.getmId())) {
                     mLoggedInUserFollows = null;
                     mChangeImageButton.setText("Change Avatar");
-                    mChangeImageButton.setOnClickListener(mChangeImageButtonListener);
+                    mChangeImageButton.setVisibility(View.GONE);
                 } else {
                     mLoggedInUserFollows = mFollows.getmId().contains(Long.valueOf(mUserid).longValue()) ? true : false;
                     configureFollowButton(mLoggedInUserFollows);
