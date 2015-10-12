@@ -207,20 +207,13 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         // as you specify a parent activity in AndroidManifest.xml. 
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement 
-        if (id == R.id.action_settings) {
-            L.m("Settings selected");
-            return true;
-        }
+        //noinspection SimplifiableIfStatement
         if (R.id.action_logout == id) {
             L.t(this.getBaseContext(), "Logout");
             db.resetTables();
             Intent login = new Intent(getApplicationContext(), LoginActivity.class);
             login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(login);
-        }
-        if (R.id.action_about == id) {
-            L.t(this.getBaseContext(), "About");
         }
         return super.onOptionsItemSelected(item);
     }

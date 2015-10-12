@@ -8,7 +8,7 @@ module.exports = {
         server: {
             image_server: 'http://images.instamelb.pinkpineapple.me/',
             host: 'localhost',
-            port: 3000
+            port: 3001
         },
         db: {
             name: 'instamelb',
