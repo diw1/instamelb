@@ -1,6 +1,5 @@
 package unimelb.edu.instamelb.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -145,9 +144,6 @@ public class LoginActivity extends AppCompatActivity {
      * Async Task to get and send data to My Sql database through JSON respone.
      **/
     private class ProcessLogin extends AsyncTask<String,String,String> {
-
-        private ProgressDialog pDialog;
-
         String user, password;
 
         @Override
@@ -156,12 +152,7 @@ public class LoginActivity extends AppCompatActivity {
 
             user = _usernameText.getText().toString();
             password = _passwordText.getText().toString();
-            pDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Base);
-            pDialog.setTitle("Contacting Servers");
-            pDialog.setMessage("Logging in ...");
-            pDialog.setIndeterminate(true);
-            pDialog.setCancelable(true);
-            pDialog.show();
+
         }
 
         @Override
@@ -181,37 +172,40 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String string) {
-            try {
-                JSONObject object = new JSONObject(string);
-                if (object.getString("user_id") != null) {
-                    pDialog.setMessage("Loading User Space");
-                    pDialog.setTitle("Getting Data");
-                    DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-                    /**
-                     * Clear all previous data in SQlite database.
-                     **/
-                    db.resetTables();
-                    db.addUser(object.getString("email"), object.getString("username"),password,object.getString("user_id"));
-                    /**
-                     *If JSON array details are stored in SQlite it launches the User Panel.
-                     **/
-                    finish();
-//                    Intent home = new Intent(getApplicationContext(), ActivityMain.class);
-//                    home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                    pDialog.dismiss();
-//                    startActivity(home);
-                    /**
-                     * Close Login Screen
-                     **/
-                } else {
-                    _loginButton.setEnabled(true);
-                    pDialog.dismiss();
-                    Toast.makeText(getBaseContext(), "Incorrect username/password", Toast.LENGTH_LONG).show();
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            if (!string.isEmpty()) {
+                try {
+                    JSONObject object = new JSONObject(string);
+                    if (object.getString("user_id") != null) {
 
+                        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+                        /**
+                         * Clear all previous data in SQlite database.
+                         **/
+                        db.resetTables();
+                        db.addUser(object.getString("email"), object.getString("username"), password, object.getString("user_id"));
+                        /**
+                         *If JSON array details are stored in SQlite it launches the User Panel.
+                         **/
+                        finish();
+
+                        Intent home = new Intent(getApplicationContext(), ActivityMain.class);
+
+//                    pDialog.dismiss();
+                        startActivity(home);
+                        /**
+                         * Close Login Screen
+                         **/
+                    } else {
+                        _loginButton.setEnabled(true);
+                        Toast.makeText(getBaseContext(), "Incorrect username/password", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                _loginButton.setEnabled(true);
+                Toast.makeText(getBaseContext(), "Incorrect username/password", Toast.LENGTH_LONG).show();
+            }
         }
     }
     public void NetAsync(View view) {

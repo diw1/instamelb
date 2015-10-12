@@ -1,6 +1,7 @@
 package unimelb.edu.instamelb.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,12 +35,14 @@ import java.util.List;
 
 import unimelb.edu.instamelb.adapters.PhotoListAdapter;
 import unimelb.edu.instamelb.extras.SortListener;
+import unimelb.edu.instamelb.extras.Util;
 import unimelb.edu.instamelb.logging.L;
 import unimelb.edu.instamelb.materialtest.R;
 import unimelb.edu.instamelb.users.APIRequest;
+import unimelb.edu.instamelb.users.Comment;
 import unimelb.edu.instamelb.users.Follows;
+import unimelb.edu.instamelb.users.Photo;
 import unimelb.edu.instamelb.users.User;
-import unimelb.edu.instamelb.users.UserPhotos;
 import unimelb.edu.instamelb.widget.urlimageviewhelper.UrlImageViewHelper;
 
 /**
@@ -56,6 +60,7 @@ public class FragmentProfile extends Fragment implements SortListener{
     private String mUsername;
     private String mPassword;
     private String mUserid;
+    private Intent mIntent;
 
 
     public FragmentProfile() {
@@ -80,8 +85,9 @@ public class FragmentProfile extends Fragment implements SortListener{
         return fragment;
     }
     private Context mContext;
+    private DisplayMetrics dm;
     private User mUser;
-    private UserPhotos mUserPhotos;
+    private Photo mPhoto;
     private Follows mFollows;
     private View mProfileView;
     private Boolean mLoggedInUserFollows;
@@ -89,13 +95,7 @@ public class FragmentProfile extends Fragment implements SortListener{
     private ProgressBar mLoadingPb;
     private GridView mGridView;
 
-    /*
-    * Given 1234567890, return "1,234,567,890"
-    */
-    public static String getPrettyCount(int count) {
-        String regex = "(\\d)(?=(\\d{3})+$)";
-        return Integer.toString(count).replaceAll(regex, "$1,");
-    }
+
 
     private void configureFollowButton(Boolean loggedInUserFollows) {
         mChangeImageButton.setText(loggedInUserFollows ? R.string.action_unfollow
@@ -153,11 +153,11 @@ public class FragmentProfile extends Fragment implements SortListener{
             }
         }
     }
-    public class DownloadTask extends AsyncTask<String, Integer, List<String>> {
-        ArrayList<String> photoList;
+    private class DownloadTask extends AsyncTask<String, Integer, List<String>> {
+        ArrayList<Photo> userPhotoList=new ArrayList<>();
         @Override
         protected List doInBackground(String... strings) {
-            List<String> result =new ArrayList();
+            List<String> result =new ArrayList<>();
             try {
                 List<NameValuePair> params = new ArrayList<NameValuePair>(1);
                 params.add(new BasicNameValuePair(strings[2], strings[3]));
@@ -178,11 +178,25 @@ public class FragmentProfile extends Fragment implements SortListener{
         @Override
         protected void onPostExecute(List<String>  result) {
             mUser = new User(result.get(0));
-            mUserPhotos = new UserPhotos(result.get(1));
-            mFollows=new Follows(result.get(2));
-            photoList = mUserPhotos.getmPhotoList();
-
-            Log.d(TAG, mUser.getmEmail());
+            try {
+                JSONObject object = new JSONObject(result.get(1));
+                if (object.has("photos")) {
+                    JSONArray photoList = object.getJSONArray("photos");
+                    int length = photoList.length();
+                    for (int i = 0; i < length; i++) {
+                        object = photoList.getJSONObject(i);
+                        mPhoto=new Photo(object);
+                        mPhoto.setUser_id(mUser.getmId());
+                        mPhoto.setUsername(mUser.getmUserName());
+                        mPhoto.setUser_avatar(mUser.getmProfileImageUrl());
+                        new getLikeAndComments(mPhoto,mUsername,mPassword).execute();
+                        userPhotoList.add(mPhoto);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            mFollows = new Follows(result.get(2));
             TextView usernameTextView = (TextView) mProfileView
                     .findViewById(R.id.username);
             TextView photoCount = (TextView) mProfileView
@@ -195,9 +209,9 @@ public class FragmentProfile extends Fragment implements SortListener{
                     .findViewById(R.id.followersCountLabel);
             LinearLayout detailsLayout = (LinearLayout) mProfileView
                     .findViewById(R.id.detailsLayout);
-            ProgressBar mLoadingPb = (ProgressBar) mProfileView
+            mLoadingPb = (ProgressBar) mProfileView
                     .findViewById(R.id.pb_loading);
-            GridView mGridView = (GridView) mProfileView
+            mGridView = (GridView) mProfileView
                     .findViewById(R.id.gridView);
             mChangeImageButton = (Button) mProfileView.
                     findViewById(R.id.change_button);
@@ -215,21 +229,19 @@ public class FragmentProfile extends Fragment implements SortListener{
                 emailTextView.setText(mUser.getmEmail());
                 detailsLayout.setVisibility(View.VISIBLE);
 
-                photoCount.setText(getPrettyCount(mUser.getmPhotoCount()));
+                photoCount.setText(Util.getPrettyCount(mUser.getmPhotoCount()));
                 followingCount
-                        .setText(getPrettyCount(mUser.getmFollowingCount()));
-                followersCount.setText(getPrettyCount(mUser
+                        .setText(Util.getPrettyCount(mUser.getmFollowingCount()));
+                followersCount.setText(Util.getPrettyCount(mUser
                         .getmFollowersCount()));
-                if (mUserid=="self"){
-                    mLoggedInUserFollows=null;
+                if (mUserid == "self" || mUserid == String.valueOf(mUser.getmId())) {
+                    mLoggedInUserFollows = null;
                     mChangeImageButton.setText("Change Avatar");
-                    mChangeImageButton.setOnClickListener(mChangeImageButtonListener);
-                }else {
-                    mLoggedInUserFollows= mFollows.getmId().contains(Long.valueOf(mUserid).longValue()) ? true : false;
-                    Log.d("Follows?",mLoggedInUserFollows.toString());
+                    mChangeImageButton.setVisibility(View.GONE);
+                } else {
+                    mLoggedInUserFollows = mFollows.getmId().contains(Long.valueOf(mUserid).longValue()) ? true : false;
                     configureFollowButton(mLoggedInUserFollows);
                 }
-
 
             } else {
                 usernameTextView.setText(null);
@@ -239,17 +251,13 @@ public class FragmentProfile extends Fragment implements SortListener{
             mLoadingPb.setVisibility(View.GONE);
 
 
-            DisplayMetrics dm = new DisplayMetrics();
-
-            getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-
             int width = (int) Math.ceil((double) dm.widthPixels / 2);
             width = width - 50;
             int height = width;
 
             PhotoListAdapter adapter = new PhotoListAdapter(mContext);
 
-            adapter.setData(photoList);
+            adapter.setData(userPhotoList);
             adapter.setLayoutParam(width, height);
 
             mGridView.setAdapter(adapter);
@@ -276,7 +284,6 @@ public class FragmentProfile extends Fragment implements SortListener{
             String result = "";
             try {
                 List<NameValuePair> params = new ArrayList<>(1);
-                Log.d(strings[2],strings[3]);
                 params.add(new BasicNameValuePair(strings[2], strings[3]));
                 APIRequest request = new APIRequest(strings[0], strings[1]);
                 String endpoint="/users/"+mUser.getmId()+"/relationship";
@@ -299,10 +306,10 @@ public class FragmentProfile extends Fragment implements SortListener{
                     TextView followingCount = (TextView) mProfileView
                             .findViewById(R.id.followingCountLabel);
                     if (mLoggedInUserFollows){
-                        followingCount.setText(getPrettyCount(mUser.getmFollowingCount()+1));
+                        followingCount.setText(Util.getPrettyCount(mUser.getmFollowingCount() + 1));
                         mUser.setmFollowingCount(mUser.getmFollowingCount()+1);
                     }else{
-                        followingCount.setText(getPrettyCount(mUser.getmFollowingCount()-1));
+                        followingCount.setText(Util.getPrettyCount(mUser.getmFollowingCount() - 1));
                         mUser.setmFollowingCount(mUser.getmFollowingCount()-1);
                     }
                 }
@@ -311,18 +318,74 @@ public class FragmentProfile extends Fragment implements SortListener{
             }
         }
     }
-    public void onClickPhoto(View v){
-    //TODO
+
+    public static class getLikeAndComments extends AsyncTask<String, Integer, List<String>> {
+        private ArrayList<Comment> oneCommentList=new ArrayList<>();
+        private ArrayList<String> likeList=new ArrayList<>();
+        private Photo photo;
+        private String username;
+        private String password;
+        public getLikeAndComments(Photo photo,String username,String password){
+            this.photo=photo;
+            this.username=username;
+            this.password=password;
+        }
+
+        @Override
+        protected List doInBackground(String... strings) {
+            List<String> result = new ArrayList();
+            try {
+                List<NameValuePair> params = new ArrayList<NameValuePair>(1);
+                APIRequest request = new APIRequest(username,password);
+                params.add(new BasicNameValuePair("photo",String.valueOf(photo.getPhoto_id())));
+                params.add(new BasicNameValuePair("comments", ""));
+                JSONObject object = new JSONObject(request.createRequest("GET", "/", params));
+
+                if (object.has("comments")) {
+                    JSONArray commentList = object.getJSONArray("comments");
+                    int commlength = commentList.length();
+                    for (int j = 0; j < commlength; j++) {
+                        oneCommentList.add(new Comment((JSONObject) commentList.get(j)));
+                    }
+                }
+                photo.setComment_list(oneCommentList);
+                params=new ArrayList<>();
+                params.add(new BasicNameValuePair("photo",String.valueOf(photo.getPhoto_id() )));
+                params.add(new BasicNameValuePair("likes", ""));
+                object = new JSONObject(request.createRequest("GET", "/", params));
+                if (object.has("likes")) {
+                    JSONArray likesList = object.getJSONArray("likes");
+                    int likelength = likesList.length();
+                    for (int j = 0; j < likelength; j++) {
+                        JSONObject oneLike= (JSONObject)likesList.get(j);
+                        likeList.add(oneLike.getString("username"));
+                        if (username==oneLike.get("username")) photo.setUser_has_liked(true);
+                    }
+                }
+                photo.setLiker_list(likeList);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> result) {
+        }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mContext=container.getContext();
         mProfileView=inflater.inflate(R.layout.fragment_profile, container, false);
+        dm = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         String[] args={mUsername, mPassword,"users", mUserid};
-        Log.d("username/password", mUsername +","+ mPassword);
         new DownloadTask().execute(args);
+        Log.d("FP","FINISHDOWNLOAD");
         return mProfileView;
     }
 }

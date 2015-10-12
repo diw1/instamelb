@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/detail_scrollview"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="unimelb.edu.instamelb.activities.ActivityDetail"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/photo_header"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <ImageView
+                android:id="@+id/post_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logo" />
+
+            <TextView
+                android:id="@+id/detail_caption"
+                android:autoLink="all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dip"
+                android:layout_marginBottom="6dp"
+                android:maxLines="5"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:layout_alignBottom="@+id/post_image"
+                android:textColor="@android:color/white"
+                android:textSize="16dp"
+                android:layout_marginLeft="16dp" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/user_container">
+            <View android:layout_gravity="bottom" android:id="@+id/divider3" android:background="@color/colorGray" android:layout_width="match_parent" android:layout_height="2dp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/user_profile"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentLeft="false"
+                android:layout_alignBottom="@+id/post_image">
+                <ImageView
+                    android:id="@+id/detail_user_pic"
+                    android:layout_width="40dip"
+                    android:layout_height="40dip"
+                    android:padding="2dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="6dp"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="72dip"
+                    android:layout_marginTop="6dp">
+
+                    <TextView
+                        android:id="@+id/detail_username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dip"
+                        android:layout_marginBottom="10dp"
+                        android:ellipsize="end"
+                        android:includeFontPadding="false"
+                        android:textColor="@android:color/black"
+                        android:singleLine="true"
+                        />
+                    <TextView
+                        android:id="@+id/detail_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/detail_username"
+                        android:layout_alignBaseline="@+id/detail_username"
+                        android:textColor="@android:color/black"
+                        android:textStyle="italic"
+                        />
+                </RelativeLayout>
+
+
+            </RelativeLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/icons_container">
+
+            <View android:layout_gravity="bottom" android:id="@+id/divider1" android:background="@color/colorGray" android:layout_width="match_parent" android:layout_height="2dp"
+                android:layout_margin="0dp" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/icons"
+                android:baselineAligned="false"
+                android:padding="6dp" >
+                <ImageView
+                    android:layout_gravity="center"
+                    android:id="@+id/like_icon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/like"
+                    android:layout_weight="1" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_comment"
+                    android:id="@+id/comment_icon"
+                    android:layout_weight="1" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/wifi"
+                    android:id="@+id/wifi_icon"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/likes">
+            <View android:layout_gravity="bottom" android:id="@+id/divider2" android:background="@color/colorGray" android:layout_width="match_parent" android:layout_height="2dp" />
+            <TextView
+                android:id="@+id/like_user"
+                android:autoLink="all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dip"
+                android:layout_marginBottom="16dp"
+                android:maxLines="5"
+                android:ellipsize="end"
+                android:includeFontPadding="false"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detail_comments"
+            android:background="?android:colorBackground"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"/>
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1">
+        </FrameLayout>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            >
+
+            <EditText
+                android:id="@+id/message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:ems="10"
+                android:hint="Input your comment to the photo"
+                android:textSize="16dp" >
+
+            </EditText>
+
+            <Button
+                android:id="@+id/send_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Send"
+                android:layout_alignBottom="@+id/message"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

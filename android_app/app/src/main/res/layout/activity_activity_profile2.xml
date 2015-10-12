@@ -1,0 +1,194 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:padding="@dimen/activity_vertical_margin"
+tools:context="unimelb.edu.instamelb.activities.ActivityProfile"
+    >
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:titleFlow="http://schemas.android.com/apk/res/com.tweetlanes.android.core"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/activity_vertical_margin">
+
+        <ImageView
+            android:id="@+id/profileImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_contact_picture"/>
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:text="iPhone Success"
+            android:layout_toRightOf="@+id/profileImage"
+            android:paddingLeft="5dp" />
+
+        <TextView
+            android:id="@+id/Email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IOS@gmail.com"
+            android:layout_marginTop="18dp"
+            android:paddingLeft="5dp"
+            android:layout_below="@+id/username"
+            android:layout_toRightOf="@+id/profileImage" />
+
+        <Button
+            android:id="@+id/change_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_unfollow"
+            android:textColor="#fff"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/detailsLayout"
+        android:weightSum="1"
+        android:layout_gravity="top">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="8.40"></LinearLayout>
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:text="@string/details"
+            android:layout_marginTop="5dip"
+            />
+
+        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/details_table_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dip"
+                android:paddingRight="20dip"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                >
+
+                <TextView
+                    android:text="@string/status_count"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight=".7"
+                    android:clickable="true"
+                    android:onClick="onClickPhoto"
+                    />
+
+                <TextView
+                    android:id="@+id/photoCountLabel"
+                    android:text="777"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dip"
+                android:paddingRight="20dip"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                >
+
+                <TextView
+                    android:text="@string/friends_count"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight=".7"
+                    />
+
+                <TextView
+                    android:id="@+id/followingCountLabel"
+                    android:text="888"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dip"
+                android:paddingRight="20dip"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                >
+
+                <TextView
+                    android:text="@string/following_count"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight=".7"
+                    />
+
+                <TextView
+                    android:id="@+id/followersCountLabel"
+                    android:text="544"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    />
+
+            </TableRow>
+
+        </TableLayout>
+
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_below="@+id/details_table_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/activity_vertical_margin" >
+
+        <GridView
+            android:id="@+id/gridView"
+            android:verticalSpacing="5dp"
+            android:horizontalSpacing="5dp"
+            android:padding="5dp"
+            android:stretchMode="columnWidth"
+            android:numColumns="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:id="@+id/pb_loading"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+</LinearLayout>
+
+</RelativeLayout>

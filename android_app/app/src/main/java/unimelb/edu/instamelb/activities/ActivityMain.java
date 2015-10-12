@@ -1,11 +1,8 @@
 package unimelb.edu.instamelb.activities;
 
-
-import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -13,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,18 +26,16 @@ import java.util.HashMap;
 import it.neokree.materialtabs.MaterialTab;
 import it.neokree.materialtabs.MaterialTabHost;
 import it.neokree.materialtabs.MaterialTabListener;
-import me.tatarka.support.job.JobInfo;
-import me.tatarka.support.job.JobScheduler;
 import unimelb.edu.instamelb.database.DatabaseHandler;
 import unimelb.edu.instamelb.extras.SortListener;
+import unimelb.edu.instamelb.fragments.FragmentCamera;
+import unimelb.edu.instamelb.fragments.FragmentChoosePhoto;
 import unimelb.edu.instamelb.fragments.FragmentDiscover;
 import unimelb.edu.instamelb.fragments.FragmentDrawer;
 import unimelb.edu.instamelb.fragments.FragmentHome;
-import unimelb.edu.instamelb.fragments.FragmentPhoto;
 import unimelb.edu.instamelb.fragments.FragmentProfile;
 import unimelb.edu.instamelb.logging.L;
 import unimelb.edu.instamelb.materialtest.R;
-import unimelb.edu.instamelb.services.ServiceMoviesBoxOffice;
 
 
 public class ActivityMain extends AppCompatActivity implements MaterialTabListener, View.OnClickListener {
@@ -56,18 +52,13 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
     public static final int TAB_PROFILE = 4;
     //int corresponding to the number of tabs in our Activity
     public static final int TAB_COUNT = 5;
-    //int corresponding to the id of our JobSchedulerService
-    private static final int JOB_ID = 100;
     //tag associated with the FAB menu button that sorts by name
     private static final String TAG_SORT_NAME = "sortName";
     //tag associated with the FAB menu button that sorts by date
     private static final String TAG_SORT_DATE = "sortDate";
     //tag associated with the FAB menu button that sorts by ratings
     private static final String TAG_SORT_RATINGS = "sortRatings";
-    //Run the JobSchedulerService every 2 minutes
-    private static final long POLL_FREQUENCY = 28800000;
     private static final String SELF = "self";
-    private JobScheduler mJobScheduler;
     private Toolbar mToolbar;
     //a layout grouping the toolbar and the tabs together
     private ViewGroup mContainerToolbar;
@@ -81,31 +72,38 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
     private HashMap loginUser;
     private String mUsername;
     private String mPassword;
+    private String mEmail;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setupFAB();
-        setupTabs();
-        setupJob();
-        setupDrawer();
+        initialization();
+
         //animate the Toolbar when it comes into the picture
         //AnimationUtils.animateToolbarDroppingDown(mContainerToolbar);
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        initialization();
+
+
     }
 
     private void initialization() {
+
         db=new DatabaseHandler(getApplicationContext());
         loginUser=db.getUserDetails();
         mUsername=(String)loginUser.get("uname");
         mPassword=(String)loginUser.get("upassword");
+        mEmail=(String)loginUser.get("email");
+        if (mUsername==null){
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }else {
+            setContentView(R.layout.activity_main);
+            setupFAB();
+            setupTabs();
+            setupDrawer();
+        }
 
     }
-
     private void setupDrawer() {
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         mContainerToolbar = (ViewGroup) findViewById(R.id.container_app_bar);
@@ -123,9 +121,6 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         mPager.setCurrentItem(index);
     }
 
-    public View getContainerToolbar() {
-        return mContainerToolbar;
-    }
 
     private void setupTabs() {
         mTabHost = (MaterialTabHost) findViewById(R.id.materialTabHost);
@@ -149,27 +144,6 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         }
     }
 
-    private void setupJob() {
-        mJobScheduler = JobScheduler.getInstance(this);
-        //set an initial delay with a Handler so that the data loading by the JobScheduler does not clash with the loading inside the Fragment
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //schedule the job after the delay has been elapsed
-                buildJob();
-            }
-        }, 30000);
-    }
-
-    private void buildJob() {
-        //attach the job ID and the name of the Service that will work in the background
-        JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(this, ServiceMoviesBoxOffice.class));
-        //set periodic polling that needs net connection and works across device reboots
-        builder.setPeriodic(POLL_FREQUENCY)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
-                .setPersisted(true);
-        mJobScheduler.schedule(builder.build());
-    }
 
     private void setupFAB() {
         //define the icon for the main floating action button
@@ -233,11 +207,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         // as you specify a parent activity in AndroidManifest.xml. 
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement 
-        if (id == R.id.action_settings) {
-            L.m("Settings selected");
-            return true;
-        }
+        //noinspection SimplifiableIfStatement
         if (R.id.action_logout == id) {
             L.t(this.getBaseContext(), "Logout");
             db.resetTables();
@@ -245,25 +215,6 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
             login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(login);
         }
-        if (R.id.action_about == id) {
-            L.t(this.getBaseContext(), "About");
-        }
-        /*if (R.id.action_shared_transitions == id) {
-            startActivity(new Intent(this, ActivitySharedA.class));
-        }
-        if (R.id.action_tabs_using_library == id) {
-            startActivity(new Intent(this, ActivitySlidingTabLayout.class));
-        }
-        if (R.id.action_vector_test_activity == id) {
-            startActivity(new Intent(this, ActivityVectorDrawable.class));
-        }
-
-        if (R.id.action_dynamic_tabs_activity == id) {
-            startActivity(new Intent(this, ActivityDynamicTabs.class));
-        }
-        if (R.id.action_recycler_item_animations == id) {
-            startActivity(new Intent(this, ActivityRecylerAnimators.class));
-        }*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -338,17 +289,19 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
             //L.m("getItem called for " + num);
             switch (num) {
                 case TAB_HOME:
-                    fragment = FragmentHome.newInstance("", "");
+                    fragment = FragmentHome.newInstance(mUsername,mPassword,mEmail);
                     break;
                 case TAB_DISCOVER:
                     fragment = FragmentDiscover.newInstance("", "");
+                    Log.d("Fragment", "Discover");
                     break;
                 case TAB_PHOTO:
-                    fragment = FragmentPhoto.newInstance("", "");
+                    fragment = FragmentChoosePhoto.newInstance("", "");
+                    Log.d("Fragment", "Photo");
                     break;
                 case TAB_ACTIVITY:
-                    //fragment = FragmentActivity.newInstance("", "");
-                    fragment = FragmentProfile.newInstance(mUsername,mPassword,"1");//just for test propose;
+                    fragment = FragmentDiscover.newInstance("", "");
+                    Log.d("Fragment", "Activity");
                     break;
                 case TAB_PROFILE:
                     fragment = FragmentProfile.newInstance(mUsername,mPassword,SELF);
@@ -371,5 +324,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         private Drawable getIcon(int position) {
             return getResources().getDrawable(icons[position]);
         }
+
+
     }
 } 

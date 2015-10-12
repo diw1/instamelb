@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="unimelb.edu.instamelb.materialtest" >
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Always required on api < 21, needed to keep a wake lock while your job is running -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -9,6 +10,13 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Required on all api levels if you are using setPersisted(true) -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.hardware.camera"
+        android:required="true"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
         android:name="unimelb.edu.instamelb.materialtest.MyApplication"
@@ -32,44 +40,32 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="unimelb.edu.instamelb.activities.ActivityMain" />
         </activity>
-        <activity
-            android:name="unimelb.edu.instamelb.activities.ActivitySlidingTabLayout"
-            android:label="@string/title_activity_activity_using_tab_library" >
-        </activity>
-        <activity
-            android:name="unimelb.edu.instamelb.activities.ActivityVectorDrawable"
-            android:label="@string/title_activity_vector_test" >
-        </activity>
 
-        <service
-            android:name="unimelb.edu.instamelb.services.ServiceMoviesBoxOffice"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <activity
-            android:name="unimelb.edu.instamelb.activities.ActivityDynamicTabs"
-            android:label="@string/title_activity_dynamic_tabs" >
-        </activity>
-        <activity
-            android:name="unimelb.edu.instamelb.activities.ActivityRecylerAnimators"
-            android:label="@string/title_activity_recycler_item_animations" >
-        </activity>
-        <activity
-            android:name="unimelb.edu.instamelb.activities.ActivityA"
-            android:label="@string/title_activity_activity_calling" >
-        </activity>
-        <activity
-            android:name="unimelb.edu.instamelb.activities.ActivityB"
-            android:label="@string/title_activity_activity_called" >
-        </activity>
         <activity android:name="unimelb.edu.instamelb.activities.LoginActivity" android:theme="@style/AppTheme.Dark.Dialog" />
         <activity android:name="unimelb.edu.instamelb.activities.SignupActivity" android:theme="@style/AppTheme.Dark.Dialog" />
         <activity
-            android:name="unimelb.edu.instamelb.activities.ActivitySharedA"
-            android:label="@string/title_activity_activity_shared"></activity>
+            android:name="unimelb.edu.instamelb.activities.ActivityTakePhoto"
+            android:label="activity_take_photo"/>
         <activity
-            android:name="unimelb.edu.instamelb.activities.ActivitySharedB"
-            android:label="@string/title_activity_activity_shared_b"></activity>
+            android:name="unimelb.edu.instamelb.activities.ActivityDetail"
+            android:label="activity_photo_detail"/>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityProfile"
+            android:label="activity_user_detail"/>
+        <activity
+            android:name="unimelb.edu.instamelb.sensors.CameraSensor"
+            android:label="Camera Sensor" ></activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityPhoto"
+            android:label="activity_photo" ></activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityCamera"
+            android:label="activity_camera" ></activity>
+        <activity
+            android:name="unimelb.edu.instamelb.activities.ActivityLibrary"
+            android:label="activity_library" ></activity>
+
+
     </application>
 
 </manifest>
