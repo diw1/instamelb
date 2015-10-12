@@ -95,6 +95,9 @@ module.exports = function (config, db) { return {
             return done(error_json);
         }
 
+        new_photo_json.longitude = Number(new_photo_json.longitude);
+        new_photo_json.latitude = Number(new_photo_json.latitude);
+
         // Generate buffers from images sent
         var image_buffer = new Buffer(new_photo_json.image, 'base64');
         var image_thumbnail_buffer =
