@@ -233,8 +233,6 @@ public class FragmentHome extends Fragment implements SortListener{
 
         @Override
         protected void onPostExecute(List<String> result) {
-
-
             swipeRefreshLayout.setVisibility(View.VISIBLE);
            adapter.notifyDataSetChanged();
         }
