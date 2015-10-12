@@ -118,16 +118,17 @@
         android:background="@color/colorPrimary">
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/photoThumbnail"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/ic_action_photo"
             android:clickable="true"
-            android:layout_weight="0.25" />
+            android:layout_weight="0.25"
+            android:scaleType="fitXY"/>
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/thumbnailFilter1"
             android:layout_gravity="center_horizontal"
@@ -136,7 +137,7 @@
             android:layout_weight="0.25" />
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/thumbnailFilter2"
             android:layout_gravity="center_horizontal"
@@ -145,7 +146,7 @@
             android:layout_weight="0.25" />
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/thumbnailFilter3"
             android:layout_gravity="center_horizontal"

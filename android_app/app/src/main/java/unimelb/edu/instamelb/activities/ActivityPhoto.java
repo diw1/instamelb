@@ -3,8 +3,9 @@ package unimelb.edu.instamelb.activities;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,14 +21,14 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URI;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import unimelb.edu.instamelb.materialtest.R;
-import unimelb.edu.instamelb.activities.ActivityCamera;
 
 /**
  * Created by bboyce on 12/09/15.
@@ -47,6 +48,16 @@ public class ActivityPhoto extends AppCompatActivity {
     private float endX;
     private float endY;
 
+    final int THUMBSIZE = 64;
+    Bitmap originalPhoto, editedPhoto, newImage;
+    Bitmap originalThumbnail, grayThumbnail, warmThumbnail, coolThumbnail;
+
+    public Uri mImageUri;
+    public File mImageFile;
+
+    Bitmap bitmap;
+    Bitmap imageThumbnail;
+
     @InjectView(R.id.brightnessSeekBar)
     SeekBar _brightnessSeekBar;
     @InjectView(R.id.contrastSeekBar)
@@ -62,22 +73,11 @@ public class ActivityPhoto extends AppCompatActivity {
     @InjectView(R.id.photoThumbnail)
     ImageView _originalThumbnail;
     @InjectView(R.id.thumbnailFilter1)
-    ImageView _filter1Thumbnail;
+    ImageView _grayThumbnail;
     @InjectView(R.id.thumbnailFilter2)
-    ImageView _filter2Thumbnail;
+    ImageView _warmThumbnail;
     @InjectView(R.id.thumbnailFilter3)
-    ImageView _filter3Thumbnail;
-
-    Bitmap originalPhoto;
-    Bitmap editedPhoto;
-    Bitmap newImage;
-
-    public Uri imageUri;
-    public File imageFile;
-
-    Bitmap bitmap;
-
-
+    ImageView _coolThumbnail;
 
 
 
@@ -91,28 +91,60 @@ public class ActivityPhoto extends AppCompatActivity {
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
         final int previewWidth = metrics.widthPixels;
         int photoPreviewHeight = previewWidth;
+        int thumbnailWidth = previewWidth / 4;
 
         // Get photo URI & create bitmap to edit
-//        Intent intent = getIntent();
-//        String message = intent.getStringExtra(ActivityCamera.EXTRA_MESSAGE);
+        mImageUri = ActivityCamera.getImageURI();
+        mImageFile = new File(mImageUri.getPath());
 
-//        imageUri = Uri.parse(message);
-        imageUri = ActivityCamera.getImageURI();
+//        try {
+//            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+//
+////            imageThumbnail= ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(mImageUri.toString()),THUMBSIZE, THUMBSIZE);
+//        }
+//        catch (IOException e){
+//            Log.e("ERROR", "BITMAP NOT AVAILABLE");
+//
+//        }
 
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-        }
-        catch (IOException e){
-            Log.e("ERROR", "BITMAP NOT AVAILABLE");
 
-        }
+        bitmap = scaledImage(metrics, mImageUri, previewWidth, false);
+        originalThumbnail = scaledImage(metrics, mImageUri, thumbnailWidth, true);
+
+        final ActivityEditPhoto photo = new ActivityEditPhoto(this);
+        final ActivityEditPhoto photoThumbnail = new ActivityEditPhoto(this);
+
+        // Create Thumbnails
+        originalThumbnail = createThumbnail(imageThumbnail, thumbnailWidth);
+        originalThumbnail = imageThumbnail;
+        _originalThumbnail.setImageBitmap(originalThumbnail);
+//        _originalThumbnail = setThumbnailSize(_originalThumbnail, thumbnailWidth);
+//
+//        grayThumbnail = createThumbnail(imageThumbnail, thumbnailWidth);
+//        warmThumbnail = createThumbnail(originalThumbnail, thumbnailWidth);
+//        coolThumbnail = createThumbnail(originalThumbnail, thumbnailWidth);
+//        Log.d("FP", "NEW THUMBNAILS CREATED");
+//
+//        // Apply filters to thumbnails
+//        grayThumbnail = photoThumbnail.grayscaleFilter(originalThumbnail);
+//        warmThumbnail = photoThumbnail.sunsetFilter(originalThumbnail);
+//        coolThumbnail = photoThumbnail.desaturatedFilter(originalThumbnail);
+//
+//        // Set thumbnail images to view
+//        _grayThumbnail.setImageBitmap(grayThumbnail);
+//        _warmThumbnail.setImageBitmap(warmThumbnail);
+//        _coolThumbnail.setImageBitmap(coolThumbnail);
+
+        _originalThumbnail.setEnabled(true);
+//        _originalThumbnail.bringToFront();
+
 
 
 //        Button _photoButton = (Button) findViewById(R.id.button_photo);
 //        Button _libraryButton = (Button) findViewById(R.id.button_library);
 //        final TextView _currentSelection = (TextView) findViewById(R.id.current_selection);
 
-        final ActivityEditPhoto photo = new ActivityEditPhoto(this);
+
 
         _editPhoto.setMinimumHeight(photoPreviewHeight);
         _editPhoto.setMaxHeight(photoPreviewHeight);
@@ -187,7 +219,7 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
 
-        _filter1Thumbnail.setOnClickListener(new Button.OnClickListener() {
+        _grayThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -200,7 +232,7 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
 
-        _filter2Thumbnail.setOnClickListener(new Button.OnClickListener() {
+        _warmThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -213,7 +245,7 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
 
-        _filter3Thumbnail.setOnClickListener(new Button.OnClickListener() {
+        _coolThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -259,6 +291,44 @@ public class ActivityPhoto extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private Bitmap createThumbnail(Bitmap originalThumbnail, int thumbnailWidth) {
+
+        Bitmap newThumbnail = Bitmap.createBitmap(thumbnailWidth, thumbnailWidth, Bitmap.Config.ARGB_8888);
+        return newThumbnail;
+    }
+
+    private ImageView setThumbnailSize(ImageView v, int thumbnailWidth) {
+        v.setMinimumWidth(thumbnailWidth);
+        v.setMinimumHeight(thumbnailWidth);
+        v.setMaxWidth(thumbnailWidth);
+        v.setMaxHeight(thumbnailWidth);
+
+        return v;
+    }
+
+    public Bitmap scaledImage(DisplayMetrics metrics, Uri mImageUri, int size, boolean isThumbnail) {
+//        byte[] imageData = null;
+        Bitmap image;
+        try
+        {
+            final int IMAGE_SIZE = size;
+
+            image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+            image = Bitmap.createScaledBitmap(image, IMAGE_SIZE, IMAGE_SIZE, false);
+
+//            if (isThumbnail == true) {
+//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                image.compress(Bitmap.CompressFormat.PNG, 100, baos);
+////            imageData = baos.toByteArray();
+//            }
+        }
+        catch(Exception e) {
+            image = null;
+            Log.e("ERROR", "COULD NOT CREATE THUMBNAIL");
+        }
+        return image;
     }
 
     @Override
