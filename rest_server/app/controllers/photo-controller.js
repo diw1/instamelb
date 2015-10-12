@@ -77,18 +77,19 @@ module.exports = function (config, db) { return {
                 },
                 longitude: {
                     required: false,
-                    type: 'number'
+                    type: 'string'
                 },
                 latitude: {
                     required: false,
-                    type: 'number'
+                    type: 'string'
                 }
             }
         });         
 
         // JSON Invalid?
         var json_valid = validatePhotoRequestJSON(new_photo_json);
-        if (!json_valid) {
+        if ((isNaN(Number(new_photo_json.longitude))
+            || isNaN(Number(new_photo_json.latitude)) || !json_valid)) {
             var error_json = { "status": 400,
                 "body": { "error": "Request JSON invalid." } }
             return done(error_json);

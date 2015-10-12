@@ -76,7 +76,7 @@ module.exports = function (config, done_app) {
             var app = express();
 
             // Body Parsing (necessary to get body JSON)
-            app.use(bodyParser.json({ limit: '5mb' }));
+            app.use(bodyParser.json({ limit: '20mb' }));
             app.use(bodyParser.urlencoded({ extended: true }));
 
             // PassportJS Strategy Setup
