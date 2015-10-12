@@ -127,6 +127,12 @@
                     android:src="@drawable/ic_comment"
                     android:id="@+id/comment_icon"
                     android:layout_weight="1" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/wifi"
+                    android:id="@+id/wifi_icon"
+                    android:layout_weight="1" />
 
             </LinearLayout>
         </RelativeLayout>
