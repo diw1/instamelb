@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -288,7 +289,8 @@ public class ActivityPhoto extends AppCompatActivity {
             public void onClick(View v) {
 
                 setButtons(false);
-                newImage = ((BitmapDrawable) _editPhoto.getDrawable()).getBitmap();
+                String s = convertToBase64(newImage);
+
                 setButtons(true);
 
             }
@@ -374,6 +376,21 @@ public class ActivityPhoto extends AppCompatActivity {
         }
         return rotatedImage;
     }
+
+    private String convertToBase64(Bitmap image) {
+        String b64Image = null;
+
+        // Convert image to byte[]
+        int bytes = image.getByteCount();
+        ByteBuffer buffer = ByteBuffer.allocate(bytes);
+        image.copyPixelsToBuffer(buffer);
+        byte[] b = buffer.array();
+
+        b64Image = Base64.encodeToString(b, Base64.DEFAULT);
+
+        return b64Image;
+    }
+
 
     @Override
     public void onBackPressed() {
