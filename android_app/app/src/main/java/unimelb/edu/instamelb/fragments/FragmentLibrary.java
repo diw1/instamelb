@@ -74,8 +74,7 @@ public class FragmentLibrary extends Fragment implements SortListener, View.OnCl
         View view = null;
         view = inflater.inflate(R.layout.fragment_camera, container, false);
 
-        mImageView = (ImageView) view.findViewById(R.id.imageViewFullSized);
-        mThumbnailImageView = (ImageView) view.findViewById(R.id.imageViewThumbnail);
+//        mImageView = (ImageView) view.findViewById(R.id.imageViewFullSized);
 //        Button takePhotoButton = (Button) view.findViewById(R.id.button_takePhoto);
 //        Button flashButton = (Button) view.findViewById(R.id.button_flash);
 //        Button gridlinesButton = (Button) view.findViewById(R.id.button_gridlines);

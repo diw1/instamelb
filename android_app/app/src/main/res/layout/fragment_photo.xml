@@ -15,70 +15,76 @@
         android:background="@color/colorPrimaryDark"
         android:layout_gravity="center">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <Button
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="EDIT PHOTO"
-            android:id="@+id/current_selection"
-            android:layout_weight="50"
-            android:layout_gravity="center_vertical"
-            android:textColor="@color/colorAccent" />
+            android:text="CANCEL"
+            android:id="@+id/back_button"
+            android:layout_weight="1"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:gravity="left|center_vertical"
+            android:paddingLeft="20dp" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="UPLOAD"
             android:id="@+id/upload_button"
             android:layout_weight="1"
             android:background="@color/colorPrimaryDark"
             android:textColor="@color/colorAccent"
-            android:textSize="@dimen/abc_text_size_large_material" />
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:gravity="center_vertical|right"
+            android:paddingRight="20dp"
+            android:singleLine="true" />
 
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:layout_gravity="top">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="BRIGHTNESS"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:text="  BRIGHTNESS"
             android:id="@+id/brightnessText"
             android:layout_weight="50"
             android:layout_gravity="center_vertical"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/colorAccent"
+            android:paddingLeft="10dp" />
 
         <SeekBar
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id="@+id/brightnessSeekBar"
             android:max="510"
-            android:progress="255"
-            android:layout_gravity="center_vertical" />
+            android:progress="255" />
 
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="CONTRAST"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:text="  CONTRAST"
             android:id="@+id/contrastText"
             android:layout_weight="50"
             android:layout_gravity="center_vertical"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/colorAccent"
+            android:paddingLeft="10dp" />
 
         <SeekBar
             android:layout_width="200dp"
@@ -107,24 +113,23 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:id="@+id/photoThumbnail"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/ic_action_photo"
             android:clickable="true"
-            android:layout_weight="0.25" />
+            android:layout_weight="0.25"
+            android:scaleType="fitXY"/>
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:id="@+id/thumbnailFilter1"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/ic_action_photo"
@@ -132,9 +137,8 @@
             android:layout_weight="0.25" />
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:id="@+id/thumbnailFilter2"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/ic_action_photo"
@@ -142,9 +146,8 @@
             android:layout_weight="0.25" />
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:id="@+id/thumbnailFilter3"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/ic_action_photo"
@@ -153,24 +156,67 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="RESET"
+            android:id="@+id/textView4"
+            android:layout_weight="0.25"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@color/colorGray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="GRAY"
+            android:id="@+id/textView"
+            android:layout_weight="0.25"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@color/colorGray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="WARM"
+            android:id="@+id/textView2"
+            android:layout_weight="0.25"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@color/colorGray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="COOL"
+            android:id="@+id/textView3"
+            android:layout_weight="0.25"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@color/colorGray" />
+
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/frameLayout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <ImageView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/photoPreview"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/sonic2" />
+            android:clickable="true" />
 
     </FrameLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></LinearLayout>
 
 
 </LinearLayout>

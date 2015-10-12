@@ -1,3 +1,4 @@
+/*
 package unimelb.edu.instamelb.views;
 
 import android.content.Context;
@@ -13,9 +14,11 @@ import android.view.View;
 
 import unimelb.edu.instamelb.materialtest.R;
 
+*/
 /**
  * Created by bboyce on 12/09/15.
- */
+ *//*
+
 public class CameraGridLines extends View{
 
 
@@ -57,3 +60,4 @@ public class CameraGridLines extends View{
 
 
 }
+*/

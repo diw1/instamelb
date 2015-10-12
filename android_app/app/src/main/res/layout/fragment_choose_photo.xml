@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
+        android:clickable="false"
+        android:layout_gravity="center_horizontal"
+        android:elegantTextHeight="false"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+        android:layout_weight="0.1" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="TAKE NEW PHOTO"
+        android:id="@+id/button_take_new_photo"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
+        android:clickable="true"
+        android:layout_margin="2dp"
+        android:layout_gravity="center_horizontal"
+        android:elegantTextHeight="false"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+        android:layout_weight="0.35"
+        android:enabled="true" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button2"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
+        android:clickable="false"
+        android:layout_gravity="center_horizontal"
+        android:elegantTextHeight="false"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+        android:layout_weight="0.1"
+        android:enabled="false" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="CHOOSE PHOTO FROM LIBRARY"
+        android:id="@+id/button_choose_from_library"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
+        android:clickable="true"
+        android:layout_margin="2dp"
+        android:layout_gravity="center_horizontal"
+        android:elegantTextHeight="false"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+        android:layout_weight="0.35"
+        android:enabled="true" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button3"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
+        android:clickable="false"
+        android:layout_gravity="center_horizontal"
+        android:elegantTextHeight="false"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+        android:layout_weight="0.1" />
+
+</LinearLayout>

@@ -1,3 +1,4 @@
+/*
 package unimelb.edu.instamelb.activities;
 
 import android.app.Activity;
@@ -31,9 +32,11 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import unimelb.edu.instamelb.materialtest.R;
 
+*/
 /**
  * Created by bboyce on 12/09/15.
- */
+ *//*
+
 public class ActivityTakePhoto extends AppCompatActivity{
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -185,12 +188,14 @@ public class ActivityTakePhoto extends AppCompatActivity{
 
 
 
-    /**
+    */
+/**
      * Scale the photo down and fit it to image views.
      * <p/>
      * "Drastically increases performance" to set images using this technique.
      * Read more:http://developer.android.com/training/camera/photobasics.html
-     */
+     *//*
+
     private void setFullImageFromFilePath(String imagePath, ImageView imageView) {
         // Get the dimensions of the View
         int targetW = imageView.getWidth();
@@ -217,3 +222,4 @@ public class ActivityTakePhoto extends AppCompatActivity{
 
 
 }
+*/
