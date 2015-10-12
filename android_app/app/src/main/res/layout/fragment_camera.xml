@@ -98,26 +98,18 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="10dp"
-            android:id="@+id/imageViewThumbnail"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_action_photo" />
-
     </FrameLayout>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:background="@color/colorPrimaryDark"
         android:layout_weight="1">
 
         <Button
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:text="TAKE PHOTO"
             android:id="@+id/button_takePhoto"
             android:background="@color/colorPrimary"

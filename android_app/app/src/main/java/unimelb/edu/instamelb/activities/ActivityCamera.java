@@ -8,12 +8,12 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -24,18 +24,23 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import unimelb.edu.instamelb.materialtest.R;
-import unimelb.edu.instamelb.views.CameraGridLines;
 
 /**
  * Created by bboyce on 12/09/15.
@@ -43,6 +48,7 @@ import unimelb.edu.instamelb.views.CameraGridLines;
 public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    public final static String EXTRA_MESSAGE = "unimelb.edu.instamelb.activities.MESSAGE";
 
     private final static String TAKEN_PHOTO_PATH = "mCurrentPhotoPath";
     private final static String TAKEN_PHOTO_URI = "mCapturedImageURI";
@@ -50,7 +56,7 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
     private String mCurrentPhotoPath = null;
     private Uri mCapturedImageURI = null;
     private Camera mCamera = null;
-//    private CameraPreview mPreview;
+    //    private CameraPreview mPreview;
     private ImageView mCameraPreview = null;
     private ImageView selectedImage;
     private Camera.Parameters mParams;
@@ -58,12 +64,29 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
     int flashStatus = 0;
     boolean flashAvailable;
     boolean gridlinesStatus = false;
-    private CameraGridLines mGrid;
+//    private CameraGridLines mGrid;
     private SurfaceView mSurfaceView;
     private SurfaceHolder mSurfaceHolder;
     boolean previewCamera = false;
     private int cameraID = 1;
     private int PICK_IMAGE_REQUEST = 1;
+    private Bitmap mcapturedImage;
+    private Bitmap mcapturedImageThumbnail;
+
+    public static Uri imageURI;
+    public File imageFile;
+
+
+    private Camera.ShutterCallback mShutterCallback;
+    private Camera.PictureCallback mRawImageCallback;
+    private Camera.PictureCallback mJpegCallback;
+    private Camera.PictureCallback mPostviewCallback;
+    private boolean mFaceDetectionRunning = false;
+
+    private static final int CAMERA_MSG_SHUTTER          = 0x002;
+    private static final int CAMERA_MSG_POSTVIEW_FRAME   = 0x040;
+    private static final int CAMERA_MSG_RAW_IMAGE        = 0x080;
+    private static final int CAMERA_MSG_COMPRESSED_IMAGE = 0x100;
 
 
     @InjectView(R.id.button_flash)
@@ -78,61 +101,63 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
     Button _libraryButton;
     @InjectView(R.id.imageViewFullSized)
     ImageView _imageFullSize;
-    @InjectView(R.id.imageViewThumbnail)
-    ImageView _imageThumbnail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("FP", "CREATED ACTIVITYCAMERA INSTANCE");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_camera);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setContentView(R.layout.fragment_camera);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         ButterKnife.inject(this);
 
+        // Get display dimensions
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
-        int previewWidth = metrics.widthPixels;
+        final int previewWidth = metrics.widthPixels;
+        int previewHeight = previewWidth;
         int borderHeight = (metrics.heightPixels - previewWidth) / 2;
 
-        _flashButton.setHeight(borderHeight);
-        _gridlinesButton.setHeight(borderHeight);
-        _takePhotoButton.setHeight(borderHeight);
+//        _flashButton.setHeight(borderHeight);
+//        _gridlinesButton.setHeight(borderHeight);
+//        _takePhotoButton.setHeight(borderHeight);
+        _gridView.setMaxHeight(previewHeight);
+        _gridView.setMinimumHeight(previewHeight);
 
         _gridView.setBackgroundColor(Color.TRANSPARENT);
 
-        getWindow().setFormat(PixelFormat.UNKNOWN);
-        mSurfaceView = (SurfaceView) findViewById(R.id.camerapreview);
-        mSurfaceView.setMinimumHeight(previewWidth);
-        mSurfaceHolder = mSurfaceView.getHolder();
-
-        mSurfaceHolder.setFixedSize(previewWidth, previewWidth);
-        mSurfaceHolder.addCallback(this);
-        mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
-
-
-
-
-       /* // Start Camera
+        // Safely open camera
         try {
             releaseCameraAndPreview();
-//            mCamera.release();
-//            mCamera = null;
             mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
+//            mCamera.setDisplayOrientation(90);
             Log.d("FP", "CAMERA OPENED");
         }
         catch (Exception e) {
-            mCamera.release();
+            if (mCamera != null) {
+                mCamera.release();
+            }
             mCamera= null;
             Log.e("ERROR", "CAMERA FAILED TO OPEN");
-        }*/
+        }
 
-//        mCamera = getCameraInstance();
+
+
+        getWindow().setFormat(PixelFormat.UNKNOWN);
+        mSurfaceView = (SurfaceView) findViewById(R.id.camerapreview);
+        mSurfaceView.setMinimumHeight(previewHeight);
+        mSurfaceHolder = mSurfaceView.getHolder();
+
+        mSurfaceHolder.setFixedSize(previewWidth, previewHeight);
+        mSurfaceHolder.addCallback(this);
+        mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         // Set initial camera parameters
         try {
+            Log.d("FP", "TRYING TO GET CAMERA PARAMETERS");
             mParams = mCamera.getParameters();
             mParams.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
             mCamera.setParameters(mParams);
+            Log.d("FP", "SET CAMERA PARAMETERS");
             flashAvailable = true;
             _flashButton.setText("FLASH AUTO");
         } catch (Exception e) {
@@ -141,13 +166,6 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
             _flashButton.setText("FLASH OFF");
             Log.e("ERROR", "CAMERA PARAMETERS COULD NOT BE LOADED");
         }
-
-//        // Create preview of photo
-//        mPreview = new CameraPreview(this, mCamera);
-//        preview = (FrameLayout) findViewById(R.id.camera_preview);
-//        Log.d("FP", "FRAME LAYOUT");
-//        preview.addView(mPreview);
-//        Log.d("FP", "FRAME LAYOUT2");
 
         // Toggle Flash settings (AUTO/ON/OFF)
         _flashButton.setOnClickListener(new Button.OnClickListener() {
@@ -190,6 +208,10 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
         _gridlinesButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                int previewWidth = _gridView.getWidth();
+                int previewHeight = _gridView.getHeight();
+
                 if (!gridlinesStatus) {
                     Log.d("FP", "GRIDLINES ACTIVATED");
                     _gridlinesButton.setText("GRID ON");
@@ -197,15 +219,21 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 
                     _gridView.setBackgroundColor(Color.TRANSPARENT);
 
-//                    setGridlines(_gridView);
-
+                    Bitmap b = setGridlines(previewWidth, previewHeight);
+                    _gridView.setImageBitmap(b);
+                    _gridView.setEnabled(true);
+                    _gridView.bringToFront();
 
                 } else {
                     Log.d("FP", "GRIDLINES DEACTIVATED");
                     _gridlinesButton.setText("GRID OFF");
                     gridlinesStatus = false;
+                    _gridView.setEnabled(false);
 
-                    removeGridlines();
+                    Bitmap b = removeGridlines(previewWidth, previewHeight);
+                    _gridView.setImageBitmap(b);
+                    _gridView.setEnabled(true);
+                    _gridView.bringToFront();
                 }
             }
         });
@@ -214,25 +242,50 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
         _takePhotoButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(getApplicationContext(), ActivityTakePhoto.class);
+                Log.d("FP", "ABOUT TO TAKE PHOTO - LAUNCH ActivityPhoto");
+
+                mCamera.setPreviewCallback(null);
+                mCamera.takePicture(null, null, mPicture);
+                Log.d("FP", "PHOTO TAKEN");
+
+//                if (imageURI!=null) {
+//                    imageURI = getCapturedImageURI();
+//                    String string = imageURI.toString();
+//                    Log.d("FP", "GOT URI STRING: " + string);
+//                }
+//                else {
+//                    Log.d("FP", "imageURI IS NULL");
+//                }
+//                Intent intent = new Intent(getApplicationContext(), ActivityPhoto.class);
+//                String uriMessage = imageURI.toString();
+//                intent.putExtra(EXTRA_MESSAGE, uriMessage);
 //                startActivity(intent);
 
-                //
-//                mCamera.takePicture(null, null, mPicture);
-
-
-                Intent intent = new Intent(getApplicationContext(), ActivityLibrary.class);
-                startActivity(intent);
-
-                Log.d("FP", "PHOTO TAKEN");
+                Log.d("FP", "PHOTO TAKING FINISHED");
             }
         });
 
         // Choose a photo from library
-        View.OnClickListener libraryViewListener = new View.OnClickListener() {
-
+        _libraryButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+//                PICK_IMAGE_REQUEST = 1;
+//                Intent selectImage = new Intent();
+//                selectImage.setType("image/*");
+//                selectImage.setAction(Intent.ACTION_GET_CONTENT);
+//                startActivityForResult(Intent.createChooser(selectImage, "Select Picture"), PICK_IMAGE_REQUEST);
+//
+//                Log.d("FP", "SELECTED LIBRARY");
+            }
+        });
+
+
+
+//        View.OnClickListener libraryViewListener = new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
 
 //            FragmentManager fm = getSupportFragmentManager();
 //            FragmentTransaction fragmentTransaction = fm.beginTransaction();
@@ -245,65 +298,74 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 //            startActivity(intent);
 //                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 //                startActivityForResult(intent, 2);
-                PICK_IMAGE_REQUEST = 2;
-                Intent selectImage = new Intent();
-                selectImage.setType("image/*");
-                selectImage.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(selectImage, "Select Picture"), PICK_IMAGE_REQUEST);
+//                PICK_IMAGE_REQUEST = 2;
+//                Intent selectImage = new Intent();
+//                selectImage.setType("image/*");
+//                selectImage.setAction(Intent.ACTION_GET_CONTENT);
+//                startActivityForResult(Intent.createChooser(selectImage, "Select Picture"), PICK_IMAGE_REQUEST);
+//
+//
+//
+//
+//                Log.d("FP", "SELECTED LIBRARY");
+//            }
+//        };
+    }
 
 
-
-
-                Log.d("FP", "SELECTED LIBRARY");
-            }
-        };
+    public static Uri getImageURI() {
+        return imageURI;
     }
 
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            File imageFile = getOutputMediaFile(1);
-            Uri imageURI = getOutputMediaFileUri(1);
+
+            Log.d("FP", "LAUNCHED onPictureTaken()");
+            imageFile = getOutputMediaFile();
+            imageURI = Uri.fromFile(getOutputMediaFile());
+            String uriString = imageURI.toString();
+
+            Log.d("FP", "GOT OUTPUT FILE: " + uriString);
 
             if (imageFile == null) {
-                Log.e("FP", "Error creating media file");
+                Log.e("FP", "ERROR CREATING FILE");
                 return;
             }
 
-            _imageFullSize.setImageURI(imageURI);
-            _imageThumbnail.setImageURI(imageURI);
-
+//            _imageFullSize.setImageURI(imageURI);
+//            _imageThumbnail.setImageURI(imageURI);
 
             try {
                 FileOutputStream fos = new FileOutputStream(imageFile);
                 fos.write(data);
                 fos.close();
+                Log.d("FP", "FILE OUTPUT STREAM CREATED");
 
-//                mCamera.stopPreview();
-                mCamera.release();
+                Intent intent = new Intent(getApplicationContext(), ActivityPhoto.class);
+                String uriMessage = imageURI.toString();
+                intent.putExtra(EXTRA_MESSAGE, uriMessage);
+                startActivity(intent);
             }
             catch (FileNotFoundException e) {
-                Log.e("FP", "File not found");
+                Log.e("FP", "FILE NOT FOUND");
             }
             catch (IOException e) {
-                Log.e("FP", "Error accessing file");
+                Log.e("FP", "ERROR ACCESSING FILE");
             }
         }
     };
 
-    private static File getOutputMediaFile(int type){
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
+    private static File getOutputMediaFile(){
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Instamelb");
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
 
         // Create the storage directory if it does not exist
         if (! mediaStorageDir.exists()){
             if (! mediaStorageDir.mkdirs()){
-                Log.d("FP", "failed to create directory");
+                Log.d("FP", "FAILED TO CREATE DIRECTORY");
                 return null;
             }
         }
@@ -311,18 +373,13 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile;
-        if (type == 1){
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_"+ timeStamp + ".jpg");
-        }
-        else {
-            return null;
-        }
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_"+ timeStamp + ".jpg");
 
         return mediaFile;
     }
 
-    @Override
+ /*   @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
@@ -397,73 +454,67 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 
             }
         }
-    }
+    }*/
 
+/*
 
     // Create a file Uri for saving an image
     private static Uri getOutputMediaFileUri(int type){
         return Uri.fromFile(getOutputMediaFile(type));
     }
+*/
 
+    //  Helper method to set Gridlines over camera preview
+    private Bitmap setGridlines(int previewWidth, int previewHeight) {
 
+        int width1 = previewWidth / 3;
+        int width2 = 2 * previewWidth / 3;
+        int height1 = previewHeight / 3;
+        int height2 = 2 * previewHeight / 3;
 
+        Bitmap b = Bitmap.createBitmap(previewWidth, previewHeight, Bitmap.Config.ARGB_8888);
+        for (int i = 0 ; i < previewWidth ; i++) {
+            for (int j = 0 ; j < previewHeight ; j++) {
+                b.setPixel(i, j, Color.TRANSPARENT);
+            }
+        }
 
+        for (int i = width1; i < width1 + 3; i++) {
+            for (int j = 0; j < previewHeight; j++) {
+                b.setPixel(i, j, Color.LTGRAY);
+            }
+        }
 
+        for (int i = width2; i < width2 + 3; i++) {
+            for (int j = 0; j < previewHeight; j++) {
+                b.setPixel(i, j, Color.LTGRAY);
+            }
+        }
 
+        for (int i = 0; i < previewWidth; i++) {
+            for (int j = height1; j < height1 + 3; j++) {
+                b.setPixel(i, j, Color.LTGRAY);
+            }
+        }
 
-
-
-
-
-
-
-
-    private void setGridlines(ImageView _gridView) {
-
-//        mGrid = new CameraGridLines(this);
-//        setContentView(mGrid);
+        for (int i = 0; i < previewWidth; i++) {
+            for (int j = height2; j < height2 + 3; j++) {
+                b.setPixel(i, j, Color.LTGRAY);
+            }
+        }
+        return b;
     }
 
-
-    private void removeGridlines() {
-
+    //  Helper method to remove Gridlines over camera preview
+    private Bitmap removeGridlines(int previewWidth, int previewHeight) {
+        Bitmap b = Bitmap.createBitmap(previewWidth, previewHeight, Bitmap.Config.ARGB_8888);
+        for (int i = 0 ; i < previewWidth ; i++) {
+            for (int j = 0 ; j < previewHeight ; j++) {
+                b.setPixel(i, j, Color.TRANSPARENT);
+            }
+        }
+        return b;
     }
-
-
-//    public static Camera getCameraInstance(){
-//        Camera c = null;
-//        try {
-//            c = Camera.open();
-//        }
-//        catch(Exception e) {
-//            Log.e("ERROR", "CAMERA COULD NOT BE OPENED");
-//        }
-//        return c;
-//    }
-
-//    private boolean safeCamera(CameraPreview mPreview) {
-//        boolean safeToOpen = false;
-//
-//        try {
-//            releaseCameraAndPreview(mPreview);
-//
-//        }
-//        catch (Exception e){
-//            return safeToOpen
-//        }
-//    }
-
-//    public static Camera getCamera() {
-//        Camera c = null;
-//        try {
-//            c = Camera.open();
-//        }
-//        catch(Exception e) {
-//
-//        }
-//        return c;
-//
-//    }
 
     private void releaseCameraAndPreview() {
 //        mCameraPreview.setCamera(null);
@@ -472,8 +523,6 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
             mCamera = null;
         }
     }
-
-
 
     // Check for cameras
     private boolean checkForCamera(Context context, Camera c) {
@@ -507,19 +556,6 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
         }
     }
 
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        View v = inflater.inflate(R.layout.fragment_camera, null);
-//        return v;
-//    }
-
-//    public void startSensor() {
-//        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        if (takePhotoIntent.resolveActivity(getPackageManager()) != null) {
-//            startActivityForResult(takePhotoIntent, REQUEST_IMAGE_CAPTURE);
-//        }
-//
-//    }
-//
 //    @Override
 //    public void onSaveInstanceState(Bundle savedInstanceState) {
 //        if (mCurrentPhotoPath != null) {
@@ -562,17 +598,9 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mSurfaceHolder = holder;
-        if (cameraID == 1) {
-
-            try {
-                mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
-            }
-            catch (Exception e) {
-                Log.e("FP", "CAMERA FAILED TO OPEN");
-            }
-        }
-
+//
         try {
+            mCamera.setDisplayOrientation(90);
             mCamera.setPreviewDisplay(holder);
             mCamera.setPreviewCallback(this);
         }
@@ -580,13 +608,12 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
             mCamera.release();
             mCamera = null;
         }
-//        mCamera = null;
-//        mCamera.release();
-//        mCamera = Camera.open();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        Log.d("FP", "SURFACE CHANGED");
+
         if(previewCamera){
             mCamera.stopPreview();
             previewCamera = true;
@@ -594,7 +621,8 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 
         if (mCamera != null){
             try {
-                mCamera.setPreviewDisplay(mSurfaceHolder);
+                mCamera.setPreviewDisplay(holder);
+                mCamera.setDisplayOrientation(90);
                 mCamera.startPreview();
                 previewCamera = true;
             }
@@ -606,9 +634,12 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        mCamera.setPreviewCallback(null);
-        mCamera.stopPreview();
-        mCamera.release();
+
+        if (mCamera != null) {
+            mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
+            mCamera.release();
+        }
         mCamera = null;
 //        previewCamera = false;
     }
@@ -617,6 +648,13 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
     public void onPreviewFrame(byte[] data, Camera camera) {
 
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        releaseCameraAndPreview();
+    }
+
 
     @Override
     protected void onPause() {
@@ -628,6 +666,35 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
         if (mCamera != null){
             mCamera.release();
             mCamera = null;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+//        ActivityCompat.finishAfterTransition(this);
+
+        Intent myIntent = new Intent(getApplicationContext(), ActivityMain.class);
+
+        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(myIntent);
+        finish();
+        return;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (imageURI != null) {
+            outState.putString("cameraImageUri", imageURI.toString());
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState.containsKey("cameraImageUri")) {
+            imageURI = Uri.parse(savedInstanceState.getString("cameraImageUri"));
         }
     }
 }

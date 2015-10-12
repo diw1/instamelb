@@ -29,6 +29,7 @@ import it.neokree.materialtabs.MaterialTabListener;
 import unimelb.edu.instamelb.database.DatabaseHandler;
 import unimelb.edu.instamelb.extras.SortListener;
 import unimelb.edu.instamelb.fragments.FragmentCamera;
+import unimelb.edu.instamelb.fragments.FragmentChoosePhoto;
 import unimelb.edu.instamelb.fragments.FragmentDiscover;
 import unimelb.edu.instamelb.fragments.FragmentDrawer;
 import unimelb.edu.instamelb.fragments.FragmentHome;
@@ -77,23 +78,30 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setupFAB();
-        setupTabs();
-        setupDrawer();
+        initialization();
+
         //animate the Toolbar when it comes into the picture
         //AnimationUtils.animateToolbarDroppingDown(mContainerToolbar);
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        initialization();
+
+
     }
 
     private void initialization() {
+
         db=new DatabaseHandler(getApplicationContext());
         loginUser=db.getUserDetails();
         mUsername=(String)loginUser.get("uname");
         mPassword=(String)loginUser.get("upassword");
         mEmail=(String)loginUser.get("email");
+        if (mUsername==null){
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }else {
+            setContentView(R.layout.activity_main);
+            setupFAB();
+            setupTabs();
+            setupDrawer();
+        }
 
     }
     private void setupDrawer() {
@@ -199,20 +207,13 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
         // as you specify a parent activity in AndroidManifest.xml. 
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement 
-        if (id == R.id.action_settings) {
-            L.m("Settings selected");
-            return true;
-        }
+        //noinspection SimplifiableIfStatement
         if (R.id.action_logout == id) {
             L.t(this.getBaseContext(), "Logout");
             db.resetTables();
             Intent login = new Intent(getApplicationContext(), LoginActivity.class);
             login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(login);
-        }
-        if (R.id.action_about == id) {
-            L.t(this.getBaseContext(), "About");
         }
         return super.onOptionsItemSelected(item);
     }
@@ -295,7 +296,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
                     Log.d("Fragment", "Discover");
                     break;
                 case TAB_PHOTO:
-                    fragment = FragmentCamera.newInstance("", "");
+                    fragment = FragmentChoosePhoto.newInstance("", "");
                     Log.d("Fragment", "Photo");
                     break;
                 case TAB_ACTIVITY:

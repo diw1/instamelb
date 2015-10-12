@@ -1,5 +1,11 @@
 package unimelb.edu.instamelb.extras;
 
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 
 import java.text.SimpleDateFormat;
@@ -30,4 +36,52 @@ public class Util {
 
         return localTime;
     }
+
+    public static Locations getLocation(Context context){
+        LocationManager locationManager;
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (location != null) {
+                return new Locations(location.getLongitude(),location.getLatitude());
+            }
+        } else {
+            toggleGPS(context, locationManager);
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            return new Locations(location.getLongitude(),location.getLatitude());
+        }
+        return new Locations(123.234,127.222);
+    }
+
+
+    private static void toggleGPS(Context context,LocationManager lm) {
+        Intent gpsIntent = new Intent();
+        gpsIntent.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+        gpsIntent.addCategory("android.intent.category.ALTERNATIVE");
+        gpsIntent.setData(Uri.parse("custom:3"));
+        try {
+            PendingIntent.getBroadcast(context, 0, gpsIntent, 0).send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static final class Locations {
+        private final double longitude;
+        private final double latitude;
+
+        public Locations(double longitude, double latitude) {
+            this.longitude = longitude;
+            this.latitude = latitude;
+        }
+
+        public double getLongitude() {
+            return longitude;
+        }
+
+        public double getLatitude() {
+            return latitude;
+        }
+    }
+
 }

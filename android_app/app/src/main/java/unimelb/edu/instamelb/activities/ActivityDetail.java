@@ -2,6 +2,8 @@ package unimelb.edu.instamelb.activities;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo.State;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -53,7 +55,7 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
     public static RelativeLayout userProfile;
     public static Button sendComment;
     public static EditText message;
-    public static ImageView postImage,detailUserPic, likeIcon,commentIcon;
+    public static ImageView postImage,detailUserPic, likeIcon,commentIcon,wifiIcon;
     public static TextView detailUsername, detailDate, detailCaption,likeUsers;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +85,7 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
 
         likeIcon = (ImageView) findViewById(R.id.like_icon);
         commentIcon = (ImageView) findViewById(R.id.comment_icon);
+        wifiIcon=(ImageView) findViewById(R.id.wifi_icon);
         detailUserPic = (ImageView) findViewById(R.id.detail_user_pic);
 
         UrlImageViewHelper.setUrlDrawable(postImage, mPhoto.getPhoto_image(), R.drawable.ic_contact_picture);
@@ -118,6 +121,12 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
         likeIcon.setOnClickListener(this);
         commentIcon.setOnClickListener(this);
         sendComment.setOnClickListener(this);
+        if (checkNetworkInfo()){
+            wifiIcon.setOnClickListener(this);
+        }else{
+            wifiIcon.setVisibility(View.GONE);
+        }
+
 
     }
 
@@ -161,10 +170,14 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.showSoftInput(message, InputMethodManager.SHOW_IMPLICIT);
                 break;
+            case R.id.wifi_icon:
+                // TODO: 2015/10/12 Add wifi swipe function here.
+                break;
             case R.id.send_comment:
                 sendComment.setEnabled(false);
                 String[] commentargs={mUsername,mPassword,"text",message.getText().toString()};
                 new PostComment(mPhoto).execute(commentargs);
+                break;
 
         }
     }
@@ -285,6 +298,15 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
                 e.printStackTrace();
             }
         }
+    }
+
+    private Boolean checkNetworkInfo()
+    {
+        ConnectivityManager conMan = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        //wifi
+        State wifi = conMan.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
+        if(wifi==State.CONNECTED||wifi==State.CONNECTING) return true;
+        else return false;
     }
 
 

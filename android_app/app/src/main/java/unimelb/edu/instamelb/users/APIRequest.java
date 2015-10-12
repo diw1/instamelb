@@ -59,9 +59,71 @@ public class APIRequest {
             return requestPost(endpoint, params);
         } else if (method.equals("DELETE")){
             return requestDelete(endpoint,params);
-        }else {
+        }else if (method.equals("GETQUERY")){
+            return requestGetQuery(endpoint,params);
+        }else{
             return requestGet(endpoint, params);
         }
+    }
+
+    private String requestGetQuery(String endpoint, List<NameValuePair> params) throws Exception {
+        String requestUri = Constants.API_BASE_URL + ((endpoint.indexOf("/") == 0) ? endpoint : "/" + endpoint);
+        return getQuery(requestUri, params);
+    }
+
+    public String getQuery(String requestUri, List<NameValuePair> params) throws Exception {
+        InputStream stream 	= null;
+        String response		= "";
+
+        try {
+            String requestUrl = requestUri;
+
+            if (params != null) {
+                StringBuilder requestParamSb = new StringBuilder();
+                int size = params.size();
+                for (int i = 0; i < size; i++) {
+                    BasicNameValuePair param = (BasicNameValuePair) params.get(i);
+
+                    requestParamSb.append(param.getName() + "=" + param.getValue() + ((i != size-1) ? "&" : ""));
+                }
+
+                String requestParam  = requestParamSb.toString();
+                requestUrl = requestUri + ((requestUri.contains("?")) ? "&" + requestParam : "?" + requestParam);
+            }
+
+            Log.i("GET " , requestUrl);
+            byte[] pair= (mUsername + ":" + mPassword).getBytes();
+            String encoding = Base64.encodeToString(pair,Base64.NO_WRAP);
+            HttpClient httpClient     = new DefaultHttpClient();
+            HttpGet httpGet       = new HttpGet(requestUrl);
+            if (mUsername != ""){
+                httpGet.setHeader("Authorization", "Basic " + encoding);
+            }
+
+            HttpResponse httpResponse   = httpClient.execute(httpGet);
+            HttpEntity httpEntity     = httpResponse.getEntity();
+
+            if (httpEntity == null) {
+                throw new Exception("Request returns empty result");
+            }
+
+            stream    = httpEntity.getContent();
+            response	= streamToString(stream);
+
+            Log.i("Response ", response);
+
+            if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                throw new Exception(httpResponse.getStatusLine().getReasonPhrase());
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (stream != null) {
+                stream.close();
+            }
+        }
+
+        return response;
     }
 
     private String requestDelete(String endpoint, List<NameValuePair> params) throws Exception{
@@ -239,6 +301,22 @@ public class APIRequest {
         return response;
     }
 
+
+
+    public static String fromStream(InputStream in) throws IOException
+    {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        StringBuilder out = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
+        String line;
+        while ((line = reader.readLine()) != null) {
+            out.append(line);
+            out.append(newLine);
+        }
+        return out.toString();
+    }
+
+
     /**
      * Create http POST request to an instagram api endpoint.
      *
@@ -263,8 +341,12 @@ public class APIRequest {
             if (mUsername != ""){
                 httpPost.setHeader("Authorization", "Basic " + encoding);
             }
+            //httpPost.setHeader("Content-Type", "application/json");
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params);
+            //entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+            httpPost.setEntity(entity);
 
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
+            Log.d("entity",fromStream(httpPost.getEntity().getContent()));
             HttpResponse httpResponse 	= httpClient.execute(httpPost);
             HttpEntity httpEntity 		= httpResponse.getEntity();
 

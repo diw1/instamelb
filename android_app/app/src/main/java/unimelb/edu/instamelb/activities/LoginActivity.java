@@ -187,10 +187,11 @@ public class LoginActivity extends AppCompatActivity {
                          *If JSON array details are stored in SQlite it launches the User Panel.
                          **/
                         finish();
-//                    Intent home = new Intent(getApplicationContext(), ActivityMain.class);
-//                    home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                        Intent home = new Intent(getApplicationContext(), ActivityMain.class);
+
 //                    pDialog.dismiss();
-//                    startActivity(home);
+                        startActivity(home);
                         /**
                          * Close Login Screen
                          **/

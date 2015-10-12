@@ -148,13 +148,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     mContext.startActivity(mIntent);
                     break;
                 case R.id.load_more:
-                    mIntent =new Intent(mContext, ActivityProfile.class);
+                    mIntent =new Intent(mContext, ActivityDetail.class);
                     mIntent.putExtra("username", FragmentHome.mUsername);
                     mIntent.putExtra("password",FragmentHome.mPassword);
                     mIntent.putExtra("photo",currentPhoto);
-                    mIntent.putExtra("userid", String.valueOf(currentPhoto.getComment_list().get(0).getUser_id()));
-                    options = ActivityOptionsCompat .makeSceneTransitionAnimation((Activity) mContext, holder.comment_photo, "avatar");
-                    mContext.startActivity(mIntent, options.toBundle());
+                    mContext.startActivity(mIntent);
                     break;
             }
         }
