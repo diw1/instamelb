@@ -114,19 +114,6 @@ public class FragmentChoosePhoto extends Fragment implements View.OnClickListene
         mSelectedImage.setImageBitmap(bitmap);
     }
 
-//
-//    public static Bitmap getBitmapFromCameraData(Intent data, Context context){
-//        Uri selectedImage = data.getData();
-//        String[] filePathColumn = { MediaStore.Images.Media.DATA };
-//        Cursor cursor = context.getContentResolver().query(selectedImage,filePathColumn, null, null, null);
-//        cursor.moveToFirst();
-//        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-//        String picturePath = cursor.getString(columnIndex);
-//        cursor.close();
-//        return BitmapFactory.decodeFile(picturePath);
-//    }
-
-
     @Override
     public void onClick(View v) {
 
