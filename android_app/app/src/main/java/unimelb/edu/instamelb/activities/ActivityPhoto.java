@@ -1,12 +1,11 @@
 package unimelb.edu.instamelb.activities;
 
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,9 +22,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -102,19 +99,13 @@ public class ActivityPhoto extends AppCompatActivity {
         int thumbnailWidth = previewWidth / 4;
 
         // Get photo URI & create bitmap to edit
-        mImageUri = ActivityCamera.getImageURI();
-        mImageFile = new File(mImageUri.getPath());
+//        mImageUri = ActivityCamera.getImageURI();
+//        mImageFile = new File(mImageUri.getPath());
 
-//        try {
-//            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
-//
-////            imageThumbnail= ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(mImageUri.toString()),THUMBSIZE, THUMBSIZE);
-//        }
-//        catch (IOException e){
-//            Log.e("ERROR", "BITMAP NOT AVAILABLE");
-//
-//        }
-
+        // Retrieve Uri
+        Intent intent = getIntent();
+        String uriString = intent.getStringExtra(ActivityCamera.EXTRA_MESSAGE);
+        mImageUri = Uri.parse(uriString);
 
         bitmap = scaledImage(metrics, mImageUri, previewWidth, false);
         originalThumbnail = scaledImage(metrics, mImageUri, thumbnailWidth, true);
@@ -328,6 +319,10 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
     }
+
+
+
+
 
     public void setButtons(boolean b) {
         _brightnessSeekBar.setEnabled(b);

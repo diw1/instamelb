@@ -97,8 +97,8 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
     Button _takePhotoButton;
     @InjectView(R.id.grid)
     ImageView _gridView;
-    @InjectView(R.id.button_library)
-    Button _libraryButton;
+//    @InjectView(R.id.button_library)
+//    Button _libraryButton;
     @InjectView(R.id.imageViewFullSized)
     ImageView _imageFullSize;
 
@@ -254,7 +254,7 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 //                    Log.d("FP", "GOT URI STRING: " + string);
 //                }
 //                else {
-//                    Log.d("FP", "imageURI IS NULL");
+//                    Log.e("ERROR", "imageURI IS NULL");
 //                }
 //                Intent intent = new Intent(getApplicationContext(), ActivityPhoto.class);
 //                String uriMessage = imageURI.toString();
@@ -266,9 +266,9 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
         });
 
         // Choose a photo from library
-        _libraryButton.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+//        _libraryButton.setOnClickListener(new Button.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
 
 //                PICK_IMAGE_REQUEST = 1;
 //                Intent selectImage = new Intent();
@@ -277,8 +277,8 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 //                startActivityForResult(Intent.createChooser(selectImage, "Select Picture"), PICK_IMAGE_REQUEST);
 //
 //                Log.d("FP", "SELECTED LIBRARY");
-            }
-        });
+//            }
+//        });
 
 
 

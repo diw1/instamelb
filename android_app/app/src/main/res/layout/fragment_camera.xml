@@ -22,21 +22,6 @@
             android:textColor="@color/colorAccent"
             android:gravity="center_vertical|center_horizontal" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="CHOOSE FROM LIBRARY"
-            android:id="@+id/button_library"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/colorAccent"
-            android:clickable="true"
-            android:layout_margin="2dp"
-            android:layout_gravity="bottom|center_horizontal"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:enabled="true"
-            android:focusable="true" />
-
-
 
     </LinearLayout>
 

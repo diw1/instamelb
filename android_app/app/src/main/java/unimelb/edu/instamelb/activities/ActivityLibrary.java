@@ -23,8 +23,8 @@ public class ActivityLibrary extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_library);
-        ButterKnife.inject(this);
+//        setContentView(R.layout.fragment_library);
+//        ButterKnife.inject(this);
 
     }
 }
