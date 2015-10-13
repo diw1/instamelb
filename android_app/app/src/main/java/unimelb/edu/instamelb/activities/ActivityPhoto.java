@@ -1,5 +1,6 @@
 package unimelb.edu.instamelb.activities;
 
+import android.location.Location;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -78,7 +80,6 @@ public class ActivityPhoto extends AppCompatActivity {
     private double longitude = 0;
     private double latitude = 0;
 
-    private String mComment;
     public Uri mImageUri;
     public File mImageFile;
     public static Uri newImageUri;
@@ -440,12 +441,9 @@ public class ActivityPhoto extends AppCompatActivity {
             public void onClick(View v) {
                 setButtons(false);
 
-			//remant of merge:
-            //    String s = convertToBase64(newImage);
-
                 //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.button_action_red);
-                String imageBase64 = convertToBase64(newImage);
-                String thumbnailBase64=convertToBase64(newImage);
+                String imageBase64 = ImageConversionTools.convertToBase64(newImage);
+                String thumbnailBase64=ImageConversionTools.convertToBase64(newImage);
                 Util.Locations location=Util.getLocation(getBaseContext());
                 latitude=location.getLatitude();
                 longitude=location.getLongitude();
@@ -572,11 +570,6 @@ public class ActivityPhoto extends AppCompatActivity {
         }
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-    private String convertToBase64(Bitmap image) {
-
-        String b64Image = null;
 
 // remnant of merge
         // Convert image to byte[]
@@ -590,11 +583,13 @@ public class ActivityPhoto extends AppCompatActivity {
 
 
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.PNG, 100, baos); //bm is the bitmap object
-        byte[] b = baos.toByteArray();
-        String b64Image = Base64.encodeToString(b, Base64.NO_WRAP);
->>>>>>> master
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        image.compress(Bitmap.CompressFormat.PNG, 100, baos); //bm is the bitmap object
+//        byte[] b = baos.toByteArray();
+//        String b64Image = Base64.encodeToString(b, Base64.NO_WRAP);
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 //            Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
 

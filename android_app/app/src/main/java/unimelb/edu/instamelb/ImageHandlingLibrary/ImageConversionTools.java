@@ -58,7 +58,7 @@ public class ImageConversionTools {
     public static Bitmap compressImage(Bitmap image) {
 
         int byteCountX = image.getByteCount();
-        Log.d("BYTE COUNT", "Byte count of compressed: " + byteCountX);
+        Log.d("BYTE COUNT", "Byte count of uncompressed: " + byteCountX);
         ByteArrayOutputStream bos = new ByteArrayOutputStream(byteCountX);
         image.compress(Bitmap.CompressFormat.JPEG, 10, bos);
         byte[] byteArray = bos.toByteArray();
