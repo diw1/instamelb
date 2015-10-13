@@ -20,8 +20,8 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/edit"
-            android:id="@+id/edit_button"
+            android:text="@string/reset"
+            android:id="@+id/reset_Button"
             android:layout_weight="1"
             android:background="@color/colorPrimaryDark"
             android:textColor="@color/colorAccent"
@@ -59,6 +59,49 @@
             android:enabled="true"
             android:clickable="true" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/selectEditTypeLayout">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/brightnessButton"
+            android:layout_weight="0.25"
+            android:focusableInTouchMode="false"
+            android:clickable="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/brightness_button"
+            android:padding="20dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/contrastButton"
+            android:layout_weight="0.25"
+            android:scaleType="fitCenter"
+            android:src="@drawable/contrast_button" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/filterButton"
+            android:layout_weight="0.25"
+            android:scaleType="fitCenter"
+            android:src="@drawable/filter_button" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/cropButton"
+            android:focusableInTouchMode="false"
+            android:layout_weight="0.25"
+            android:scaleType="fitCenter"
+            android:src="@drawable/crop_button" />
     </LinearLayout>
 
     <LinearLayout
@@ -112,8 +155,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id="@+id/brightnessSeekBar"
-            android:max="510"
-            android:progress="255" />
+            android:max="260"
+            android:progress="130" />
 
     </LinearLayout>
 
@@ -139,8 +182,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id="@+id/contrastSeekBar"
-            android:max="510"
-            android:progress="255"
+            android:max="200"
+            android:progress="100"
             android:layout_gravity="center_vertical" />
 
         <!--<Button-->
@@ -156,99 +199,112 @@
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:id="@+id/filterThumbnailLayout">
+        android:id="@+id/filterLayout">
 
-        <ImageView
-            android:layout_width="fill_parent"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/photoThumbnail"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_action_photo"
-            android:clickable="true"
-            android:layout_weight="0.25"
-            android:scaleType="fitXY"/>
+            android:background="@color/colorPrimary"
+            android:id="@+id/filterThumbnailLayout">
 
-        <ImageView
-            android:layout_width="fill_parent"
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/photoThumbnail"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_action_photo"
+                android:clickable="true"
+                android:layout_weight="0.25"
+                android:scaleType="fitXY"/>
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/thumbnailFilter1"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_action_photo"
+                android:clickable="true"
+                android:layout_weight="0.25" />
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/thumbnailFilter2"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_action_photo"
+                android:clickable="true"
+                android:layout_weight="0.25" />
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/thumbnailFilter3"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_action_photo"
+                android:clickable="true"
+                android:layout_weight="0.25" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/thumbnailFilter1"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_action_photo"
-            android:clickable="true"
-            android:layout_weight="0.25" />
+            android:background="@color/colorPrimary"
+            android:id="@+id/filterIDLayout">
 
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/thumbnailFilter2"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_action_photo"
-            android:clickable="true"
-            android:layout_weight="0.25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/reset"
+                android:id="@+id/textView4"
+                android:layout_weight="0.25"
+                android:gravity="center_vertical|center_horizontal"
+                android:textColor="@color/colorGray" />
 
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/thumbnailFilter3"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_action_photo"
-            android:clickable="true"
-            android:layout_weight="0.25" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/gray"
+                android:id="@+id/textView"
+                android:layout_weight="0.25"
+                android:gravity="center_vertical|center_horizontal"
+                android:textColor="@color/colorGray" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/warm"
+                android:id="@+id/textView2"
+                android:layout_weight="0.25"
+                android:gravity="center_vertical|center_horizontal"
+                android:textColor="@color/colorGray" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/cool"
+                android:id="@+id/textView3"
+                android:layout_weight="0.25"
+                android:gravity="center_vertical|center_horizontal"
+                android:textColor="@color/colorGray" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:id="@+id/filterIDLayout">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/reset"
-            android:id="@+id/textView4"
-            android:layout_weight="0.25"
-            android:gravity="center_vertical|center_horizontal"
-            android:textColor="@color/colorGray" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/gray"
-            android:id="@+id/textView"
-            android:layout_weight="0.25"
-            android:gravity="center_vertical|center_horizontal"
-            android:textColor="@color/colorGray" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/warm"
-            android:id="@+id/textView2"
-            android:layout_weight="0.25"
-            android:gravity="center_vertical|center_horizontal"
-            android:textColor="@color/colorGray" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/cool"
-            android:id="@+id/textView3"
-            android:layout_weight="0.25"
-            android:gravity="center_vertical|center_horizontal"
-            android:textColor="@color/colorGray" />
-
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:id="@+id/cropLayout"></LinearLayout>
 
     <FrameLayout
         android:id="@+id/frameLayout"
@@ -265,6 +321,11 @@
             android:clickable="true" />
 
     </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></LinearLayout>
 
 
 </LinearLayout>

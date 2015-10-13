@@ -17,19 +17,7 @@ public class ActivityEditPhoto extends ImageView{
 
 
     // Crop image
-    public Bitmap cropImage(Bitmap photo, float startX, float startY, float endX, float endY) {
-        int width = photo.getWidth();
-        int height = photo.getHeight();
-
-
-
-
-        Bitmap adjustedPhoto = Bitmap.createBitmap(width, height, photo.getConfig());
-
-
-
-
-        return adjustedPhoto;
+    public void cropImage(Bitmap photo, float startX, float startY, float endX, float endY) {
     }
 
 
@@ -148,7 +136,7 @@ public class ActivityEditPhoto extends ImageView{
         return adjustedPhoto;
     }
 
-    // To adjust brightness set value between -255 to 255
+    // To adjust brightness set value between -130 to 130
     public Bitmap adjustBrightness(Bitmap photo, int brightnessValue) {
 
 
