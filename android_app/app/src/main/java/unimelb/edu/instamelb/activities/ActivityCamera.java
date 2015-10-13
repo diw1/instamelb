@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.net.Uri;
@@ -33,6 +34,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -127,6 +130,7 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
         try {
             releaseCameraAndPreview();
             mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
+//            mCamera.setDisplayOrientation(90);
             Log.d("FP", "CAMERA OPENED");
         }
         catch (Exception e) {
@@ -150,7 +154,8 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 
         // Set initial camera parameters
         try {
-            Log.d("FP", "TRYING TO GET PARAMETERS");
+
+            Log.d("FP", "TRYING TO GET CAMERA PARAMETERS");
             mParams = mCamera.getParameters();
             Log.d("FP", "GOT PARAMETERS");
             mParams.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
@@ -599,6 +604,7 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
         mSurfaceHolder = holder;
 //
         try {
+            mCamera.setDisplayOrientation(90);
             mCamera.setPreviewDisplay(holder);
             mCamera.setPreviewCallback(this);
         }
@@ -618,7 +624,8 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 
         if (mCamera != null){
             try {
-                mCamera.setPreviewDisplay(mSurfaceHolder);
+                mCamera.setPreviewDisplay(holder);
+                mCamera.setDisplayOrientation(90);
                 mCamera.startPreview();
                 previewCamera = true;
             }

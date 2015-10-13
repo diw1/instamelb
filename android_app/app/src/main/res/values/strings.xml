@@ -63,5 +63,16 @@
     <string name="library">LIBRARY</string>
     <string name="photo">PHOTO</string>
     <string name="video">VIDEO</string>
+    <string name="caption_prompt">CAPTION:</string>
+    <string name="caption">CAPTION</string>
+    <string name="brightness">BRIGHTNESS</string>
+    <string name="contrast">CONTRAST</string>
+    <string name="reset">RESET</string>
+    <string name="gray">GRAY</string>
+    <string name="warm">WARM</string>
+    <string name="cool">COOL</string>
+    <string name="edit">EDIT</string>
+    <string name="upload">UPLOAD</string>
+
 
 </resources>
