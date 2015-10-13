@@ -116,29 +116,49 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="fill_parent"
         android:id="@+id/addCommentLayout">
 
-        <TextView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/caption_prompt"
-            android:id="@+id/captionHeader"
-            android:textColor="@color/background_material_light"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:background="@color/colorPrimary"
-            android:padding="10dp"
-            android:singleLine="false"
-            android:password="false" />
+            android:layout_height="wrap_content">
 
-        <TextView
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/caption_prompt"
+                android:id="@+id/captionHeader"
+                android:textColor="@color/background_material_light"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:background="@color/colorPrimary"
+                android:padding="10dp"
+                android:layout_weight="0.5"
+                android:gravity="left|center_vertical" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/add_caption"
+                android:id="@+id/addCaptionButton"
+                android:gravity="center_vertical|right"
+                android:background="@color/colorPrimary"
+                android:layout_weight="0.5"
+                android:padding="10dp"
+                android:textColor="@color/background_material_light"
+                android:textSize="@dimen/abc_text_size_medium_material" />
+        </LinearLayout>
+
+            <EditText
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/captionText"
             android:editable="true"
             android:padding="10dp"
-            android:textColor="@color/colorPrimaryDark" />
+            android:textColor="@color/colorPrimaryDark"
+            android:enabled="true" />
+
     </LinearLayout>
 
     <LinearLayout
