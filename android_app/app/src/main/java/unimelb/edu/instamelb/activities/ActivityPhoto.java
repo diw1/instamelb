@@ -299,8 +299,9 @@ public class ActivityPhoto extends AppCompatActivity {
             public void onClick(View v) {
 
                 setButtons(false);
+                //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.button_action_red);
                 String imageBase64 = convertToBase64(newImage);
-                String thumbnailBase64=convertToBase64(imageThumbnail);
+                String thumbnailBase64=convertToBase64(newImage);
                 Util.Locations location=Util.getLocation(getBaseContext());
                 latitude=location.getLatitude();
                 longitude=location.getLongitude();

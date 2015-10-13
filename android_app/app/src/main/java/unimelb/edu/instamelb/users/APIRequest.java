@@ -333,7 +333,6 @@ public class APIRequest {
 
         try {
             Log.d(mUsername,mPassword);
-            Log.i("POST " , requestUrl);
             byte[] pair= (mUsername + ":" + mPassword).getBytes();
             String encoding = Base64.encodeToString(pair,Base64.NO_WRAP);
             HttpClient httpClient 	= new DefaultHttpClient();
@@ -345,8 +344,6 @@ public class APIRequest {
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params);
             //entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
             httpPost.setEntity(entity);
-
-            Log.d("entity",fromStream(httpPost.getEntity().getContent()));
             HttpResponse httpResponse 	= httpClient.execute(httpPost);
             HttpEntity httpEntity 		= httpResponse.getEntity();
 
