@@ -97,6 +97,8 @@ public class Photo implements Serializable {
                 user_avatar= counts.getString("profile_image");
                 username=counts.getString("username");
             }
+            liker_list=new ArrayList<String>();
+            comment_list=new ArrayList<Comment>();
         } catch (JSONException e) {
             e.printStackTrace();
         }

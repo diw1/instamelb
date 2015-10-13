@@ -301,6 +301,22 @@ public class APIRequest {
         return response;
     }
 
+
+
+    public static String fromStream(InputStream in) throws IOException
+    {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        StringBuilder out = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
+        String line;
+        while ((line = reader.readLine()) != null) {
+            out.append(line);
+            out.append(newLine);
+        }
+        return out.toString();
+    }
+
+
     /**
      * Create http POST request to an instagram api endpoint.
      *
@@ -317,7 +333,6 @@ public class APIRequest {
 
         try {
             Log.d(mUsername,mPassword);
-            Log.i("POST " , requestUrl);
             byte[] pair= (mUsername + ":" + mPassword).getBytes();
             String encoding = Base64.encodeToString(pair,Base64.NO_WRAP);
             HttpClient httpClient 	= new DefaultHttpClient();
@@ -325,8 +340,10 @@ public class APIRequest {
             if (mUsername != ""){
                 httpPost.setHeader("Authorization", "Basic " + encoding);
             }
-
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
+            //httpPost.setHeader("Content-Type", "application/json");
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params);
+            //entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+            httpPost.setEntity(entity);
             HttpResponse httpResponse 	= httpClient.execute(httpPost);
             HttpEntity httpEntity 		= httpResponse.getEntity();
 
