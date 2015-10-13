@@ -3,24 +3,14 @@ package unimelb.edu.instamelb.activities;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-<<<<<<< HEAD
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.ThumbnailUtils;
-import android.net.Uri;
-=======
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
->>>>>>> Di
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-<<<<<<< HEAD
-=======
 import android.util.Base64;
->>>>>>> Di
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -29,10 +19,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-<<<<<<< HEAD
-=======
 import android.widget.Toast;
->>>>>>> Di
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -48,14 +35,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-<<<<<<< HEAD
-=======
 import unimelb.edu.instamelb.extras.Util;
 import unimelb.edu.instamelb.fragments.FragmentHome;
->>>>>>> Di
 import unimelb.edu.instamelb.materialtest.R;
 import unimelb.edu.instamelb.users.APIRequest;
 import unimelb.edu.instamelb.users.Photo;
@@ -81,13 +66,12 @@ public class ActivityPhoto extends AppCompatActivity {
     final int THUMBSIZE = 64;
     Bitmap originalPhoto, editedPhoto, newImage;
     Bitmap originalThumbnail, grayThumbnail, warmThumbnail, coolThumbnail;
-<<<<<<< HEAD
-=======
     private String mComment="NO CAPTION";
     private double longitude = 0;
     private double latitude = 0;
->>>>>>> Di
-
+    private String mComment;
+    private double longitude = 0;
+    private double latitude = 0;
     public Uri mImageUri;
     public File mImageFile;
 
@@ -100,15 +84,10 @@ public class ActivityPhoto extends AppCompatActivity {
     SeekBar _contrastSeekBar;
     @InjectView(R.id.photoPreview)
     ImageView _editPhoto;
-<<<<<<< HEAD
-    @InjectView(R.id.back_button)
-    Button _backButton;
-=======
     @InjectView(R.id.edit_button)
     Button _editButton;
     @InjectView(R.id.caption_button)
     Button _captionButton;
->>>>>>> Di
 
     @InjectView(R.id.upload_button)
     Button _uploadButton;
@@ -153,12 +132,6 @@ public class ActivityPhoto extends AppCompatActivity {
 
         bitmap = scaledImage(metrics, mImageUri, previewWidth, false);
         originalThumbnail = scaledImage(metrics, mImageUri, thumbnailWidth, true);
-
-<<<<<<< HEAD
-=======
-
-
->>>>>>> Di
         final ActivityEditPhoto photo = new ActivityEditPhoto(this);
         final ActivityEditPhoto photoThumbnail = new ActivityEditPhoto(this);
 
@@ -202,27 +175,13 @@ public class ActivityPhoto extends AppCompatActivity {
         _editPhoto.setImageBitmap(bitmap);
         originalPhoto = bitmap;
         editedPhoto = bitmap;
-<<<<<<< HEAD
-=======
         newImage = bitmap;
         imageThumbnail=bitmap;
->>>>>>> Di
 
 //        originalPhoto = ((BitmapDrawable) _editPhoto.getDrawable()).getBitmap();
 //        editedPhoto = ((BitmapDrawable) _editPhoto.getDrawable()).getBitmap();
 
         // Return to Choose Library/Camera Screen
-<<<<<<< HEAD
-        _backButton.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("FP", "CANCEL EDIT - TAKE NEW PHOTO");
-                Intent intent = new Intent(getApplicationContext(), ActivityCamera.class);
-                startActivity(intent);
-
-            }
-        });
-=======
 //        _backButton.setOnClickListener(new Button.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -232,7 +191,6 @@ public class ActivityPhoto extends AppCompatActivity {
 //
 //            }
 //        });
->>>>>>> Di
         _brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -240,10 +198,7 @@ public class ActivityPhoto extends AppCompatActivity {
                 setButtons(false);
                 newImage = photo.adjustBrightness(editedPhoto, progress-255);
                 _editPhoto.setImageBitmap(newImage);
-<<<<<<< HEAD
-=======
                 setButtons(true);
->>>>>>> Di
             }
 
             @Override
@@ -265,10 +220,7 @@ public class ActivityPhoto extends AppCompatActivity {
                 setButtons(false);
                 newImage = photo.adjustContrast(editedPhoto, progress - 255);
                 _editPhoto.setImageBitmap(newImage);
-<<<<<<< HEAD
-=======
                 setButtons(true);
->>>>>>> Di
             }
 
             @Override
@@ -286,11 +238,7 @@ public class ActivityPhoto extends AppCompatActivity {
         _originalThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-<<<<<<< HEAD
-=======
                 setButtons(false);
->>>>>>> Di
                 _brightnessSeekBar.setProgress(255);
                 _contrastSeekBar.setProgress(255);
                 _editPhoto.setImageBitmap(originalPhoto);
@@ -302,24 +250,18 @@ public class ActivityPhoto extends AppCompatActivity {
         _grayThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-<<<<<<< HEAD
-=======
                 setButtons(false);
                 Log.d("FP", "BUTTONS DISABLED");
->>>>>>> Di
                 _brightnessSeekBar.setProgress(255);
                 _contrastSeekBar.setProgress(255);
 
                 newImage = photo.grayscaleFilter(originalPhoto);
-<<<<<<< HEAD
+                Log.d("FP", "IMAGE FILTERED");
                 _editPhoto.setImageBitmap(newImage);
-=======
 
                 Log.d("FP", "IMAGE FILTERED");
                 _editPhoto.setImageBitmap(newImage);
 
->>>>>>> Di
                 Log.d("FP", "SELECTED GRAYSCALE PHOTO");
                 setButtons(true);
 
@@ -331,10 +273,7 @@ public class ActivityPhoto extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-<<<<<<< HEAD
-=======
                 setButtons(false);
->>>>>>> Di
                 _brightnessSeekBar.setProgress(255);
                 _contrastSeekBar.setProgress(255);
 
@@ -348,11 +287,7 @@ public class ActivityPhoto extends AppCompatActivity {
         _coolThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-<<<<<<< HEAD
-=======
                 setButtons(false);
->>>>>>> Di
                 _brightnessSeekBar.setProgress(255);
                 _contrastSeekBar.setProgress(255);
 
@@ -366,10 +301,6 @@ public class ActivityPhoto extends AppCompatActivity {
         _uploadButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-<<<<<<< HEAD
-                newImage = ((BitmapDrawable) _editPhoto.getDrawable()).getBitmap();
-=======
                 setButtons(false);
                 //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.button_action_red);
                 String imageBase64 = convertToBase64(newImage);
@@ -387,8 +318,6 @@ public class ActivityPhoto extends AppCompatActivity {
                 new UploadPhoto().execute(argu);
 
                 setButtons(true);
->>>>>>> Di
-
             }
         });
 
@@ -417,22 +346,6 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
     }
-<<<<<<< HEAD
-
-    private Bitmap createThumbnail(Bitmap originalThumbnail, int thumbnailWidth) {
-
-        Bitmap newThumbnail = Bitmap.createBitmap(thumbnailWidth, thumbnailWidth, Bitmap.Config.ARGB_8888);
-        return newThumbnail;
-    }
-
-    private ImageView setThumbnailSize(ImageView v, int thumbnailWidth) {
-        v.setMinimumWidth(thumbnailWidth);
-        v.setMinimumHeight(thumbnailWidth);
-        v.setMaxWidth(thumbnailWidth);
-        v.setMaxHeight(thumbnailWidth);
-
-=======
-
     public void setButtons(boolean b) {
         _brightnessSeekBar.setEnabled(b);
         _contrastSeekBar.setEnabled(b);
@@ -454,19 +367,13 @@ public class ActivityPhoto extends AppCompatActivity {
         v.setMinimumHeight(thumbnailWidth);
         v.setMaxWidth(thumbnailWidth);
         v.setMaxHeight(thumbnailWidth);
-
->>>>>>> Di
         return v;
     }
 
     public Bitmap scaledImage(DisplayMetrics metrics, Uri mImageUri, int size, boolean isThumbnail) {
 //        byte[] imageData = null;
-<<<<<<< HEAD
-        Bitmap image;
-=======
         Bitmap image = null;
         Bitmap rotatedImage = null;
->>>>>>> Di
         try
         {
             final int IMAGE_SIZE = size;
@@ -474,16 +381,12 @@ public class ActivityPhoto extends AppCompatActivity {
             image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
             image = Bitmap.createScaledBitmap(image, IMAGE_SIZE, IMAGE_SIZE, false);
 
-<<<<<<< HEAD
-=======
 //            Bitmap rotatedImage = Bitmap.createBitmap(IMAGE_SIZE, IMAGE_SIZE, Bitmap.Config.ARGB_8888);
 
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
             rotatedImage = Bitmap.createBitmap(image, 0, 0, IMAGE_SIZE, IMAGE_SIZE, matrix, true);
 
-
->>>>>>> Di
 //            if (isThumbnail == true) {
 //                ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //                image.compress(Bitmap.CompressFormat.PNG, 100, baos);
@@ -491,28 +394,6 @@ public class ActivityPhoto extends AppCompatActivity {
 //            }
         }
         catch(Exception e) {
-<<<<<<< HEAD
-            image = null;
-            Log.e("ERROR", "COULD NOT CREATE THUMBNAIL");
-        }
-        return image;
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        //        ActivityCompat.finishAfterTransition(this);
-
-        Intent myIntent = new Intent(getApplicationContext(), ActivityCamera.class);
-
-        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(myIntent);
-        finish();
-        return;
-    }
-
-
-=======
             Log.e("ERROR", "COULD NOT CREATE THUMBNAIL");
         }
         return rotatedImage;
@@ -583,7 +464,5 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         }
     }
-
->>>>>>> Di
 }
 

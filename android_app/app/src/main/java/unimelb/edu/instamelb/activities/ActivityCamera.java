@@ -34,7 +34,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -154,12 +153,9 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 
         // Set initial camera parameters
         try {
-
             Log.d("FP", "TRYING TO GET CAMERA PARAMETERS");
             mParams = mCamera.getParameters();
-            Log.d("FP", "GOT PARAMETERS");
             mParams.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-            Log.d("FP", "SET FLASH MODE");
             mCamera.setParameters(mParams);
             Log.d("FP", "SET CAMERA PARAMETERS");
             flashAvailable = true;
@@ -617,6 +613,7 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         Log.d("FP", "SURFACE CHANGED");
+
         if(previewCamera){
             mCamera.stopPreview();
             previewCamera = true;
