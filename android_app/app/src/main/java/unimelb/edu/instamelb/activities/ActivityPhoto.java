@@ -43,8 +43,8 @@ import java.io.IOException;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-import unimelb.edu.instamelb.imagehandlinglibrary.ImageConversionTools;
-import unimelb.edu.instamelb.imagehandlinglibrary.PhotoEditingTools;
+import unimelb.edu.instamelb.ImageHandlingLibrary.ImageConversionTools;
+import unimelb.edu.instamelb.ImageHandlingLibrary.PhotoEditingTools;
 
 import unimelb.edu.instamelb.extras.Util;
 import unimelb.edu.instamelb.fragments.FragmentHome;
@@ -442,16 +442,26 @@ public class ActivityPhoto extends AppCompatActivity {
                 setButtons(false);
 
                 //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.button_action_red);
-                String imageBase64 = ImageConversionTools.convertToBase64(newImage);
-                String thumbnailBase64=ImageConversionTools.convertToBase64(newImage);
-                Util.Locations location=Util.getLocation(getBaseContext());
+                // Compress image
+                Bitmap compressedImage = ImageConversionTools.compressImage(newImage);
+                String imageBase64 = ImageConversionTools.convertToBase64(compressedImage);
+//                String imageBase64 = "R0lGODlhDwAPAKECAAAAzMzM/////\n" +
+//                       "wAAACwAAAAADwAPAAACIISPeQHsrZ5ModrLlN48CXF8m2iQ3YmmKqVlRtW4ML\n" +
+//                        "wWACH+H09wdGltaXplZCBieSBVbGVhZCBTbWFydFNhdmVyIQAAOw==";
+                Log.d("IMAGESIZE", String.valueOf(imageBase64.length()));
+                Log.d("IMAGESIZEBASE64", imageBase64);
+                String thumbnailBase64=ImageConversionTools.convertToBase64(compressedImage);
+//                String thumbnailBase64 = "R0lGODlhDwAPAKECAAAAzMzM/////\n" +
+//                        "wAAACwAAAAADwAPAAACIISPeQHsrZ5ModrLlN48CXF8m2iQ3YmmKqVlRtW4ML\n" +
+//                        "wWACH+H09wdGltaXplZCBieSBVbGVhZCBTbWFydFNhdmVyIQAAOw==";
+//                Util.Locations location=Util.getLocation(getBaseContext());
 //                latitude=location.getLatitude();
 //                longitude=location.getLongitude();
                 latitude = 100;
                 longitude = 100;
                 String[] argu={FragmentHome.mUsername,FragmentHome.mPassword,
                 "caption",mComment,
-                "image",imageBase64,
+                "image",thumbnailBase64,
                 "image_thumbnail",thumbnailBase64,
                 "longitude",String.valueOf(longitude),
                 "latitude",String.valueOf(latitude)};
@@ -459,8 +469,7 @@ public class ActivityPhoto extends AppCompatActivity {
                 new UploadPhoto().execute(argu);
 
 
-                // Compress image
-                Bitmap compressedImage = ImageConversionTools.compressImage(newImage);
+
 
                 // Save to library (converts to byte[] first)
                 Uri imageUri = ImageConversionTools.saveImageToLibrary(compressedImage);
@@ -653,6 +662,7 @@ public class ActivityPhoto extends AppCompatActivity {
                 params.add(new BasicNameValuePair(strings[8], strings[9]));
                 params.add(new BasicNameValuePair(strings[10], strings[11]));
                 object = new JSONObject(request.createRequest("POST", endpoint, params));
+                Log.d("JSONOBJ", String.valueOf(object));
             }
             catch (Exception ex) {
                 ex.printStackTrace();

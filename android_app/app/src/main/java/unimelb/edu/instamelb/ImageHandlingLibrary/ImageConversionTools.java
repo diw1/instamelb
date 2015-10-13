@@ -1,4 +1,4 @@
-package unimelb.edu.instamelb.imagehandlinglibrary;
+package unimelb.edu.instamelb.ImageHandlingLibrary;
 
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
@@ -36,14 +36,12 @@ public class ImageConversionTools {
     }
 
     public static String convertToBase64(Bitmap image) {
-        String b64Image = null;
 
-        byte[] b = convertImageToByteArray(image);
-
-        b64Image = Base64.encodeToString(b, Base64.DEFAULT);
-        Log.d("FP", "CONVERTED IMAGE TO BASE64 STRING");
-
-        return b64Image;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        String b64image = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        return b64image;
     }
 
     public static Bitmap convertByteToBitmap(byte[] bytes) {

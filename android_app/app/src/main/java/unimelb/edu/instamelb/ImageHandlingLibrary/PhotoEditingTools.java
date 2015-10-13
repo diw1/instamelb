@@ -1,4 +1,4 @@
-package unimelb.edu.instamelb.imagehandlinglibrary;
+package unimelb.edu.instamelb.ImageHandlingLibrary;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
