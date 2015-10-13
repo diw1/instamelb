@@ -149,7 +149,10 @@
                 android:textSize="@dimen/abc_text_size_medium_material" />
         </LinearLayout>
 
+
         <EditText
+
+            <EditText
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"

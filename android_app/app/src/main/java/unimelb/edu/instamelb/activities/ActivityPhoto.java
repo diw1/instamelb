@@ -407,7 +407,8 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
 
-        _addCaptionButton.setOnClickListener(new View.OnClickListener() {
+        _addCaptionButton.setOnClickListener(new Button.OnClickListener() {
+
             @Override
             public void onClick(View v){
                 mComment = _captionText.getText().toString();
@@ -445,6 +446,7 @@ public class ActivityPhoto extends AppCompatActivity {
 
                 String imageBase64 = ImageConversionTools.convertToBase64(newImage);
                 String thumbnailBase64=ImageConversionTools.convertToBase64(newImage);
+
                 Util.Locations location=Util.getLocation(getBaseContext());
 
                 // From Util.java
@@ -484,6 +486,7 @@ public class ActivityPhoto extends AppCompatActivity {
 
 //                String s = ImageConversionTools.convertToBase64(compressedImage);
 			    Log.d("FP", "IMAGE UPLOADED");
+
                 Intent intent = new Intent(getBaseContext(), ActivityMain.class);
                 startActivity(intent);
 
