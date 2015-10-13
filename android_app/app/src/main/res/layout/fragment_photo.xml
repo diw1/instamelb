@@ -60,7 +60,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/selectEditTypeLayout">
+        android:id="@+id/selectEditTypeLayout"
+        android:background="#ffffff">
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -69,25 +70,27 @@
             android:layout_weight="0.25"
             android:focusableInTouchMode="false"
             android:clickable="true"
-            android:scaleType="fitCenter"
+            android:scaleType="fitXY"
             android:src="@drawable/brightness_button"
-            android:padding="20dp" />
+            android:background="#ffffff" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/contrastButton"
             android:layout_weight="0.25"
-            android:scaleType="fitCenter"
-            android:src="@drawable/contrast_button" />
+            android:scaleType="fitXY"
+            android:src="@drawable/contrast_button"
+            android:background="#ffffff" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/filterButton"
             android:layout_weight="0.25"
-            android:scaleType="fitCenter"
-            android:src="@drawable/filter_button" />
+            android:scaleType="fitXY"
+            android:src="@drawable/filter_button"
+            android:background="#ffffff" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -95,8 +98,19 @@
             android:id="@+id/cropButton"
             android:focusableInTouchMode="false"
             android:layout_weight="0.25"
-            android:scaleType="fitCenter"
-            android:src="@drawable/crop_button" />
+            android:scaleType="fitXY"
+            android:src="@drawable/crop_button"
+            android:background="#ffffff" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/captionButton"
+            android:focusableInTouchMode="false"
+            android:layout_weight="0.25"
+            android:scaleType="fitXY"
+            android:src="@drawable/caption_button"
+            android:background="#ffffff" />
     </LinearLayout>
 
     <LinearLayout
@@ -316,11 +330,6 @@
             android:clickable="true" />
 
     </FrameLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></LinearLayout>
 
 
 </LinearLayout>

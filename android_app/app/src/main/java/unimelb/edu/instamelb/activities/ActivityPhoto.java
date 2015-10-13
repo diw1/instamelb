@@ -25,6 +25,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
@@ -95,6 +96,11 @@ public class ActivityPhoto extends AppCompatActivity {
     ImageView _editPhoto;
     @InjectView(R.id.reset_Button)
     Button _resetButton;
+    @InjectView(R.id.captionText)
+    TextView _captionText;
+    @InjectView(R.id.header)
+    TextView _header;
+
 
     @InjectView(R.id.brightnessLayout)
     LinearLayout _brightnessLayout;
@@ -104,6 +110,9 @@ public class ActivityPhoto extends AppCompatActivity {
     LinearLayout _filterLayout;
     @InjectView(R.id.cropLayout)
     LinearLayout _cropLayout;
+    @InjectView(R.id.addCommentLayout)
+    LinearLayout _captionLayout;
+
     @InjectView(R.id.selectEditTypeLayout)
     LinearLayout _selectLayout;
     @InjectView(R.id.upload_button)
@@ -120,6 +129,8 @@ public class ActivityPhoto extends AppCompatActivity {
     ImageButton _filterButton;
     @InjectView(R.id.cropButton)
     ImageButton _cropButton;
+    @InjectView(R.id.captionButton)
+    ImageButton _captionButton;
 
 
 
@@ -214,8 +225,12 @@ public class ActivityPhoto extends AppCompatActivity {
         originalOrCroppedImage = bitmap;
 
         android.view.ViewGroup.LayoutParams layoutParams = _selectLayout.getLayoutParams();
-        layoutParams.height = previewWidth / 4;
+        layoutParams.height = previewWidth / 5;
         _selectLayout.setLayoutParams(layoutParams);
+
+        android.view.ViewGroup.LayoutParams layoutParamsHeader = _header.getLayoutParams();
+        layoutParamsHeader.height = previewWidth / 8;
+        _selectLayout.setLayoutParams(layoutParamsHeader);
 
 //        setLayoutHeight(_selectLayout, previewWidth);
         setLayoutHeight(_brightnessLayout, previewWidth);
@@ -247,6 +262,8 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
 
+
+        // TODO
         _wifiButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
@@ -263,6 +280,7 @@ public class ActivityPhoto extends AppCompatActivity {
                 _contrastLayout.setVisibility(View.GONE);
                 _filterLayout.setVisibility(View.GONE);
                 _cropLayout.setVisibility(View.GONE);
+                _captionLayout.setVisibility(View.GONE);
             }
         });
 
@@ -274,6 +292,7 @@ public class ActivityPhoto extends AppCompatActivity {
                 _contrastLayout.setVisibility(View.VISIBLE);
                 _filterLayout.setVisibility(View.GONE);
                 _cropLayout.setVisibility(View.GONE);
+                _captionLayout.setVisibility(View.GONE);
             }
         });
 
@@ -285,6 +304,7 @@ public class ActivityPhoto extends AppCompatActivity {
                 _contrastLayout.setVisibility(View.GONE);
                 _filterLayout.setVisibility(View.VISIBLE);
                 _cropLayout.setVisibility(View.GONE);
+                _captionLayout.setVisibility(View.GONE);
             }
         });
 
@@ -295,6 +315,19 @@ public class ActivityPhoto extends AppCompatActivity {
                 _brightnessLayout.setVisibility(View.GONE);
                 _contrastLayout.setVisibility(View.GONE);
                 _filterLayout.setVisibility(View.GONE);
+                _captionLayout.setVisibility(View.GONE);
+            }
+        });
+
+        _captionButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                _captionLayout.setVisibility(View.VISIBLE);
+                _brightnessLayout.setVisibility(View.GONE);
+                _contrastLayout.setVisibility(View.VISIBLE);
+                _filterLayout.setVisibility(View.GONE);
+                _cropLayout.setVisibility(View.GONE);
+                _contrastLayout.setVisibility(View.GONE);
             }
         });
 
@@ -436,6 +469,13 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
 
+        _captionText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+
         _uploadButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -460,10 +500,10 @@ public class ActivityPhoto extends AppCompatActivity {
 
 
                 // Compress image
-                Bitmap compressedImage = ImageConversionTools.compressImage(newImage);
+//                Bitmap compressedImage = ImageConversionTools.compressImage(newImage);
 
                 // Save to library (converts to byte[] first)
-                Uri imageUri = ImageConversionTools.saveImageToLibrary(compressedImage);
+//                Uri imageUri = ImageConversionTools.saveImageToLibrary(compressedImage);
 
 
                 // Get Uri of saved/compressed image, convert to bitmap, convert to byte[], convert to base64
@@ -473,7 +513,7 @@ public class ActivityPhoto extends AppCompatActivity {
 
 //                Log.d("BYTE COUNT", "Byte count of converted: " + byteCountZ);
 
-                String s = ImageConversionTools.convertToBase64(compressedImage);
+//                String s = ImageConversionTools.convertToBase64(compressedImage);
 			Log.d("FP", "IMAGE UPLOADED");
                 Intent intent = new Intent(getBaseContext(), ActivityCamera.class);
                 startActivity(intent);
