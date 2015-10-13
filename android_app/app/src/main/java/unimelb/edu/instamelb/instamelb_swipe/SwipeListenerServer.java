@@ -150,6 +150,7 @@ public class SwipeListenerServer implements Runnable  {
 
                 Log.w(getClass().getName(), "[SwipeListenerImageClient] END END END END REACHED REACHED REACHED REACHED (Image sucessfully downloaded)");
 
+
                 // Close streams
                 toServer.close();
                 fromServer.close();

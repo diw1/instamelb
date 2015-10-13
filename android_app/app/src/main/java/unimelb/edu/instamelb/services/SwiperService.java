@@ -34,11 +34,13 @@ public class SwiperService extends Service {
 
         protected Context mContext;
 
+
         // Constructor
         public SwiperServiceThread(Context context) {
             Log.w(getClass().getName(), "[SwiperServiceThread] Starting Thread!");
             this.mContext = context;
         }
+
 
         @Override
         public void run() {
