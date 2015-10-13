@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -99,7 +100,7 @@ public class ActivityPhoto extends AppCompatActivity {
     @InjectView(R.id.captionText)
     TextView _captionText;
     @InjectView(R.id.header)
-    TextView _header;
+    LinearLayout _header;
 
 
     @InjectView(R.id.brightnessLayout)
@@ -224,26 +225,26 @@ public class ActivityPhoto extends AppCompatActivity {
 
         originalOrCroppedImage = bitmap;
 
-        android.view.ViewGroup.LayoutParams layoutParams = _selectLayout.getLayoutParams();
-        layoutParams.height = previewWidth / 5;
-        _selectLayout.setLayoutParams(layoutParams);
+        setUpEditLayouts(_header, previewWidth, 8);
+        setUpEditLayouts(_selectLayout, previewWidth, 5);
+        setUpEditLayouts(_brightnessLayout, previewWidth, 4);
+        setUpEditLayouts(_contrastLayout, previewWidth, 4);
+        setUpEditLayouts(_filterLayout, previewWidth, 4);
+        setUpEditLayouts(_captionLayout, previewWidth, 4);
 
-        android.view.ViewGroup.LayoutParams layoutParamsHeader = _header.getLayoutParams();
-        layoutParamsHeader.height = previewWidth / 8;
-        _selectLayout.setLayoutParams(layoutParamsHeader);
-
-//        setLayoutHeight(_selectLayout, previewWidth);
-        setLayoutHeight(_brightnessLayout, previewWidth);
-        setLayoutHeight(_contrastLayout, previewWidth);
-        setLayoutHeight(_filterLayout, previewWidth);
+////        setLayoutHeight(_selectLayout, previewWidth);
+//        setLayoutHeight(_brightnessLayout, previewWidth);
+//        setLayoutHeight(_contrastLayout, previewWidth);
+//        setLayoutHeight(_filterLayout, previewWidth);
 
 
-//        _brightnessLayout.setVisibility(View.VISIBLE);
+        _brightnessLayout.setVisibility(View.VISIBLE);
         _contrastLayout.setVisibility(View.GONE);
         _filterLayout.setVisibility(View.GONE);
         _cropLayout.setVisibility(View.GONE);
+        _captionLayout.setVisibility(View.GONE);
 
-        setUpLayout(_brightnessLayout, previewWidth, View.VISIBLE);
+//        setUpLayout(_brightnessLayout, previewWidth, View.VISIBLE);
 
 
 
@@ -589,6 +590,11 @@ public class ActivityPhoto extends AppCompatActivity {
         return image;
     }
 
+    public void setUpEditLayouts(LinearLayout layout, int previewWidth, int i) {
+        android.view.ViewGroup.LayoutParams layoutParams = layout.getLayoutParams();
+        layoutParams.height = previewWidth / i;
+        layout.setLayoutParams(layoutParams);
+    }
 
     public void setUpLayout(LinearLayout layout, int width, int view) {
         setLayoutHeight(layout, width);
