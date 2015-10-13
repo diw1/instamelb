@@ -60,7 +60,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/selectEditTypeLayout">
+        android:id="@+id/selectEditTypeLayout"
+        android:background="#ffffff">
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -69,25 +70,27 @@
             android:layout_weight="0.25"
             android:focusableInTouchMode="false"
             android:clickable="true"
-            android:scaleType="fitCenter"
+            android:scaleType="fitXY"
             android:src="@drawable/brightness_button"
-            android:padding="20dp" />
+            android:background="#ffffff" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/contrastButton"
             android:layout_weight="0.25"
-            android:scaleType="fitCenter"
-            android:src="@drawable/contrast_button" />
+            android:scaleType="fitXY"
+            android:src="@drawable/contrast_button"
+            android:background="#ffffff" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/filterButton"
             android:layout_weight="0.25"
-            android:scaleType="fitCenter"
-            android:src="@drawable/filter_button" />
+            android:scaleType="fitXY"
+            android:src="@drawable/filter_button"
+            android:background="#ffffff" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -95,36 +98,66 @@
             android:id="@+id/cropButton"
             android:focusableInTouchMode="false"
             android:layout_weight="0.25"
-            android:scaleType="fitCenter"
-            android:src="@drawable/crop_button" />
+            android:scaleType="fitXY"
+            android:src="@drawable/crop_button"
+            android:background="#ffffff" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/captionButton"
+            android:focusableInTouchMode="false"
+            android:layout_weight="0.25"
+            android:scaleType="fitXY"
+            android:src="@drawable/caption_button"
+            android:background="#ffffff" />
     </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="fill_parent"
         android:id="@+id/addCommentLayout">
 
-        <TextView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/caption_prompt"
-            android:id="@+id/captionHeader"
-            android:textColor="@color/background_material_light"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:background="@color/colorPrimary"
-            android:padding="10dp"
-            android:singleLine="false"
-            android:password="false" />
+            android:layout_height="wrap_content">
 
-        <TextView
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/caption_prompt"
+                android:id="@+id/captionHeader"
+                android:textColor="@color/background_material_light"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:background="@color/colorPrimary"
+                android:padding="10dp"
+                android:layout_weight="0.5"
+                android:gravity="left|center_vertical" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/add_caption"
+                android:id="@+id/addCaptionButton"
+                android:gravity="center_vertical|right"
+                android:background="@color/colorPrimary"
+                android:layout_weight="0.5"
+                android:padding="10dp"
+                android:textColor="@color/background_material_light"
+                android:textSize="@dimen/abc_text_size_medium_material" />
+        </LinearLayout>
+            <EditText
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/captionText"
             android:editable="true"
             android:padding="10dp"
-            android:textColor="@color/colorPrimaryDark" />
+            android:textColor="@color/colorPrimaryDark"
+            android:enabled="true" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -150,6 +183,7 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id="@+id/brightnessSeekBar"
+            android:layout_gravity="center_vertical"
             android:max="260"
             android:progress="130" />
 
@@ -182,15 +216,15 @@
             android:layout_gravity="center_vertical" />
 
         <!--<Button-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@string/video"-->
-            <!--android:id="@+id/button_video"-->
-            <!--android:layout_weight="1"-->
-            <!--android:singleLine="true"-->
-            <!--android:background="@color/colorPrimaryDark"-->
-            <!--android:textColor="@color/colorAccent"-->
-            <!--android:clickable="true" />-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/video"-->
+        <!--android:id="@+id/button_video"-->
+        <!--android:layout_weight="1"-->
+        <!--android:singleLine="true"-->
+        <!--android:background="@color/colorPrimaryDark"-->
+        <!--android:textColor="@color/colorAccent"-->
+        <!--android:clickable="true" />-->
     </LinearLayout>
 
     <LinearLayout
@@ -316,11 +350,6 @@
             android:clickable="true" />
 
     </FrameLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></LinearLayout>
 
 
 </LinearLayout>

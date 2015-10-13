@@ -1,21 +1,18 @@
 package unimelb.edu.instamelb.activities;
 
-import android.location.Location;
+import android.content.Context;
 import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
@@ -32,23 +30,20 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.io.File;
 import java.io.IOException;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-import unimelb.edu.instamelb.ImageHandlingLibrary.ImageConversionTools;
-import unimelb.edu.instamelb.ImageHandlingLibrary.PhotoEditingTools;
+import unimelb.edu.instamelb.imagehandlinglibrary.ImageConversionTools;
+import unimelb.edu.instamelb.imagehandlinglibrary.LocationFinder;
+import unimelb.edu.instamelb.imagehandlinglibrary.PhotoEditingTools;
 
 import unimelb.edu.instamelb.extras.Util;
 import unimelb.edu.instamelb.fragments.FragmentHome;
-
 import unimelb.edu.instamelb.materialtest.R;
 import unimelb.edu.instamelb.users.APIRequest;
 import unimelb.edu.instamelb.users.Photo;
@@ -59,19 +54,8 @@ import unimelb.edu.instamelb.users.Photo;
 public class ActivityPhoto extends AppCompatActivity {
 
 
-    private static final int REQUEST_PHOTO = 0;
     final int PIC_CROP = 2;
-    private ViewPager mViewPager;
-    int seekBarValue;
-    private Uri mCapturedImageURI = null;
 
-    // Variables for cropping
-    private float startX;
-    private float startY;
-    private float endX;
-    private float endY;
-
-    final int THUMBSIZE = 64;
     public Bitmap originalPhoto, editedPhoto, newImage, originalOrCroppedImage;
     public Bitmap originalThumbnail, grayThumbnail, warmThumbnail, coolThumbnail, imageThumbnail;
 
@@ -81,10 +65,6 @@ public class ActivityPhoto extends AppCompatActivity {
     private double latitude = 0;
 
     public Uri mImageUri;
-    public File mImageFile;
-    public static Uri newImageUri;
-    public File newImageFile;
-    public String imagePath;
     public Bitmap bitmap = null;
 
     @InjectView(R.id.brightnessSeekBar)
@@ -95,6 +75,11 @@ public class ActivityPhoto extends AppCompatActivity {
     ImageView _editPhoto;
     @InjectView(R.id.reset_Button)
     Button _resetButton;
+    @InjectView(R.id.captionText)
+    TextView _captionText;
+    @InjectView(R.id.header)
+    LinearLayout _header;
+
 
     @InjectView(R.id.brightnessLayout)
     LinearLayout _brightnessLayout;
@@ -104,6 +89,9 @@ public class ActivityPhoto extends AppCompatActivity {
     LinearLayout _filterLayout;
     @InjectView(R.id.cropLayout)
     LinearLayout _cropLayout;
+    @InjectView(R.id.addCommentLayout)
+    LinearLayout _captionLayout;
+
     @InjectView(R.id.selectEditTypeLayout)
     LinearLayout _selectLayout;
     @InjectView(R.id.upload_button)
@@ -120,9 +108,10 @@ public class ActivityPhoto extends AppCompatActivity {
     ImageButton _filterButton;
     @InjectView(R.id.cropButton)
     ImageButton _cropButton;
-
-
-
+    @InjectView(R.id.captionButton)
+    ImageButton _captionButton;
+    @InjectView(R.id.addCaptionButton)
+    Button _addCaptionButton;
 
     @InjectView(R.id.photoThumbnail)
     ImageView _originalThumbnail;
@@ -141,14 +130,10 @@ public class ActivityPhoto extends AppCompatActivity {
         setContentView(R.layout.fragment_photo);
         ButterKnife.inject(this);
 
-        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        final DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
         final int previewWidth = metrics.widthPixels;
         int photoPreviewHeight = previewWidth;
-        int thumbnailWidth = previewWidth / 4;
-
-        // Get photo URI & create bitmap to edit
-//        mImageUri = ActivityCamera.getImageURI();
-//        mImageFile = new File(mImageUri.getPath());
+        final int thumbnailWidth = previewWidth / 4;
 
         // Retrieve Uri
         Intent intent = getIntent();
@@ -157,14 +142,6 @@ public class ActivityPhoto extends AppCompatActivity {
 
         bitmap = getImageFromLibrary(mImageUri);
 
-
-
-//        try {
-//            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
-//        } catch (IOException e) {
-//            Log.e("ERROR", "COULD NOT RETRIEVE BITMAP");
-//        }
-
         if (bitmap == null) {
             Log.e("ERROR", "BITMAP IS NULL");
         }
@@ -172,11 +149,9 @@ public class ActivityPhoto extends AppCompatActivity {
         int imageWidth = bitmap.getWidth();
         int imageHeight = bitmap.getHeight();
 
-
-        bitmap = scaledImage(metrics, bitmap, imageWidth, imageHeight, false, previewWidth);
-        imageThumbnail = scaledImage(metrics, bitmap, thumbnailWidth, thumbnailWidth, true, previewWidth);
-
-
+        // create photo & thumbnail bitmaps
+        bitmap = scaledImage(bitmap, imageWidth, imageHeight, false, previewWidth);
+        imageThumbnail = scaledImage(bitmap, thumbnailWidth, thumbnailWidth, true, previewWidth);
 
         final PhotoEditingTools photo = new PhotoEditingTools(this);
         final PhotoEditingTools photoThumbnail = new PhotoEditingTools(this);
@@ -184,11 +159,7 @@ public class ActivityPhoto extends AppCompatActivity {
         // Create Thumbnails
         originalThumbnail = imageThumbnail;
         _originalThumbnail.setImageBitmap(originalThumbnail);
-//        _originalThumbnail = setThumbnailSize(_originalThumbnail, thumbnailWidth);
-//
-//        grayThumbnail = imageThumbnail;
-//        warmThumbnail = createThumbnail(originalThumbnail, thumbnailWidth);
-//        coolThumbnail = createThumbnail(originalThumbnail, thumbnailWidth);
+
         Log.d("FP", "NEW THUMBNAILS CREATED");
 
         // Apply filters to thumbnails
@@ -201,37 +172,31 @@ public class ActivityPhoto extends AppCompatActivity {
         _warmThumbnail.setImageBitmap(warmThumbnail);
         _coolThumbnail.setImageBitmap(coolThumbnail);
 
+        // set up photos
         _editPhoto.setMinimumHeight(photoPreviewHeight);
         _editPhoto.setMaxHeight(photoPreviewHeight);
-//        Drawable d = getResources().getDrawable(R.drawable.sonic);
-//        _editPhoto.setImageDrawable(bitmap);
-
         _editPhoto.setImageBitmap(bitmap);
         originalPhoto = bitmap;
         editedPhoto = bitmap;
         newImage = bitmap;
-
         originalOrCroppedImage = bitmap;
 
-        android.view.ViewGroup.LayoutParams layoutParams = _selectLayout.getLayoutParams();
-        layoutParams.height = previewWidth / 4;
-        _selectLayout.setLayoutParams(layoutParams);
+        // set up layouts for edit screen
+        setUpEditLayouts(_header, previewWidth, 8);
+        setUpEditLayouts(_selectLayout, previewWidth, 5);
+        setUpEditLayouts(_brightnessLayout, previewWidth, 4);
+        setUpEditLayouts(_contrastLayout, previewWidth, 4);
+        setUpEditLayouts(_filterLayout, previewWidth, 4);
+        setUpEditLayouts(_captionLayout, previewWidth, 4);
 
-//        setLayoutHeight(_selectLayout, previewWidth);
-        setLayoutHeight(_brightnessLayout, previewWidth);
-        setLayoutHeight(_contrastLayout, previewWidth);
-        setLayoutHeight(_filterLayout, previewWidth);
-
-
-//        _brightnessLayout.setVisibility(View.VISIBLE);
+        _brightnessLayout.setVisibility(View.VISIBLE);
         _contrastLayout.setVisibility(View.GONE);
         _filterLayout.setVisibility(View.GONE);
         _cropLayout.setVisibility(View.GONE);
-
-        setUpLayout(_brightnessLayout, previewWidth, View.VISIBLE);
-
+        _captionLayout.setVisibility(View.GONE);
 
 
+        // On Click Listeners
         _resetButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -247,6 +212,8 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
 
+
+        // TODO
         _wifiButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
@@ -263,6 +230,7 @@ public class ActivityPhoto extends AppCompatActivity {
                 _contrastLayout.setVisibility(View.GONE);
                 _filterLayout.setVisibility(View.GONE);
                 _cropLayout.setVisibility(View.GONE);
+                _captionLayout.setVisibility(View.GONE);
             }
         });
 
@@ -274,6 +242,7 @@ public class ActivityPhoto extends AppCompatActivity {
                 _contrastLayout.setVisibility(View.VISIBLE);
                 _filterLayout.setVisibility(View.GONE);
                 _cropLayout.setVisibility(View.GONE);
+                _captionLayout.setVisibility(View.GONE);
             }
         });
 
@@ -285,6 +254,7 @@ public class ActivityPhoto extends AppCompatActivity {
                 _contrastLayout.setVisibility(View.GONE);
                 _filterLayout.setVisibility(View.VISIBLE);
                 _cropLayout.setVisibility(View.GONE);
+                _captionLayout.setVisibility(View.GONE);
             }
         });
 
@@ -295,21 +265,22 @@ public class ActivityPhoto extends AppCompatActivity {
                 _brightnessLayout.setVisibility(View.GONE);
                 _contrastLayout.setVisibility(View.GONE);
                 _filterLayout.setVisibility(View.GONE);
+                _captionLayout.setVisibility(View.GONE);
             }
         });
 
+        _captionButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                _captionLayout.setVisibility(View.VISIBLE);
+                _brightnessLayout.setVisibility(View.GONE);
+                _contrastLayout.setVisibility(View.VISIBLE);
+                _filterLayout.setVisibility(View.GONE);
+                _cropLayout.setVisibility(View.GONE);
+                _contrastLayout.setVisibility(View.GONE);
+            }
+        });
 
-
-        // Return to Choose Library/Camera Screen
-//        _backButton.setOnClickListener(new Button.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d("FP", "CANCEL EDIT - TAKE NEW PHOTO");
-//                Intent intent = new Intent(getApplicationContext(), ActivityCamera.class);
-//                startActivity(intent);
-//
-//            }
-//        });
 
         _brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -436,32 +407,62 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
 
+        _addCaptionButton.setOnClickListener(new Button.OnClickListener() {
+
+            @Override
+            public void onClick(View v){
+                mComment = _captionText.getText().toString();
+                Toast.makeText(getBaseContext(), "Caption added to photo!", Toast.LENGTH_LONG).show();
+                Log.d("FP", "Caption: " + mComment);
+                _captionLayout.setVisibility(View.GONE);
+                _brightnessLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        // TODO
+        _wifiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                byte[] byteArray = ImageConversionTools.convertImageToByteArray(newImage);
+            }
+        });
+
+
+
+
         _uploadButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setButtons(false);
 
-                //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.button_action_red);
-                // Compress image
-                Bitmap compressedImage = ImageConversionTools.compressImage(newImage);
-                String imageBase64 = ImageConversionTools.convertToBase64(compressedImage);
-//                String imageBase64 = "R0lGODlhDwAPAKECAAAAzMzM/////\n" +
-//                       "wAAACwAAAAADwAPAAACIISPeQHsrZ5ModrLlN48CXF8m2iQ3YmmKqVlRtW4ML\n" +
-//                        "wWACH+H09wdGltaXplZCBieSBVbGVhZCBTbWFydFNhdmVyIQAAOw==";
-                Log.d("IMAGESIZE", String.valueOf(imageBase64.length()));
-                Log.d("IMAGESIZEBASE64", imageBase64);
-                String thumbnailBase64=ImageConversionTools.convertToBase64(compressedImage);
-//                String thumbnailBase64 = "R0lGODlhDwAPAKECAAAAzMzM/////\n" +
-//                        "wAAACwAAAAADwAPAAACIISPeQHsrZ5ModrLlN48CXF8m2iQ3YmmKqVlRtW4ML\n" +
-//                        "wWACH+H09wdGltaXplZCBieSBVbGVhZCBTbWFydFNhdmVyIQAAOw==";
-//                Util.Locations location=Util.getLocation(getBaseContext());
+                // Get Location
+                LocationManager locationManager=    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+                LocationFinder locationListener = new LocationFinder();
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+                // Update thumbnail to reflect edited image
+                imageThumbnail = scaledImage(newImage, thumbnailWidth, thumbnailWidth, true, previewWidth);
+
+                String imageBase64 = ImageConversionTools.convertToBase64(newImage);
+                String thumbnailBase64=ImageConversionTools.convertToBase64(newImage);
+
+                Util.Locations location=Util.getLocation(getBaseContext());
+
+                // From Util.java
 //                latitude=location.getLatitude();
 //                longitude=location.getLongitude();
-                latitude = 100;
-                longitude = 100;
+
+                // From LocationFinder
+                latitude = locationListener.getLatitude();
+                longitude = locationListener.getLongitude();
+                Log.d("FP", "Latitude: " + latitude);
+                Log.d("FP", "Longitude: " + longitude);
+//                latitude = 100;
+//                longitude = 100;
                 String[] argu={FragmentHome.mUsername,FragmentHome.mPassword,
                 "caption",mComment,
-                "image",thumbnailBase64,
+                "image",imageBase64,
                 "image_thumbnail",thumbnailBase64,
                 "longitude",String.valueOf(longitude),
                 "latitude",String.valueOf(latitude)};
@@ -469,10 +470,11 @@ public class ActivityPhoto extends AppCompatActivity {
                 new UploadPhoto().execute(argu);
 
 
-
+                // Compress image
+//                Bitmap compressedImage = ImageConversionTools.compressImage(newImage);
 
                 // Save to library (converts to byte[] first)
-                Uri imageUri = ImageConversionTools.saveImageToLibrary(compressedImage);
+//                Uri imageUri = ImageConversionTools.saveImageToLibrary(compressedImage);
 
 
                 // Get Uri of saved/compressed image, convert to bitmap, convert to byte[], convert to base64
@@ -482,9 +484,10 @@ public class ActivityPhoto extends AppCompatActivity {
 
 //                Log.d("BYTE COUNT", "Byte count of converted: " + byteCountZ);
 
-                String s = ImageConversionTools.convertToBase64(compressedImage);
-			Log.d("FP", "IMAGE UPLOADED");
-                Intent intent = new Intent(getBaseContext(), ActivityCamera.class);
+//                String s = ImageConversionTools.convertToBase64(compressedImage);
+			    Log.d("FP", "IMAGE UPLOADED");
+
+                Intent intent = new Intent(getBaseContext(), ActivityMain.class);
                 startActivity(intent);
 
                 setButtons(true);
@@ -525,7 +528,7 @@ public class ActivityPhoto extends AppCompatActivity {
         return v;
     }
 
-    public Bitmap scaledImage(DisplayMetrics metrics, Bitmap bitmap, int width, int height, boolean isThumbnail, int previewWidth) {
+    public Bitmap scaledImage(Bitmap bitmap, int width, int height, boolean isThumbnail, int previewWidth) {
 
         Bitmap image = bitmap;
         Bitmap rotatedImage = null;
@@ -542,10 +545,6 @@ public class ActivityPhoto extends AppCompatActivity {
 
             image = Bitmap.createScaledBitmap(image, width, height, false);
 
-//            Bitmap rotatedImage = Bitmap.createBitmap(IMAGE_SIZE, IMAGE_SIZE, Bitmap.Config.ARGB_8888);
-
-
-
             if (isThumbnail == false) {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
@@ -558,10 +557,10 @@ public class ActivityPhoto extends AppCompatActivity {
         return image;
     }
 
-
-    public void setUpLayout(LinearLayout layout, int width, int view) {
-        setLayoutHeight(layout, width);
-        _brightnessLayout.setVisibility(view);
+    public void setUpEditLayouts(LinearLayout layout, int previewWidth, int i) {
+        android.view.ViewGroup.LayoutParams layoutParams = layout.getLayoutParams();
+        layoutParams.height = previewWidth / i;
+        layout.setLayoutParams(layoutParams);
     }
 
     private void performCrop(Uri imageUri){
@@ -581,25 +580,6 @@ public class ActivityPhoto extends AppCompatActivity {
         }
     }
 
-
-// remnant of merge
-        // Convert image to byte[]
- //       int bytes = image.getByteCount();
- //       ByteBuffer buffer = ByteBuffer.allocate(bytes);
- //       image.copyPixelsToBuffer(buffer);
- //       byte[] b = buffer.array();
-//
-  //      b64Image = Base64.encodeToString(b, Base64.DEFAULT);
-  //      Log.d("FP", "CONVERTED IMAGE TO BASE64 STRING");
-
-
-
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        image.compress(Bitmap.CompressFormat.PNG, 100, baos); //bm is the bitmap object
-//        byte[] b = baos.toByteArray();
-//        String b64Image = Base64.encodeToString(b, Base64.NO_WRAP);
-
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 //            Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
@@ -614,15 +594,6 @@ public class ActivityPhoto extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
-//        //        ActivityCompat.finishAfterTransition(this);
-//
-//        Intent myIntent = new Intent(getApplicationContext(), ActivityCamera.class);
-//
-//        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        startActivity(myIntent);
-//        finish();
-//        return;
         super.onBackPressed();
         ActivityCompat.finishAfterTransition(this);
 
@@ -662,7 +633,6 @@ public class ActivityPhoto extends AppCompatActivity {
                 params.add(new BasicNameValuePair(strings[8], strings[9]));
                 params.add(new BasicNameValuePair(strings[10], strings[11]));
                 object = new JSONObject(request.createRequest("POST", endpoint, params));
-                Log.d("JSONOBJ", String.valueOf(object));
             }
             catch (Exception ex) {
                 ex.printStackTrace();

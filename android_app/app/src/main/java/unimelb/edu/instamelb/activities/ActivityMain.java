@@ -38,6 +38,7 @@ import unimelb.edu.instamelb.fragments.FragmentProfile;
 import unimelb.edu.instamelb.fragments.FragmentSearch;
 import unimelb.edu.instamelb.logging.L;
 import unimelb.edu.instamelb.materialtest.R;
+import unimelb.edu.instamelb.services.SwiperService;
 
 import static unimelb.edu.instamelb.fragments.FragmentDiscover.*;
 
@@ -82,6 +83,11 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.w(getClass().getName(), "Start SwiperService before initialization()");
+        // Service
+        startService(new Intent(getBaseContext(), SwiperService.class));
+
         initialization();
 
         //animate the Toolbar when it comes into the picture
