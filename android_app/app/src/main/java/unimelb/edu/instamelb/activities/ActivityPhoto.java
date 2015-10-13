@@ -445,8 +445,10 @@ public class ActivityPhoto extends AppCompatActivity {
                 String imageBase64 = ImageConversionTools.convertToBase64(newImage);
                 String thumbnailBase64=ImageConversionTools.convertToBase64(newImage);
                 Util.Locations location=Util.getLocation(getBaseContext());
-                latitude=location.getLatitude();
-                longitude=location.getLongitude();
+//                latitude=location.getLatitude();
+//                longitude=location.getLongitude();
+                latitude = 100;
+                longitude = 100;
                 String[] argu={FragmentHome.mUsername,FragmentHome.mPassword,
                 "caption",mComment,
                 "image",imageBase64,
