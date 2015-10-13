@@ -177,7 +177,6 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
                 new PostComment(mPhoto).execute(commentargs);
                 break;
 
-                break;
 
         }
     }

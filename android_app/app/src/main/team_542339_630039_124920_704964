@@ -1,0 +1,35 @@
+Activities	                                                            Marks	Name
+----------------------------------------------------------------------------------------------------
+Register & Login screen	                                                    1   Andres Parra (704964)
+Functional tab bar (top/bottom of screen, with icons)	                    1	Andres Parra (704964)
+
+User Feed - Scroll through photos and comments	                            2	Di Wang (630039)
+User Feed - Like a photo and display users who liked a photo in the feed	1	Di Wang (630039)
+User Feed - leave a comment	                                                1	Di Wang (630039)
+User Feed - sort by both date/time and location	                            2	Di Wang (630039)
+
+Discover - Search for users	                                                1	Andres Parra (704964)
+Discover - Display suggested users to follow	                            1	Andres Parra (704964)
+Discover - Algorithm to suggest users	                                    3	Jun Min Cheong (542339)
+
+Photo - Take a photo with camera while providing flash options	            2	Brianna Boyce (124920)
+Photo - Overlay a grid on top of camera view	                            1	Brianna Boyce (124920)
+Photo - Select photo from library instead of taking a new one	            2	Brianna Boyce (124920)
+Photo - Change brightness and contrast	                                    1	Brianna Boyce (124920)
+Photo - Crop a photo	                                                    1	Brianna Boyce (124920)
+Photo - Apply at least 3 different filters	                                3	Brianna Boyce (124920)
+Photo - Upload photo	                                                    1	Di Wang (630039)
+
+Activity Feed - Display users following that liked photos or started
+        following user	                                                    2	Di Wang (630039)
+Activity Feed - Display activity of users that current user are following	2	Di Wang (630039)
+Profile - Display stats on posts, followers and following, profile pic	    1	Jun Min Cheong (542339)
+Profile - Display all user photos uploaded	                                1	Jun Min Cheong (542339)
+
+Bluetooth or WiFi Adhoc Feature - In Range Swiping, e.g. Swipe photos
+    to friends nearby that they can view on feed with an "In Range" tag	    4	Andres Parra (704964)
+Network - Implement a server for communications or retrieve data from
+    actual Instagram API	                                                2	Jun Min Cheong (542339)
+Errors are treated correctly	                                            1	Everyone
+Code Quality	                                                            3	Everyone
+Backend		                                                                    Jun Min Cheong (542339)

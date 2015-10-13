@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.net.Uri;
@@ -24,17 +23,12 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -75,6 +69,7 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 
     public static Uri imageURI;
     public File imageFile;
+    public String imagePath;
 
 
     private Camera.ShutterCallback mShutterCallback;
@@ -97,8 +92,8 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
     Button _takePhotoButton;
     @InjectView(R.id.grid)
     ImageView _gridView;
-    @InjectView(R.id.button_library)
-    Button _libraryButton;
+//    @InjectView(R.id.button_library)
+//    Button _libraryButton;
     @InjectView(R.id.imageViewFullSized)
     ImageView _imageFullSize;
 
@@ -254,7 +249,7 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 //                    Log.d("FP", "GOT URI STRING: " + string);
 //                }
 //                else {
-//                    Log.d("FP", "imageURI IS NULL");
+//                    Log.e("ERROR", "imageURI IS NULL");
 //                }
 //                Intent intent = new Intent(getApplicationContext(), ActivityPhoto.class);
 //                String uriMessage = imageURI.toString();
@@ -266,9 +261,9 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
         });
 
         // Choose a photo from library
-        _libraryButton.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+//        _libraryButton.setOnClickListener(new Button.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
 
 //                PICK_IMAGE_REQUEST = 1;
 //                Intent selectImage = new Intent();
@@ -277,8 +272,8 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
 //                startActivityForResult(Intent.createChooser(selectImage, "Select Picture"), PICK_IMAGE_REQUEST);
 //
 //                Log.d("FP", "SELECTED LIBRARY");
-            }
-        });
+//            }
+//        });
 
 
 
@@ -325,6 +320,7 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
             Log.d("FP", "LAUNCHED onPictureTaken()");
             imageFile = getOutputMediaFile();
             imageURI = Uri.fromFile(getOutputMediaFile());
+
             String uriString = imageURI.toString();
 
             Log.d("FP", "GOT OUTPUT FILE: " + uriString);
@@ -333,9 +329,6 @@ public class ActivityCamera extends AppCompatActivity implements SurfaceHolder.C
                 Log.e("FP", "ERROR CREATING FILE");
                 return;
             }
-
-//            _imageFullSize.setImageURI(imageURI);
-//            _imageThumbnail.setImageURI(imageURI);
 
             try {
                 FileOutputStream fos = new FileOutputStream(imageFile);
