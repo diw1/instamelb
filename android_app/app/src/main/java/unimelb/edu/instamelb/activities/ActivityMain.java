@@ -28,14 +28,18 @@ import it.neokree.materialtabs.MaterialTabHost;
 import it.neokree.materialtabs.MaterialTabListener;
 import unimelb.edu.instamelb.database.DatabaseHandler;
 import unimelb.edu.instamelb.extras.SortListener;
+import unimelb.edu.instamelb.fragments.FragmentActivity;
 import unimelb.edu.instamelb.fragments.FragmentCamera;
 import unimelb.edu.instamelb.fragments.FragmentChoosePhoto;
 import unimelb.edu.instamelb.fragments.FragmentDiscover;
 import unimelb.edu.instamelb.fragments.FragmentDrawer;
 import unimelb.edu.instamelb.fragments.FragmentHome;
 import unimelb.edu.instamelb.fragments.FragmentProfile;
+import unimelb.edu.instamelb.fragments.FragmentSearch;
 import unimelb.edu.instamelb.logging.L;
 import unimelb.edu.instamelb.materialtest.R;
+
+import static unimelb.edu.instamelb.fragments.FragmentDiscover.*;
 
 
 public class ActivityMain extends AppCompatActivity implements MaterialTabListener, View.OnClickListener {
@@ -292,7 +296,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
                     fragment = FragmentHome.newInstance(mUsername,mPassword,mEmail);
                     break;
                 case TAB_DISCOVER:
-                    fragment = FragmentDiscover.newInstance("", "");
+                    fragment = new FragmentDiscover().newInstance(mUsername,mPassword,SELF);
                     Log.d("Fragment", "Discover");
                     break;
                 case TAB_PHOTO:
@@ -300,7 +304,8 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
                     Log.d("Fragment", "Photo");
                     break;
                 case TAB_ACTIVITY:
-                    fragment = FragmentDiscover.newInstance("", "");
+                    fragment = new FragmentActivity().newInstance(mUsername,mPassword,SELF);
+                    //fragment = new FragmentSearch().newInstance("","");
                     Log.d("Fragment", "Activity");
                     break;
                 case TAB_PROFILE:
