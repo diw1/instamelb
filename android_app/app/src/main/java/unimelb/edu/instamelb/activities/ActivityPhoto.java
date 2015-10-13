@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
@@ -20,7 +21,17 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +39,11 @@ import java.nio.ByteBuffer;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import unimelb.edu.instamelb.extras.Util;
+import unimelb.edu.instamelb.fragments.FragmentHome;
 import unimelb.edu.instamelb.materialtest.R;
+import unimelb.edu.instamelb.users.APIRequest;
+import unimelb.edu.instamelb.users.Photo;
 
 /**
  * Created by bboyce on 12/09/15.
@@ -51,10 +66,12 @@ public class ActivityPhoto extends AppCompatActivity {
     final int THUMBSIZE = 64;
     Bitmap originalPhoto, editedPhoto, newImage;
     Bitmap originalThumbnail, grayThumbnail, warmThumbnail, coolThumbnail;
+    private String mComment="NO CAPTION";
+    private double longitude = 0;
+    private double latitude = 0;
     private String mComment;
     private double longitude = 0;
     private double latitude = 0;
-
     public Uri mImageUri;
     public File mImageFile;
 
@@ -117,12 +134,8 @@ public class ActivityPhoto extends AppCompatActivity {
         int imageWidth = bitmap.getWidth();
         int imageHeight = bitmap.getHeight();
 
-        bitmap = scaledImage(metrics, bitmap, imageWidth, imageHeight, false, previewWidth);
-        imageThumbnail = scaledImage(metrics, bitmap, thumbnailWidth, thumbnailWidth, true, previewWidth);
-
-
-
-        final ActivityEditPhoto photo = new ActivityEditPhoto(this);
+ bitmap = scaledImage(metrics, bitmap, imageWidth, imageHeight, false, previewWidth);
+        imageThumbnail = scaledImage(metrics, bitmap, thumbnailWidth, thumbnailWidth, true, previewWidth);        final ActivityEditPhoto photo = new ActivityEditPhoto(this);
         final ActivityEditPhoto photoThumbnail = new ActivityEditPhoto(this);
 
         // Create Thumbnails
@@ -154,8 +167,17 @@ public class ActivityPhoto extends AppCompatActivity {
         originalPhoto = bitmap;
         editedPhoto = bitmap;
         newImage = bitmap;
-
-
+        // Return to Choose Library/Camera Screen
+//        _backButton.setOnClickListener(new Button.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d("FP", "CANCEL EDIT - TAKE NEW PHOTO");
+//                Intent intent = new Intent(getApplicationContext(), ActivityCamera.class);
+//                startActivity(intent);
+//
+//            }
+//        });
+>>>>>>> e401c004d41fc68251f7d96fa7c9fcdbf186ddfa
         _brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -205,7 +227,6 @@ public class ActivityPhoto extends AppCompatActivity {
         _originalThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 setButtons(false);
                 _brightnessSeekBar.setProgress(255);
                 _contrastSeekBar.setProgress(255);
@@ -219,12 +240,12 @@ public class ActivityPhoto extends AppCompatActivity {
         _grayThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 setButtons(false);
                 _brightnessSeekBar.setProgress(255);
                 _contrastSeekBar.setProgress(255);
 
                 newImage = photo.grayscaleFilter(originalPhoto);
+
                 editedPhoto = newImage;
                 _editPhoto.setImageBitmap(newImage);
 
@@ -253,7 +274,6 @@ public class ActivityPhoto extends AppCompatActivity {
         _coolThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 setButtons(false);
                 _brightnessSeekBar.setProgress(255);
                 _contrastSeekBar.setProgress(275);
@@ -270,16 +290,33 @@ public class ActivityPhoto extends AppCompatActivity {
         _uploadButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 setButtons(false);
-                String s = convertToBase64(newImage);
-                Log.d("FP", "IMAGE UPLOADED");
-                Intent intent = new Intent(getBaseContext(), ActivityCamera.class);
-                startActivity(intent);
+
+			//remant of merge:
+            //    String s = convertToBase64(newImage);
+
+                //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.button_action_red);
+                String imageBase64 = convertToBase64(newImage);
+                String thumbnailBase64=convertToBase64(newImage);
+                Util.Locations location=Util.getLocation(getBaseContext());
+                latitude=location.getLatitude();
+                longitude=location.getLongitude();
+                String[] argu={FragmentHome.mUsername,FragmentHome.mPassword,
+                "caption",mComment,
+                "image",imageBase64,
+                "image_thumbnail",thumbnailBase64,
+                "longitude",String.valueOf(longitude),
+                "latitude",String.valueOf(latitude)};
+                Log.d("BASE64",imageBase64);
+                new UploadPhoto().execute(argu);
 
 
                 setButtons(true);
 
+
+                Log.d("FP", "IMAGE UPLOADED");
+                Intent intent = new Intent(getBaseContext(), ActivityCamera.class);
+                startActivity(intent);
             }
         });
 
@@ -309,10 +346,6 @@ public class ActivityPhoto extends AppCompatActivity {
         });
     }
 
-
-
-
-
     public void setButtons(boolean b) {
         _brightnessSeekBar.setEnabled(b);
         _contrastSeekBar.setEnabled(b);
@@ -334,7 +367,6 @@ public class ActivityPhoto extends AppCompatActivity {
         v.setMinimumHeight(thumbnailWidth);
         v.setMaxWidth(thumbnailWidth);
         v.setMaxHeight(thumbnailWidth);
-
         return v;
     }
 
@@ -364,6 +396,7 @@ public class ActivityPhoto extends AppCompatActivity {
 
 //            Bitmap rotatedImage = Bitmap.createBitmap(IMAGE_SIZE, IMAGE_SIZE, Bitmap.Config.ARGB_8888);
 
+
             if (isThumbnail == false) {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
@@ -384,16 +417,25 @@ public class ActivityPhoto extends AppCompatActivity {
     }
 
     private String convertToBase64(Bitmap image) {
+<<<<<<< HEAD
         String b64Image = null;
 
+// remnant of merge
         // Convert image to byte[]
-        int bytes = image.getByteCount();
-        ByteBuffer buffer = ByteBuffer.allocate(bytes);
-        image.copyPixelsToBuffer(buffer);
-        byte[] b = buffer.array();
+ //       int bytes = image.getByteCount();
+ //       ByteBuffer buffer = ByteBuffer.allocate(bytes);
+ //       image.copyPixelsToBuffer(buffer);
+ //       byte[] b = buffer.array();
+//
+  //      b64Image = Base64.encodeToString(b, Base64.DEFAULT);
+  //      Log.d("FP", "CONVERTED IMAGE TO BASE64 STRING");
 
-        b64Image = Base64.encodeToString(b, Base64.DEFAULT);
-        Log.d("FP", "CONVERTED IMAGE TO BASE64 STRING");
+
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, baos); //bm is the bitmap object
+        byte[] b = baos.toByteArray();
+        String b64Image = Base64.encodeToString(b, Base64.NO_WRAP);
 
         return b64Image;
     }
@@ -412,6 +454,47 @@ public class ActivityPhoto extends AppCompatActivity {
         return;
     }
 
+    public class UploadPhoto extends AsyncTask<String, Void, JSONObject> {
 
+        @Override
+        protected JSONObject doInBackground(String... strings) {
+            JSONObject object=new JSONObject();
+            String endpoint="/photo/";
+            try {
+                List<NameValuePair> params = new ArrayList<NameValuePair>(1);
+                APIRequest request = new APIRequest(strings[0], strings[1]);
+                params.add(new BasicNameValuePair(strings[2], strings[3]));
+                params.add(new BasicNameValuePair(strings[4], strings[5]));
+                params.add(new BasicNameValuePair(strings[6], strings[7]));
+                params.add(new BasicNameValuePair(strings[8], strings[9]));
+                params.add(new BasicNameValuePair(strings[10], strings[11]));
+                object = new JSONObject(request.createRequest("POST", endpoint, params));
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return object;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject object) {
+            try {
+                if (object.getBoolean("uploaded")) {
+                    Photo photo=new Photo(object);
+                    finish();
+                    Intent mIntent =new Intent(getBaseContext(), ActivityDetail.class);
+                    mIntent.putExtra("username", FragmentHome.mUsername);
+                    mIntent.putExtra("password",FragmentHome.mPassword);
+                    mIntent.putExtra("photo",photo);
+                    startActivity(mIntent);
+                    Toast.makeText(getBaseContext(), "Upload Photo success!", Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(getBaseContext(), "Upload Photo failed!", Toast.LENGTH_LONG).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
 
