@@ -1,6 +1,7 @@
 package unimelb.edu.instamelb.activities;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -8,14 +9,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -26,15 +25,12 @@ import android.widget.SeekBar;
 
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import unimelb.edu.instamelb.imagehandlinglibrary.ImageConversionTools;
+import unimelb.edu.instamelb.imagehandlinglibrary.PhotoEditingTools;
 import unimelb.edu.instamelb.materialtest.R;
 
 /**
@@ -75,8 +71,6 @@ public class ActivityPhoto extends AppCompatActivity {
     SeekBar _contrastSeekBar;
     @InjectView(R.id.photoPreview)
     ImageView _editPhoto;
-    @InjectView(R.id.caption_button)
-    Button _captionButton;
     @InjectView(R.id.reset_Button)
     Button _resetButton;
 
@@ -90,6 +84,11 @@ public class ActivityPhoto extends AppCompatActivity {
     LinearLayout _cropLayout;
     @InjectView(R.id.selectEditTypeLayout)
     LinearLayout _selectLayout;
+    @InjectView(R.id.upload_button)
+    Button _uploadButton;
+    @InjectView(R.id.wifi_Button)
+    ImageView _wifiButton;
+
 
     @InjectView(R.id.brightnessButton)
     ImageButton _brightnessButton;
@@ -101,8 +100,7 @@ public class ActivityPhoto extends AppCompatActivity {
     ImageButton _cropButton;
 
 
-    @InjectView(R.id.upload_button)
-    Button _uploadButton;
+
 
     @InjectView(R.id.photoThumbnail)
     ImageView _originalThumbnail;
@@ -156,8 +154,8 @@ public class ActivityPhoto extends AppCompatActivity {
         imageThumbnail = scaledImage(metrics, bitmap, thumbnailWidth, thumbnailWidth, true, previewWidth);
 
 
-        final ActivityEditPhoto photo = new ActivityEditPhoto(this);
-        final ActivityEditPhoto photoThumbnail = new ActivityEditPhoto(this);
+        final PhotoEditingTools photo = new PhotoEditingTools(this);
+        final PhotoEditingTools photoThumbnail = new PhotoEditingTools(this);
 
         // Create Thumbnails
         originalThumbnail = imageThumbnail;
@@ -194,16 +192,19 @@ public class ActivityPhoto extends AppCompatActivity {
         layoutParams.height = previewWidth / 4;
         _selectLayout.setLayoutParams(layoutParams);
 
-        setLayoutHeight(_selectLayout, previewWidth);
+//        setLayoutHeight(_selectLayout, previewWidth);
         setLayoutHeight(_brightnessLayout, previewWidth);
         setLayoutHeight(_contrastLayout, previewWidth);
         setLayoutHeight(_filterLayout, previewWidth);
 
 
-        _brightnessLayout.setVisibility(View.VISIBLE);
+//        _brightnessLayout.setVisibility(View.VISIBLE);
         _contrastLayout.setVisibility(View.GONE);
         _filterLayout.setVisibility(View.GONE);
         _cropLayout.setVisibility(View.GONE);
+
+        setUpLayout(_brightnessLayout, previewWidth, View.VISIBLE);
+
 
 
         _resetButton.setOnClickListener(new Button.OnClickListener() {
@@ -220,6 +221,15 @@ public class ActivityPhoto extends AppCompatActivity {
                 _contrastLayout.setVisibility(View.GONE);
             }
         });
+
+        _wifiButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                byte[] bytaArray = ImageConversionTools.convertImageToByteArray(newImage);
+
+            }
+        });
+
 
         _brightnessButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -383,7 +393,7 @@ public class ActivityPhoto extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Uri cropImageUri = saveImageToLibrary(newImage);
+                Uri cropImageUri = ImageConversionTools.saveImageToLibrary(newImage);
                 performCrop(cropImageUri);
                 newImage = getImageFromLibrary(cropImageUri);
                 originalOrCroppedImage = newImage;
@@ -397,12 +407,20 @@ public class ActivityPhoto extends AppCompatActivity {
 
                 setButtons(false);
 
-                // Compress image & save to library
-                mImageUri = saveImageToLibrary(newImage);
+                // Compress image
+                Bitmap compressedImage = ImageConversionTools.compressImage(newImage);
 
-                // Get Uri of saved image, convert to bitmap, convert to byte[]
-                newImage = getImageFromLibrary(mImageUri);
-                String s = convertToBase64(newImage);
+                // Save to library (converts to byte[] first)
+                Uri imageUri = ImageConversionTools.saveImageToLibrary(compressedImage);
+
+                // Get Uri of saved/compressed image, convert to bitmap, convert to byte[], convert to base64
+//                Bitmap imageToBase64 = ImageConversionTools.getImageFromLibrary(getApplicationContext().getContentResolver(), imageUri);
+
+//                int byteCountZ = imageToBase64.getByteCount();
+
+//                Log.d("BYTE COUNT", "Byte count of converted: " + byteCountZ);
+
+                String s = ImageConversionTools.convertToBase64(compressedImage);
 
                 Intent intent = new Intent(getBaseContext(), ActivityCamera.class);
                 startActivity(intent);
@@ -476,23 +494,21 @@ public class ActivityPhoto extends AppCompatActivity {
         return image;
     }
 
+    public void setUpLayout(LinearLayout layout, int width, int view) {
+        setLayoutHeight(layout, width);
+        _brightnessLayout.setVisibility(view);
+    }
+
     private void performCrop(Uri imageUri){
         try {
-            //call the standard crop action intent (the user device may not support it)
             Intent cropIntent = new Intent("com.android.camera.action.CROP");
-            // indicate image type and Uri
             cropIntent.setDataAndType(imageUri, "image/*");
-            //set crop properties
             cropIntent.putExtra("crop", "true");
-            //indicate aspect of desired crop
             cropIntent.putExtra("aspectX", 1);
             cropIntent.putExtra("aspectY", 1);
-            //indicate output X and Y
             cropIntent.putExtra("outputX", 256);
             cropIntent.putExtra("outputY", 256);
-            //retrieve data on return
             cropIntent.putExtra("return-data", true);
-            //start the activity - we handle returning in onActivityResult
             startActivityForResult(cropIntent, PIC_CROP);
         }
         catch(ActivityNotFoundException e){
@@ -500,132 +516,16 @@ public class ActivityPhoto extends AppCompatActivity {
         }
     }
 
-    private byte[] convertImageToByteArray(Bitmap image) {
-        // Convert image to byte[]
-        int bytes = image.getByteCount();
-        ByteBuffer buffer = ByteBuffer.allocate(bytes);
-        image.copyPixelsToBuffer(buffer);
-        byte[] b = buffer.array();
-        Log.d("BYTE COUNT", "Byte count is: " + bytes*8);
-        return b;
-    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-//    private void compressImage(Bitmap image) {
-//        Bitmap compressedImage = null;
-//
-//        FileOutputStream out = null;
-//        try {
-//            out = new FileOutputStream(filename);
-//            image.compress(Bitmap.CompressFormat.JPEG, 100, out);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//                if (out != null) {
-//                    out.close();
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//
-//
-//
-////        return compressedImage;
-//    }
+//            Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
 
+        if (requestCode == PIC_CROP && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            newImage = imageBitmap;
 
-    private String convertToBase64(Bitmap image) {
-        String b64Image = null;
-
-        byte[] b = convertImageToByteArray(image);
-
-        b64Image = Base64.encodeToString(b, Base64.DEFAULT);
-        Log.d("FP", "CONVERTED IMAGE TO BASE64 STRING");
-
-        return b64Image;
-    }
-
-    public Bitmap getImageFromLibrary(Uri uri) {
-        Bitmap newBitmap = null;
-        try {
-            newBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
-            Log.d("FP", "BITMAP RETURNED FROM URI");
-        } catch (IOException e) {
-            Log.e("ERROR", "COULD NOT RETRIEVE BITMAP");
         }
-
-
-
-        return newBitmap;
-    }
-
-    public Bitmap convertByteToBitmap(byte[] bytes) {
-        Bitmap image = null;
-
-        int byteCount = bytes.length;
-        image = BitmapFactory.decodeByteArray(bytes, 0, byteCount);
-
-        return image;
-    }
-
-
-
-    private Uri saveImageToLibrary(Bitmap image) {
-
-            Log.d("FP", "LAUNCHED onPictureTaken()");
-            newImageFile = getOutputMediaFile();
-            newImageUri = Uri.fromFile(getOutputMediaFile());
-            imagePath = newImageFile.getAbsolutePath();
-            String uriString = newImageUri.toString();
-
-            Log.d("FP", "GOT OUTPUT FILE: " + uriString);
-
-            if (newImageFile == null) {
-                Log.e("FP", "ERROR CREATING FILE");
-                return newImageUri;
-            }
-
-            try {
-                FileOutputStream fos = new FileOutputStream(newImageFile);
-                image.compress(Bitmap.CompressFormat.PNG, 50, fos);
-//                fos.write(byteArray);
-                fos.close();
-                Log.d("FP", "FILE OUTPUT STREAM CREATED");
-            }
-            catch (FileNotFoundException e) {
-                Log.e("FP", "FILE NOT FOUND");
-            }
-            catch (IOException e) {
-                Log.e("FP", "ERROR ACCESSING FILE");
-            }
-
-        return newImageUri;
-
-    };
-
-
-    private static File getOutputMediaFile(){
-
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Instamelb");
-
-        // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
-                Log.d("FP", "FAILED TO CREATE DIRECTORY");
-                return null;
-            }
-        }
-
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile;
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "IMG_"+ timeStamp + ".jpg");
-
-        return mediaFile;
     }
 
     @Override
@@ -640,7 +540,7 @@ public class ActivityPhoto extends AppCompatActivity {
 //        finish();
 //        return;
         super.onBackPressed();
-//        ActivityCompat.finishAfterTransition(this);
+        ActivityCompat.finishAfterTransition(this);
 
         Intent myIntent = new Intent(getApplicationContext(), ActivityMain.class);
 
@@ -650,6 +550,17 @@ public class ActivityPhoto extends AppCompatActivity {
         return;
 
 
+    }
+
+    public Bitmap getImageFromLibrary(Uri uri) {
+        Bitmap newBitmap = null;
+        try {
+            newBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            Log.d("FP", "BITMAP RETURNED FROM URI");
+        } catch (IOException e) {
+            Log.e("ERROR", "COULD NOT RETRIEVE BITMAP");
+        }
+        return newBitmap;
     }
 
 

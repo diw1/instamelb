@@ -1,20 +1,19 @@
-/*
-package unimelb.edu.instamelb.activities;
+package unimelb.edu.instamelb.imagehandlinglibrary;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.*;
-import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.util.Log;
 import android.widget.ImageView;
 
-*/
 /**
  * Created by bboyce on 12/09/15.
- *//*
+ */
+public class PhotoEditingTools extends ImageView  {
 
-public class ActivityEditPhoto extends ImageView{
-
-    public ActivityEditPhoto(Context context) {
+    public PhotoEditingTools(Context context) {
         super(context);
     }
 
@@ -177,6 +176,4 @@ public class ActivityEditPhoto extends ImageView{
         }
         return value;
     }
-
 }
-*/

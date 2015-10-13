@@ -31,17 +31,12 @@
             android:clickable="true"
             android:enabled="true" />
 
-        <Button
-            android:layout_width="match_parent"
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/caption"
-            android:id="@+id/caption_button"
+            android:id="@+id/wifi_Button"
             android:layout_weight="1"
-            android:background="@color/colorPrimaryDark"
-            android:textColor="@color/colorAccent"
-            android:textSize="@dimen/abc_text_size_large_material"
-            android:gravity="center_vertical|center_horizontal"
-            android:enabled="true"
+            android:src="@drawable/wifi_white"
             android:clickable="true" />
 
         <Button
