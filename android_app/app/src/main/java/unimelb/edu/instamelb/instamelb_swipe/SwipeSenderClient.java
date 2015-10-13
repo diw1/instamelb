@@ -1,5 +1,8 @@
 package unimelb.edu.instamelb.instamelb_swipe;
 
+import android.content.Context;
+import android.net.wifi.WifiManager;
+import android.net.DhcpInfo;
 import android.util.Log;
 
 import java.io.IOException;
@@ -7,109 +10,69 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.util.Enumeration;
-
 /**
  * Created by pheo on 10/12/15.
  */
-// SwipeSenderClient used to broadcast need to transmit, then interact with server
+// SwipeSenderClient does a udp broadcast offering image download service to recipients
 public class SwipeSenderClient implements Runnable {
 
-    private DatagramSocket c;
     private final int port; // Port to send to
-    private final String address = "255.255.255.255"; // Broadcast to Address
+    private String unique_string;
+    private int broadcast_count;
+    private Context mContext;
+
 
     // Constructor
-    public SwipeSenderClient(int port_to_send) {
+    public SwipeSenderClient(int port_to_send, String uniq_str, int spam_count, Context app_context) {
         this.port = port_to_send;
-    }
+        this.unique_string = uniq_str;
 
+        if (spam_count < 0) {
+            this.broadcast_count = 1;
+        } else {
+            this.broadcast_count = spam_count;
+        }
+
+        this.mContext = app_context;
+
+    }
 
     // Run thread with .start()
     @Override
     public void run() {
 
         try {
-            c = new DatagramSocket();
-            c.setBroadcast(true);
+            String data = "SwipeSenderClient_REQUEST=" + this.unique_string;
+            Log.w(getClass().getName(), "[SwipeSenderClient] Data: " + data);
 
-            byte[] sendData = "SwipeSenderClient_REQUEST".getBytes();
+            DatagramSocket socket = new DatagramSocket();
+            socket.setBroadcast(true);
 
-            // Try this.address (255.255.255.255)
-            try {
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(this.address), this.port);
-                c.send(sendPacket);
-                Log.w(getClass().getName(), "[SwipeSenderClient] Request packet sent to: " + this.address);
-            } catch (Exception e) {
-                Log.w(getClass().getName(), "[SwipeSenderClient] ERROR (1): " + e.getMessage());
+            DatagramPacket packet = new DatagramPacket(data.getBytes(), data.length(),
+                    getBroadcastAddress(), this.port);
+            Log.w(getClass().getName(), "[SwipeSenderClient] Broadcasting to: " + packet.getAddress().getHostAddress());
+
+            // Spam with broadcast_count
+            for (int i = 0; i < this.broadcast_count; i++) {
+                socket.send(packet);
             }
 
-            // Broadcast message over all network interfaces
-            Enumeration interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = (NetworkInterface) interfaces.nextElement();
-
-                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                    continue; // Don't want to broadcast to the loopback interface
-                }
-
-                for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                    InetAddress broadcast =  interfaceAddress.getBroadcast();
-                    if (broadcast == null) {
-                        continue;
-                    }
-
-                    // Send the broadcast package!
-                    try {
-                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast, this.port);
-                        c.send(sendPacket);
-                    } catch (Exception e) {
-                        Log.w(getClass().getName(), "[SwipeSenderClient] ERROR (2): " + e.getMessage());
-                    }
-
-                    Log.w(getClass().getName(), "[SwipeSenderClient] Request packet sent to: " + broadcast.getHostAddress() + "; Interface: " + networkInterface.getDisplayName());
-                }
-
-                Log.w(getClass().getName(), "[SwipeSenderClient] Done looping over all network interfaces. Now waiting for a reply!");
-
-                // Wait for a response
-                byte[] recvBuf = new byte[15000];
-                DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
-                c.receive(receivePacket);
-
-                // We have a response
-                Log.w(getClass().getName(), "[SwipeSenderClient] Broadcast response from server: " + receivePacket.getAddress().getHostAddress());
-
-                // Check if the message is correct
-                String message = new String(receivePacket.getData()).trim();
-                if (message.equals("SwipeListenerServer_RESPONSE")) {
-                    // Do something with server's ip
-                    Log.w(getClass().getName(), "[SwipeSenderClient] Start Thread to send image to server! (Does nothing atm)");
-                }
-
-                // Close the port!
-                c.close();
-            }
         } catch (IOException ex) {
-            Log.w(SwipeSenderClient.class.getName(), "[SwipeSenderClient] ERROR (3): " + ex.getMessage());
+            Log.w(getClass().getName(), "[SwipeSenderClient] ERROR: " + ex.getMessage());
         }
 
     }
+
+    private InetAddress getBroadcastAddress() throws IOException {
+
+        WifiManager wifi = (WifiManager) this.mContext.getSystemService(Context.WIFI_SERVICE);
+        DhcpInfo dhcp = wifi.getDhcpInfo();
+        // handle null somehow
+
+        int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
+        byte[] quads = new byte[4];
+        for (int k = 0; k < 4; k++)
+            quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+        return InetAddress.getByAddress(quads);
+    }
 }
-
-
-/*
-    // Call once to broadcast image
-    // Starts an image server for 10 seconds.
-    public Boolean broadcastImage(String base64_image_string) {
-        // Emit Single Broadcast
-        return Boolean.TRUE;
-    }
-
-    public Boolean sendBroadcast() {
-        // Broadcast to
-        return Boolean.TRUE;
-    }
-*/
