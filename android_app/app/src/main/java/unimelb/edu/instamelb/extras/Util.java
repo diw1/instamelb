@@ -37,7 +37,11 @@ public class Util {
         return localTime;
     }
 
+<<<<<<< HEAD
     public Locations getLocation(Context context){
+=======
+    public static Locations getLocation(Context context){
+>>>>>>> Di
         LocationManager locationManager;
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -45,7 +49,10 @@ public class Util {
             if (location != null) {
                 return new Locations(location.getLongitude(),location.getLatitude());
             }
+<<<<<<< HEAD
             //gps已打开
+=======
+>>>>>>> Di
         } else {
             toggleGPS(context, locationManager);
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -55,7 +62,11 @@ public class Util {
     }
 
 
+<<<<<<< HEAD
     private void toggleGPS(Context context,LocationManager lm) {
+=======
+    private static void toggleGPS(Context context,LocationManager lm) {
+>>>>>>> Di
         Intent gpsIntent = new Intent();
         gpsIntent.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
         gpsIntent.addCategory("android.intent.category.ALTERNATIVE");
@@ -67,7 +78,11 @@ public class Util {
         }
     }
 
+<<<<<<< HEAD
     public final class Locations {
+=======
+    public static final class Locations {
+>>>>>>> Di
         private final double longitude;
         private final double latitude;
 

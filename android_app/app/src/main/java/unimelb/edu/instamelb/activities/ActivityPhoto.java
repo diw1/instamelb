@@ -3,15 +3,14 @@ package unimelb.edu.instamelb.activities;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -20,7 +19,17 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,7 +39,11 @@ import java.nio.ByteBuffer;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import unimelb.edu.instamelb.extras.Util;
+import unimelb.edu.instamelb.fragments.FragmentHome;
 import unimelb.edu.instamelb.materialtest.R;
+import unimelb.edu.instamelb.users.APIRequest;
+import unimelb.edu.instamelb.users.Photo;
 
 /**
  * Created by bboyce on 12/09/15.
@@ -53,10 +66,12 @@ public class ActivityPhoto extends AppCompatActivity {
     final int THUMBSIZE = 64;
     Bitmap originalPhoto, editedPhoto, newImage;
     Bitmap originalThumbnail, grayThumbnail, warmThumbnail, coolThumbnail;
+    private String mComment="NO CAPTION";
+    private double longitude = 0;
+    private double latitude = 0;
     private String mComment;
     private double longitude = 0;
     private double latitude = 0;
-
     public Uri mImageUri;
     public File mImageFile;
 
@@ -69,8 +84,10 @@ public class ActivityPhoto extends AppCompatActivity {
     SeekBar _contrastSeekBar;
     @InjectView(R.id.photoPreview)
     ImageView _editPhoto;
-    @InjectView(R.id.back_button)
-    Button _backButton;
+    @InjectView(R.id.edit_button)
+    Button _editButton;
+    @InjectView(R.id.caption_button)
+    Button _captionButton;
 
     @InjectView(R.id.upload_button)
     Button _uploadButton;
@@ -115,9 +132,6 @@ public class ActivityPhoto extends AppCompatActivity {
 
         bitmap = scaledImage(metrics, mImageUri, previewWidth, false);
         originalThumbnail = scaledImage(metrics, mImageUri, thumbnailWidth, true);
-
-
-
         final ActivityEditPhoto photo = new ActivityEditPhoto(this);
         final ActivityEditPhoto photoThumbnail = new ActivityEditPhoto(this);
 
@@ -161,20 +175,22 @@ public class ActivityPhoto extends AppCompatActivity {
         _editPhoto.setImageBitmap(bitmap);
         originalPhoto = bitmap;
         editedPhoto = bitmap;
+        newImage = bitmap;
+        imageThumbnail=bitmap;
 
 //        originalPhoto = ((BitmapDrawable) _editPhoto.getDrawable()).getBitmap();
 //        editedPhoto = ((BitmapDrawable) _editPhoto.getDrawable()).getBitmap();
 
         // Return to Choose Library/Camera Screen
-        _backButton.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("FP", "CANCEL EDIT - TAKE NEW PHOTO");
-                Intent intent = new Intent(getApplicationContext(), ActivityCamera.class);
-                startActivity(intent);
-
-            }
-        });
+//        _backButton.setOnClickListener(new Button.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d("FP", "CANCEL EDIT - TAKE NEW PHOTO");
+//                Intent intent = new Intent(getApplicationContext(), ActivityCamera.class);
+//                startActivity(intent);
+//
+//            }
+//        });
         _brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -222,7 +238,6 @@ public class ActivityPhoto extends AppCompatActivity {
         _originalThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 setButtons(false);
                 _brightnessSeekBar.setProgress(255);
                 _contrastSeekBar.setProgress(255);
@@ -235,13 +250,14 @@ public class ActivityPhoto extends AppCompatActivity {
         _grayThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 setButtons(false);
                 Log.d("FP", "BUTTONS DISABLED");
                 _brightnessSeekBar.setProgress(255);
                 _contrastSeekBar.setProgress(255);
 
                 newImage = photo.grayscaleFilter(originalPhoto);
+                Log.d("FP", "IMAGE FILTERED");
+                _editPhoto.setImageBitmap(newImage);
 
                 Log.d("FP", "IMAGE FILTERED");
                 _editPhoto.setImageBitmap(newImage);
@@ -271,7 +287,6 @@ public class ActivityPhoto extends AppCompatActivity {
         _coolThumbnail.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 setButtons(false);
                 _brightnessSeekBar.setProgress(255);
                 _contrastSeekBar.setProgress(255);
@@ -286,11 +301,23 @@ public class ActivityPhoto extends AppCompatActivity {
         _uploadButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 setButtons(false);
-                newImage = ((BitmapDrawable) _editPhoto.getDrawable()).getBitmap();
-                setButtons(true);
+                //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.button_action_red);
+                String imageBase64 = convertToBase64(newImage);
+                String thumbnailBase64=convertToBase64(newImage);
+                Util.Locations location=Util.getLocation(getBaseContext());
+                latitude=location.getLatitude();
+                longitude=location.getLongitude();
+                String[] argu={FragmentHome.mUsername,FragmentHome.mPassword,
+                "caption",mComment,
+                "image",imageBase64,
+                "image_thumbnail",thumbnailBase64,
+                "longitude",String.valueOf(longitude),
+                "latitude",String.valueOf(latitude)};
+                Log.d("BASE64",imageBase64);
+                new UploadPhoto().execute(argu);
 
+                setButtons(true);
             }
         });
 
@@ -319,7 +346,6 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
     }
-
     public void setButtons(boolean b) {
         _brightnessSeekBar.setEnabled(b);
         _contrastSeekBar.setEnabled(b);
@@ -341,7 +367,6 @@ public class ActivityPhoto extends AppCompatActivity {
         v.setMinimumHeight(thumbnailWidth);
         v.setMaxWidth(thumbnailWidth);
         v.setMaxHeight(thumbnailWidth);
-
         return v;
     }
 
@@ -362,7 +387,6 @@ public class ActivityPhoto extends AppCompatActivity {
             matrix.postRotate(90);
             rotatedImage = Bitmap.createBitmap(image, 0, 0, IMAGE_SIZE, IMAGE_SIZE, matrix, true);
 
-
 //            if (isThumbnail == true) {
 //                ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //                image.compress(Bitmap.CompressFormat.PNG, 100, baos);
@@ -374,6 +398,16 @@ public class ActivityPhoto extends AppCompatActivity {
         }
         return rotatedImage;
     }
+
+    private String convertToBase64(Bitmap image) {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, baos); //bm is the bitmap object
+        byte[] b = baos.toByteArray();
+        String b64Image = Base64.encodeToString(b, Base64.NO_WRAP);
+        return b64Image;
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -388,6 +422,47 @@ public class ActivityPhoto extends AppCompatActivity {
         return;
     }
 
+    public class UploadPhoto extends AsyncTask<String, Void, JSONObject> {
 
+        @Override
+        protected JSONObject doInBackground(String... strings) {
+            JSONObject object=new JSONObject();
+            String endpoint="/photo/";
+            try {
+                List<NameValuePair> params = new ArrayList<NameValuePair>(1);
+                APIRequest request = new APIRequest(strings[0], strings[1]);
+                params.add(new BasicNameValuePair(strings[2], strings[3]));
+                params.add(new BasicNameValuePair(strings[4], strings[5]));
+                params.add(new BasicNameValuePair(strings[6], strings[7]));
+                params.add(new BasicNameValuePair(strings[8], strings[9]));
+                params.add(new BasicNameValuePair(strings[10], strings[11]));
+                object = new JSONObject(request.createRequest("POST", endpoint, params));
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return object;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject object) {
+            try {
+                if (object.getBoolean("uploaded")) {
+                    Photo photo=new Photo(object);
+                    finish();
+                    Intent mIntent =new Intent(getBaseContext(), ActivityDetail.class);
+                    mIntent.putExtra("username", FragmentHome.mUsername);
+                    mIntent.putExtra("password",FragmentHome.mPassword);
+                    mIntent.putExtra("photo",photo);
+                    startActivity(mIntent);
+                    Toast.makeText(getBaseContext(), "Upload Photo success!", Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(getBaseContext(), "Upload Photo failed!", Toast.LENGTH_LONG).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
 

@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,7 +34,6 @@ import java.util.List;
 import unimelb.edu.instamelb.adapters.CommentsAdapter;
 import unimelb.edu.instamelb.extras.Util;
 import unimelb.edu.instamelb.fragments.FragmentHome;
-import unimelb.edu.instamelb.fragments.FragmentProfile;
 import unimelb.edu.instamelb.materialtest.R;
 import unimelb.edu.instamelb.users.APIRequest;
 import unimelb.edu.instamelb.users.Comment;
@@ -126,14 +126,12 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
         }else{
             wifiIcon.setVisibility(View.GONE);
         }
-
-
     }
 
     public String getLikeList(){
         String likeList="❤";
         ArrayList<String> currentList;
-        if (mPhoto.getLiker_list().isEmpty()){
+        if (mPhoto.getLiker_list()==null||mPhoto.getLiker_list().isEmpty()){
             currentList=new ArrayList<>();
         }else{
             currentList=mPhoto.getLiker_list();
@@ -177,6 +175,8 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
                 sendComment.setEnabled(false);
                 String[] commentargs={mUsername,mPassword,"text",message.getText().toString()};
                 new PostComment(mPhoto).execute(commentargs);
+                break;
+
                 break;
 
         }
@@ -288,11 +288,8 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
         protected void onPostExecute(JSONObject object) {
             try {
                 if (object.getBoolean("posted")) {
-                    new FragmentProfile.getLikeAndComments(mPhoto,mUsername,mPassword).execute();
-                    Toast.makeText(getBaseContext(), "Post comment success!", Toast.LENGTH_LONG).show();
-                    sendComment.setEnabled(true);
-                    finish();
-                    startActivity(getIntent());
+                    new getComments(mPhoto,mUsername,mPassword).execute();
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -300,6 +297,60 @@ public class ActivityDetail extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    public class getComments extends AsyncTask<String, Integer, List<String>> {
+        private ArrayList<Comment> oneCommentList=new ArrayList<>();
+        private ArrayList<String> likeList=new ArrayList<>();
+        private Photo photo;
+        private String username;
+        private String password;
+        public getComments(Photo photo,String username,String password){
+            this.photo=photo;
+            this.username=username;
+            this.password=password;
+        }
+
+        @Override
+        protected List doInBackground(String... strings) {
+            List<String> result = new ArrayList();
+            try {
+                List<NameValuePair> params = new ArrayList<NameValuePair>(1);
+                APIRequest request = new APIRequest(username,password);
+                params.add(new BasicNameValuePair("photo",String.valueOf(photo.getPhoto_id())));
+                params.add(new BasicNameValuePair("comments", ""));
+                JSONObject object = new JSONObject(request.createRequest("GET", "/", params));
+
+                if (object.has("comments")) {
+                    JSONArray commentList = object.getJSONArray("comments");
+                    int commlength = commentList.length();
+                    for (int j = 0; j < commlength; j++) {
+                        oneCommentList.add(new Comment((JSONObject) commentList.get(j)));
+                    }
+                }
+                photo.setComment_list(oneCommentList);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> result) {
+            Toast.makeText(getBaseContext(), "Post comment success!", Toast.LENGTH_LONG).show();
+            commentList=photo.getComment_list();
+            detailComments.removeAllViews();
+            sendComment.setEnabled(true);
+            commentsAdapter.setData(commentList);
+            commentsAdapter.notifyDataSetChanged();
+            for (int i = 0; i < commentsAdapter.getCount(); i++) {
+
+                View item = commentsAdapter.getView(i, null, detailComments);
+
+                detailComments.addView(item);
+            }
+            detailComments.invalidate();
+        }
+    }
     private Boolean checkNetworkInfo()
     {
         ConnectivityManager conMan = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
