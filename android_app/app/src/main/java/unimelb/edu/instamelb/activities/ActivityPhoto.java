@@ -132,6 +132,8 @@ public class ActivityPhoto extends AppCompatActivity {
     ImageButton _cropButton;
     @InjectView(R.id.captionButton)
     ImageButton _captionButton;
+    @InjectView(R.id.addCaptionButton)
+    Button _addCaptionButton;
 
 
 
@@ -470,10 +472,15 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
 
-        _captionText.setOnClickListener(new View.OnClickListener() {
+        _addCaptionButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v){
 
+                mComment = _captionText.getText().toString();
+                Toast.makeText(getBaseContext(), "Caption added to photo!", Toast.LENGTH_LONG).show();
+                Log.d("FP", "Caption: " + mComment);
+                _captionLayout.setVisibility(View.GONE);
+                _brightnessLayout.setVisibility(View.VISIBLE);
             }
         });
 
@@ -485,9 +492,10 @@ public class ActivityPhoto extends AppCompatActivity {
                 //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.button_action_red);
                 String imageBase64 = ImageConversionTools.convertToBase64(newImage);
                 String thumbnailBase64=ImageConversionTools.convertToBase64(newImage);
-                Util.Locations location=Util.getLocation(getBaseContext());
+//                Util.Locations location=Util.getLocation(getBaseContext());
 //                latitude=location.getLatitude();
 //                longitude=location.getLongitude();
+                latitude =
                 latitude = 100;
                 longitude = 100;
                 String[] argu={FragmentHome.mUsername,FragmentHome.mPassword,
@@ -515,7 +523,7 @@ public class ActivityPhoto extends AppCompatActivity {
 //                Log.d("BYTE COUNT", "Byte count of converted: " + byteCountZ);
 
 //                String s = ImageConversionTools.convertToBase64(compressedImage);
-			Log.d("FP", "IMAGE UPLOADED");
+			    Log.d("FP", "IMAGE UPLOADED");
                 Intent intent = new Intent(getBaseContext(), ActivityCamera.class);
                 startActivity(intent);
 
