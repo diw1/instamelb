@@ -25,7 +25,8 @@ module.exports = function (config, db) { return {
         }
 
         db.Users.findOne({
-            where: {id: user_id}
+            where: {id: user_id},
+            include: [db.Follows, db.Likes]
         }).then(function(result) {
 
             // No result found
@@ -43,7 +44,7 @@ module.exports = function (config, db) { return {
             user_json.profile_image = "http://images.instamelb.pinkpineapple.me/1.jpg";
             user_json.counts = {
                 "photos": 0,
-                "follows": 0,
+                "follows": user.Follows.length,
                 "followed_by": 0
             }
 
@@ -152,8 +153,8 @@ module.exports = function (config, db) { return {
 
         db.Photos.findAll({
             include: [ db.Likes, db.Comments ],
-            order: ['created_at', DESC ]
             limit: 5,
+            order: [['created_at','DESC']]
         }).then(function (result) {
 
             var result_json = { "feed": [] }
@@ -183,6 +184,60 @@ module.exports = function (config, db) { return {
         });
 
     },
+
+    getFollowsFeed: function (done) {
+
+        var feed_json = {
+            "feed": [
+                {
+                    "event": "comment",
+                    "message": "B commented on A's Photo.",
+                    "user_commenting": {
+                        "user_id": 3,
+                        "username": "B"
+                    },
+                    "user_commented": {
+                        "user_id": 2,
+                        "username": "A"
+                    },
+                    "photo": {
+                        "photo_id": 1,
+                        "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                    }
+                },
+                {
+                    "event": "like",
+                    "message": "B liked A's Photo.",
+                    "user_liking": {
+                        "user_id": 3,
+                        "username": "B"
+                    },
+                    "user_liked": {
+                        "user_id": 2,
+                        "username": "A"
+                    },
+                    "photo": {
+                        "photo_id": 1,
+                        "photo_image": "http://images.instamelb.pinkpineapple.me/1.jpg"
+                    }
+                },
+                {
+                    "event": "follow",
+                    "message": "B is following A.",
+                    "user_following": {
+                        "user_id": 3,
+                        "username": "B"
+                    },
+                    "user_followed": {
+                        "user_id": 2,
+                        "username": "A"
+                    }
+                }
+            ]
+        } 
+
+        return done(null, feed_json);
+     },
 
     // GET User Follows
     getUserFollows: function (auth_user_id, user_id, done) {
