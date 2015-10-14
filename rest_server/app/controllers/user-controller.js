@@ -25,7 +25,8 @@ module.exports = function (config, db) { return {
         }
 
         db.Users.findOne({
-            where: {id: user_id}
+            where: {id: user_id},
+            include: [db.Follows]
         }).then(function(result) {
 
             // No result found
@@ -43,7 +44,7 @@ module.exports = function (config, db) { return {
             user_json.profile_image = "http://images.instamelb.pinkpineapple.me/1.jpg";
             user_json.counts = {
                 "photos": 0,
-                "follows": 0,
+                "follows": user.Follows.length,
                 "followed_by": 0
             }
 
