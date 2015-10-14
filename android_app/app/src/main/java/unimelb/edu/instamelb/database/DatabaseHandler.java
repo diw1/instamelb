@@ -30,6 +30,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_UID = "uid";
     private static final String KEY_PASSWORD = "upassword";
 
+    // Feed table name
+    private static final String TABLE_FEED = "table";
+
+    // Feed Table Columns names
+    private static final String FEED_ID = "id";
+    private static final String FEED_TYPE = "type";
+    private static final String FEED_MESSAGE = "message";
+
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -44,6 +52,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_PASSWORD + " TEXT,"
                 + KEY_UID + " TEXT" + ")";
         db.execSQL(CREATE_LOGIN_TABLE);
+
+        String CREATE_FEED_TABLE = "CREATE TABLE" + TABLE_FEED + "("
+                + FEED_ID + " INTEGER PRIMARY KEY,"
+                + FEED_TYPE + " STRING"
+                + FEED_MESSAGE + " STRING";
+        db.execSQL(CREATE_FEED_TABLE);
     }
 
     // Upgrading database
@@ -110,6 +124,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // return row count
         return rowCount;
+    }
+
+    // Write feed to database
+    public Boolean writeFeed(String type, String message) {
+        return Boolean.FALSE;
+    }
+
+    // Grab feeds
+    public String[] getFeeds() {
+        String getQuery = "SELECT * FROM " + TABLE_FEED;
+        SQLiteDatabase db = this.getReadableDatabase();
+        return new String[] {"ok"};
     }
 
     /**

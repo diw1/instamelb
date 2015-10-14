@@ -108,6 +108,10 @@ public class CustomAdapterActivity extends RecyclerView.Adapter<CustomAdapterAct
                 Drawable drawable3 = ContextCompat.getDrawable(mContext, R.drawable.ic_action_star);
                 viewHolder.imageView.setImageDrawable(drawable3);
                 break;
+            case "swipe":
+                Drawable drawable4 = ContextCompat.getDrawable(mContext, R.drawable.ic_action_wifi);
+                viewHolder.imageView.setImageDrawable(drawable4);
+                break;
         }
         viewHolder.getTextView().setText(parts[1]);
         viewHolder.textComment.setText("");

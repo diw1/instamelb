@@ -1,11 +1,9 @@
-package unimelb.edu.instamelb.ImageHandlingLibrary;
+package unimelb.edu.instamelb.imagehandlinglibrary;
 
-import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 
@@ -17,8 +15,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import unimelb.edu.instamelb.activities.ActivityPhoto;
 
 /**
  * Created by bboyce on 12/09/15.

@@ -148,8 +148,41 @@ module.exports = function (config, db) { return {
     },
 
     // GET Self Feed
-    getSelfFeed: function (done) {
+    getSelfFeed: function (auth_user_id, done) {
 
+        db.Photos.findAll({
+            order: 'updated_at DESC',
+            limit: 5,
+            include: [ db.Likes, db.Comments ]
+        }).then(function (result) {
+
+            var result_json = { "feed": [] }
+
+            if (result) {
+
+                for (var i=0;i < result.length; i++) {
+                    var photo_object = result[i].dataValues;
+
+                    var feed_json = {};
+                    feed_json.photo_id = photo_object.id;
+                    feed_json.photo_image = photo_object.url;
+                    feed_json.photo_caption = photo_object.caption;
+                    feed_json.timestamp = new Date(photo_object.created_at).getTime();
+                    feed_json.comments = { count: photo_object.Comments.length };
+                    feed_json.likes = { count: photo_object.Likes.length };
+                    feed_json.location = { longitude: photo_object.longitude,
+                        latitude: photo_object.latitude };
+                    feed_json.user = { user_id: photo_object.user_id,
+                        username: "Pheo",
+                        profile_image: "http://images.instamelb.pinkpineapple.me/1.jpg"
+                    };
+                    result_json.feed.push(feed_json);
+                }
+            }
+            return done(null, result_json);
+        });
+
+        /*
         var feed_json = {
             "feed": [
                 {
@@ -261,6 +294,7 @@ module.exports = function (config, db) { return {
         }
 
         return done(null, feed_json);
+        */
     },
 
     getFollowsFeed: function (done) {

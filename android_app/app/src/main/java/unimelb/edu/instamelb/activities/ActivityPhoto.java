@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -44,6 +45,7 @@ import unimelb.edu.instamelb.imagehandlinglibrary.PhotoEditingTools;
 
 import unimelb.edu.instamelb.extras.Util;
 import unimelb.edu.instamelb.fragments.FragmentHome;
+import unimelb.edu.instamelb.instamelb_swipe.SwipeSenderClient;
 import unimelb.edu.instamelb.materialtest.R;
 import unimelb.edu.instamelb.users.APIRequest;
 import unimelb.edu.instamelb.users.Photo;
@@ -217,11 +219,13 @@ public class ActivityPhoto extends AppCompatActivity {
         _wifiButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                byte[] bytaArray = ImageConversionTools.convertImageToByteArray(newImage);
-
+                String unique_string = UUID.randomUUID().toString();
+                Thread swipe_sender_client = new Thread(new SwipeSenderClient(13475, unique_string, 20, getApplicationContext()));
+                swipe_sender_client.start();
+                Toast.makeText(getApplicationContext(), "Start Broadcasting!", Toast.LENGTH_SHORT).show();
+                //byte[] bytaArray = ImageConversionTools.convertImageToByteArray(newImage);
             }
         });
-
 
         _brightnessButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -419,6 +423,7 @@ public class ActivityPhoto extends AppCompatActivity {
             }
         });
 
+        /*
         // TODO
         _wifiButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -427,7 +432,7 @@ public class ActivityPhoto extends AppCompatActivity {
                 byte[] byteArray = ImageConversionTools.convertImageToByteArray(newImage);
             }
         });
-
+        */
 
 
 
@@ -447,19 +452,19 @@ public class ActivityPhoto extends AppCompatActivity {
                 String imageBase64 = ImageConversionTools.convertToBase64(newImage);
                 String thumbnailBase64=ImageConversionTools.convertToBase64(newImage);
 
-                Util.Locations location=Util.getLocation(getBaseContext());
+                //Util.Locations location=Util.getLocation(getBaseContext());
 
                 // From Util.java
 //                latitude=location.getLatitude();
 //                longitude=location.getLongitude();
 
                 // From LocationFinder
-                latitude = locationListener.getLatitude();
-                longitude = locationListener.getLongitude();
+                //latitude = locationListener.getLatitude();
+                //longitude = locationListener.getLongitude();
                 Log.d("FP", "Latitude: " + latitude);
                 Log.d("FP", "Longitude: " + longitude);
-//                latitude = 100;
-//                longitude = 100;
+                latitude = 100;
+                longitude = 100;
                 String[] argu={FragmentHome.mUsername,FragmentHome.mPassword,
                 "caption",mComment,
                 "image",imageBase64,

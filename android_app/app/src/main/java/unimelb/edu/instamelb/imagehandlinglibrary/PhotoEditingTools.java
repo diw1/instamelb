@@ -1,11 +1,7 @@
-package unimelb.edu.instamelb.ImageHandlingLibrary;
+package unimelb.edu.instamelb.imagehandlinglibrary;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.*;
-import android.net.Uri;
-import android.util.Log;
 import android.widget.ImageView;
 
 /**

@@ -70,10 +70,10 @@ module.exports = function (config, app, db, passport) {
     });
 
     // Get Self Feed
-    app.get('/users/self/feed', function (req, res) {
+    app.get('/users/self/feed', auth(passport), function (req, res) {
         logger("GET /users/self/feed");
 
-        user_controller.getSelfFeed(function done (error, result) {
+        user_controller.getSelfFeed(req.user.id, function done (error, result) {
             if (error) { return res.status(error.status).json(error.body); }
 
             user_view.getSelfFeed(result, function done (error, result) {
