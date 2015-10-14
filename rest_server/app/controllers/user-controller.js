@@ -152,7 +152,7 @@ module.exports = function (config, db) { return {
 
         db.Photos.findAll({
             include: [ db.Likes, db.Comments ],
-            order: 'Photos.created_at DESC',
+            order: ['created_at', DESC ]
             limit: 5,
         }).then(function (result) {
 
