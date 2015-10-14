@@ -151,9 +151,9 @@ module.exports = function (config, db) { return {
     getSelfFeed: function (auth_user_id, done) {
 
         db.Photos.findAll({
-            order: 'created_at DESC',
+            include: [ db.Likes, db.Comments ],
+            order: 'Photos.created_at DESC',
             limit: 5,
-            include: [ db.Likes, db.Comments ]
         }).then(function (result) {
 
             var result_json = { "feed": [] }
