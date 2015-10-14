@@ -152,8 +152,8 @@ module.exports = function (config, db) { return {
 
         db.Photos.findAll({
             include: [ db.Likes, db.Comments ],
-            order: ['created_at', DESC ]
             limit: 5,
+            order: [['created_at','DESC']]
         }).then(function (result) {
 
             var result_json = { "feed": [] }
