@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -33,6 +34,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import unimelb.edu.instamelb.activities.ActivityDetail;
 import unimelb.edu.instamelb.adapters.PhotoListAdapter;
 import unimelb.edu.instamelb.extras.SortListener;
 import unimelb.edu.instamelb.extras.Util;
@@ -259,8 +261,22 @@ public class FragmentProfile extends Fragment implements SortListener{
 
             adapter.setData(userPhotoList);
             adapter.setLayoutParam(width, height);
-
             mGridView.setAdapter(adapter);
+            mGridView.setOnItemClickListener(new gridViewListener());
+        }
+
+        class gridViewListener implements AdapterView.OnItemClickListener {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                                    long arg3) {
+                Intent mIntent =new Intent(getActivity(), ActivityDetail.class);
+                mIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mIntent.putExtra("username", FragmentHome.mUsername);
+                mIntent.putExtra("password", FragmentHome.mPassword);
+                mIntent.putExtra("photo",userPhotoList.get(arg2));
+                getActivity().startActivity(mIntent);
+            }
         }
     }
 

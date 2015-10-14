@@ -1,5 +1,6 @@
 package unimelb.edu.instamelb.activities;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -27,6 +29,7 @@ import java.util.List;
 
 import unimelb.edu.instamelb.adapters.PhotoListAdapter;
 import unimelb.edu.instamelb.extras.Util;
+import unimelb.edu.instamelb.fragments.FragmentHome;
 import unimelb.edu.instamelb.fragments.FragmentProfile;
 import unimelb.edu.instamelb.materialtest.R;
 import unimelb.edu.instamelb.users.APIRequest;
@@ -137,7 +140,6 @@ public class ActivityProfile extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<String>  result) {
             mUser = new User(result.get(0));
-            mUser = new User(result.get(0));
             try {
                 JSONObject object = new JSONObject(result.get(1));
                 if (object.has("photos")) {
@@ -211,8 +213,24 @@ public class ActivityProfile extends AppCompatActivity {
             adapter.setData(userPhotoList);
             adapter.setLayoutParam(width, height);
             mGridView.setAdapter(adapter);
+            mGridView.setOnItemClickListener(new gridViewListener());
+        }
+
+        class gridViewListener implements AdapterView.OnItemClickListener {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                                    long arg3) {
+                Intent mIntent =new Intent(getBaseContext(), ActivityDetail.class);
+                mIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mIntent.putExtra("username", FragmentHome.mUsername);
+                mIntent.putExtra("password", FragmentHome.mPassword);
+                mIntent.putExtra("photo",userPhotoList.get(arg2));
+                getBaseContext().startActivity(mIntent);
+            }
         }
     }
+
 
 
     public class FollowAction extends AsyncTask<String, Integer,String> {

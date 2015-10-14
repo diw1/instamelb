@@ -1,12 +1,10 @@
 package unimelb.edu.instamelb.activities;
 
-import android.content.Context;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,26 +23,18 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import java.io.IOException;
 import java.util.UUID;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-
-import unimelb.edu.instamelb.imagehandlinglibrary.ImageConversionTools;
-import unimelb.edu.instamelb.imagehandlinglibrary.LocationFinder;
-import unimelb.edu.instamelb.imagehandlinglibrary.PhotoEditingTools;
-
-import unimelb.edu.instamelb.extras.Util;
+import unimelb.edu.instamelb.extras.SimpleLocation;
 import unimelb.edu.instamelb.fragments.FragmentHome;
+import unimelb.edu.instamelb.imagehandlinglibrary.ImageConversionTools;
+import unimelb.edu.instamelb.imagehandlinglibrary.PhotoEditingTools;
 import unimelb.edu.instamelb.instamelb_swipe.SwipeSenderClient;
 import unimelb.edu.instamelb.materialtest.R;
 import unimelb.edu.instamelb.users.APIRequest;
@@ -440,38 +430,32 @@ public class ActivityPhoto extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 setButtons(false);
-
-                // Get Location
-                LocationManager locationManager=    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-                LocationFinder locationListener = new LocationFinder();
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
                 // Update thumbnail to reflect edited image
                 imageThumbnail = scaledImage(newImage, thumbnailWidth, thumbnailWidth, true, previewWidth);
 
                 String imageBase64 = ImageConversionTools.convertToBase64(newImage);
                 String thumbnailBase64=ImageConversionTools.convertToBase64(newImage);
 
-                //Util.Locations location=Util.getLocation(getBaseContext());
-
+                SimpleLocation location=new SimpleLocation(getBaseContext());
+                if (!location.hasLocationEnabled()) {
+                    // ask the user to enable location access
+                    SimpleLocation.openSettings(getBaseContext());
+                }
                 // From Util.java
-//                latitude=location.getLatitude();
-//                longitude=location.getLongitude();
+                latitude=location.getLatitude();
+                longitude=location.getLongitude();
 
                 // From LocationFinder
                 //latitude = locationListener.getLatitude();
                 //longitude = locationListener.getLongitude();
                 Log.d("FP", "Latitude: " + latitude);
                 Log.d("FP", "Longitude: " + longitude);
-                latitude = 100;
-                longitude = 100;
                 String[] argu={FragmentHome.mUsername,FragmentHome.mPassword,
                 "caption",mComment,
                 "image",imageBase64,
                 "image_thumbnail",thumbnailBase64,
                 "longitude",String.valueOf(longitude),
                 "latitude",String.valueOf(latitude)};
-                Log.d("BASE64",imageBase64);
                 new UploadPhoto().execute(argu);
 
 
@@ -491,9 +475,6 @@ public class ActivityPhoto extends AppCompatActivity {
 
 //                String s = ImageConversionTools.convertToBase64(compressedImage);
 			    Log.d("FP", "IMAGE UPLOADED");
-
-                Intent intent = new Intent(getBaseContext(), ActivityMain.class);
-                startActivity(intent);
 
                 setButtons(true);
 
@@ -630,14 +611,13 @@ public class ActivityPhoto extends AppCompatActivity {
             JSONObject object=new JSONObject();
             String endpoint="/photo/";
             try {
-                List<NameValuePair> params = new ArrayList<NameValuePair>(1);
                 APIRequest request = new APIRequest(strings[0], strings[1]);
-                params.add(new BasicNameValuePair(strings[2], strings[3]));
-                params.add(new BasicNameValuePair(strings[4], strings[5]));
-                params.add(new BasicNameValuePair(strings[6], strings[7]));
-                params.add(new BasicNameValuePair(strings[8], strings[9]));
-                params.add(new BasicNameValuePair(strings[10], strings[11]));
-                object = new JSONObject(request.createRequest("POST", endpoint, params));
+                object.put(strings[2], strings[3]);
+                object.put(strings[4], strings[5]);
+                object.put(strings[6], strings[7]);
+                object.put(strings[8], strings[9]);
+                object.put(strings[10], strings[11]);
+                object = new JSONObject(request.createRequest("POSTPHOTO", endpoint, object));
             }
             catch (Exception ex) {
                 ex.printStackTrace();

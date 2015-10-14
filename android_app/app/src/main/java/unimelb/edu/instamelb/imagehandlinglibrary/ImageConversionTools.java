@@ -34,7 +34,7 @@ public class ImageConversionTools {
     public static String convertToBase64(Bitmap image) {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        image.compress(Bitmap.CompressFormat.JPEG, 30, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         String b64image = Base64.encodeToString(byteArray, Base64.DEFAULT);
         return b64image;

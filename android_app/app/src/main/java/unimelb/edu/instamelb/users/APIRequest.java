@@ -13,8 +13,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,6 +43,13 @@ public class APIRequest {
         mPassword=password;
     }
 
+
+    public String createRequest(String method, String endpoint, JSONObject params) throws Exception {
+        if (method.equals("POSTPHOTO")){
+            return requestPostPhoto(endpoint, params);
+        }
+        return null;
+    }
     /**
      * Create http request to an instagram api endpoint.
      * This is a synchronus method, so you have to call it on a separate thread.
@@ -53,12 +62,12 @@ public class APIRequest {
      *
      * @throws Exception If error occured.
      */
-
     public String createRequest(String method, String endpoint, List<NameValuePair> params) throws Exception {
         if (method.equals("POST")) {
             return requestPost(endpoint, params);
-        } else if (method.equals("DELETE")){
-            return requestDelete(endpoint,params);
+        }
+        else if (method.equals("DELETE")){
+            return requestDelete(endpoint, params);
         }else if (method.equals("GETQUERY")){
             return requestGetQuery(endpoint,params);
         }else{
@@ -177,6 +186,11 @@ public class APIRequest {
         String requestUri = Constants.API_BASE_URL + ((endpoint.indexOf("/") == 0) ? endpoint : "/" + endpoint);
 
         return post(requestUri, params);
+    }
+    private String requestPostPhoto(String endpoint, JSONObject params) throws Exception {
+        String requestUri = Constants.API_BASE_URL + ((endpoint.indexOf("/") == 0) ? endpoint : "/" + endpoint);
+
+        return postphoto(requestUri, params);
     }
 
     /**
@@ -342,6 +356,45 @@ public class APIRequest {
             }
             //httpPost.setHeader("Content-Type", "application/json");
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params);
+            //entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+            httpPost.setEntity(entity);
+            HttpResponse httpResponse 	= httpClient.execute(httpPost);
+            HttpEntity httpEntity 		= httpResponse.getEntity();
+
+            if (httpEntity == null) {
+                throw new Exception("Request returns empty result");
+            }
+
+            stream		= httpEntity.getContent();
+            response	= streamToString(stream);
+
+            Log.i("Response " , response);
+
+            if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                throw new Exception(httpResponse.getStatusLine().getReasonPhrase());
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+
+        return response;
+    }
+
+    public String postphoto(String requestUrl, JSONObject params) throws Exception {
+        InputStream stream 	= null;
+        String response		= "";
+
+        try {
+            Log.d(mUsername,mPassword);
+            byte[] pair= (mUsername + ":" + mPassword).getBytes();
+            String encoding = Base64.encodeToString(pair,Base64.NO_WRAP);
+            HttpClient httpClient 	= new DefaultHttpClient();
+            HttpPost httpPost 		= new HttpPost(requestUrl);
+            if (mUsername != ""){
+                httpPost.setHeader("Authorization", "Basic " + encoding);
+            }
+            httpPost.setHeader("Content-Type", "application/json");
+            StringEntity entity = new StringEntity(params.toString());
             //entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
             httpPost.setEntity(entity);
             HttpResponse httpResponse 	= httpClient.execute(httpPost);

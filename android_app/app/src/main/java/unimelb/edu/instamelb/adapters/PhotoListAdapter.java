@@ -14,8 +14,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
 
-import unimelb.edu.instamelb.activities.ActivityDetail;
-import unimelb.edu.instamelb.fragments.FragmentHome;
 import unimelb.edu.instamelb.fragments.FragmentProfile;
 import unimelb.edu.instamelb.materialtest.R;
 import unimelb.edu.instamelb.users.Photo;
@@ -87,16 +85,16 @@ public class PhotoListAdapter extends BaseAdapter{
 			imageIv.setLayoutParams(new GridView.LayoutParams(mWidth, mHeight));
             imageIv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             imageIv.setPadding(0, 0, 0, 0);
-			imageIv.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					mIntent =new Intent(mContext, ActivityDetail.class);
-					mIntent.putExtra("username", FragmentHome.mUsername);
-					mIntent.putExtra("password",FragmentHome.mPassword);
-					mIntent.putExtra("photo",mPhotoList.get(position));
-					mContext.startActivity(mIntent);
-				}
-			});
+//			imageIv.setOnClickListener(new View.OnClickListener() {
+//				@Override
+//				public void onClick(View v) {
+//					mIntent =new Intent(mContext, ActivityDetail.class);
+//					mIntent.putExtra("username", FragmentHome.mUsername);
+//					mIntent.putExtra("password",FragmentHome.mPassword);
+//					mIntent.putExtra("photo",mPhotoList.get(position));
+//					mContext.startActivity(mIntent);
+//				}
+//			});
 		} else {
 			imageIv = (ImageView) convertView;
 		}
