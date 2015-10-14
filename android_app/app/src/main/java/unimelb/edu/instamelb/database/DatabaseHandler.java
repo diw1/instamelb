@@ -53,11 +53,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_UID + " TEXT" + ")";
         db.execSQL(CREATE_LOGIN_TABLE);
 
-        String CREATE_FEED_TABLE = "CREATE TABLE" + TABLE_FEED + "("
-                + FEED_ID + " INTEGER PRIMARY KEY,"
-                + FEED_TYPE + " STRING"
-                + FEED_MESSAGE + " STRING";
-        db.execSQL(CREATE_FEED_TABLE);
     }
 
     // Upgrading database
@@ -124,18 +119,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // return row count
         return rowCount;
-    }
-
-    // Write feed to database
-    public Boolean writeFeed(String type, String message) {
-        return Boolean.FALSE;
-    }
-
-    // Grab feeds
-    public String[] getFeeds() {
-        String getQuery = "SELECT * FROM " + TABLE_FEED;
-        SQLiteDatabase db = this.getReadableDatabase();
-        return new String[] {"ok"};
     }
 
     /**

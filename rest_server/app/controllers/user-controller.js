@@ -26,7 +26,7 @@ module.exports = function (config, db) { return {
 
         db.Users.findOne({
             where: {id: user_id},
-            include: [db.Follows]
+            include: [db.Follows, db.Likes]
         }).then(function(result) {
 
             // No result found

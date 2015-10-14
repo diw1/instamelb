@@ -403,9 +403,10 @@ public class ActivityPhoto extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Uri cropImageUri = ImageConversionTools.saveImageToLibrary(newImage);
-                performCrop(cropImageUri);
-                newImage = getImageFromLibrary(cropImageUri);
+                //Uri cropImageUri = ImageConversionTools.saveImageToLibrary(newImage);
+                performCrop(mImageUri);
+//                newImage = getImageFromLibrary(mImageUri);
+                _editPhoto.setImageBitmap(newImage);
                 originalOrCroppedImage = newImage;
                 editedPhoto = newImage;
             }
@@ -575,8 +576,8 @@ public class ActivityPhoto extends AppCompatActivity {
             cropIntent.putExtra("crop", "true");
             cropIntent.putExtra("aspectX", 1);
             cropIntent.putExtra("aspectY", 1);
-            cropIntent.putExtra("outputX", 256);
-            cropIntent.putExtra("outputY", 256);
+            cropIntent.putExtra("outputX", 512);
+            cropIntent.putExtra("outputY", 512);
             cropIntent.putExtra("return-data", true);
             startActivityForResult(cropIntent, PIC_CROP);
         }
