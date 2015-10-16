@@ -59,9 +59,9 @@ public class FragmentChoosePhoto extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         mChooserView=inflater.inflate(R.layout.fragment_choose_photo, container, false);
         mContext=container.getContext();
+
         Log.d("FP", "CREATED PHOTO CHOOSER VIEW");
 
         mChooserView.findViewById(R.id.button_take_new_photo).setOnClickListener(new Button.OnClickListener() {

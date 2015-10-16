@@ -1,5 +1,6 @@
 package unimelb.edu.instamelb.activities;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -70,7 +71,7 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
     private MaterialTabHost mTabHost;
     private ViewPager mPager;
     private ViewPagerAdapter mAdapter;
-    private FloatingActionButton mFAB;
+    public FloatingActionButton mFAB;
     private FloatingActionMenu mFABMenu;
     private FragmentDrawer mDrawerFragment;
     private DatabaseHandler db;
@@ -155,6 +156,13 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
     }
 
 
+    public void replaceFragment(Fragment someFragment) {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        //transaction.replace(R.id.viewPager, someFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
     private void setupFAB() {
         //define the icon for the main floating action button
         ImageView iconFAB = new ImageView(this);
@@ -166,40 +174,47 @@ public class ActivityMain extends AppCompatActivity implements MaterialTabListen
                 .setBackgroundDrawable(R.drawable.selector_button_red)
                 .build();
 
-        //define the icons for the sub action buttons
-        ImageView iconSortName = new ImageView(this);
-        iconSortName.setImageResource(R.drawable.ic_action_alphabets);
-        ImageView iconSortDate = new ImageView(this);
-        iconSortDate.setImageResource(R.drawable.ic_action_calendar);
-        ImageView iconSortRatings = new ImageView(this);
-        iconSortRatings.setImageResource(R.drawable.ic_action_important);
+        mFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPager.setCurrentItem(2);
+            }
+        });
 
-        //set the background for all the sub buttons
-        SubActionButton.Builder itemBuilder = new SubActionButton.Builder(this);
-        itemBuilder.setBackgroundDrawable(getResources().getDrawable(R.drawable.selector_sub_button_gray));
-
-
-        //build the sub buttons
-        SubActionButton buttonSortName = itemBuilder.setContentView(iconSortName).build();
-        SubActionButton buttonSortDate = itemBuilder.setContentView(iconSortDate).build();
-        SubActionButton buttonSortRatings = itemBuilder.setContentView(iconSortRatings).build();
-
-        //to determine which button was clicked, set Tags on each button
-        buttonSortName.setTag(TAG_SORT_NAME);
-        buttonSortDate.setTag(TAG_SORT_DATE);
-        buttonSortRatings.setTag(TAG_SORT_RATINGS);
-
-        buttonSortName.setOnClickListener(this);
-        buttonSortDate.setOnClickListener(this);
-        buttonSortRatings.setOnClickListener(this);
-
-        //add the sub buttons to the main floating action button
-        mFABMenu = new FloatingActionMenu.Builder(this)
-                .addSubActionView(buttonSortName)
-                .addSubActionView(buttonSortDate)
-                .addSubActionView(buttonSortRatings)
-                .attachTo(mFAB)
-                .build();
+//        //define the icons for the sub action buttons
+//        ImageView iconSortName = new ImageView(this);
+//        iconSortName.setImageResource(R.drawable.ic_action_alphabets);
+//        ImageView iconSortDate = new ImageView(this);
+//        iconSortDate.setImageResource(R.drawable.ic_action_calendar);
+//        ImageView iconSortRatings = new ImageView(this);
+//        iconSortRatings.setImageResource(R.drawable.ic_action_important);
+//
+//        //set the background for all the sub buttons
+//        SubActionButton.Builder itemBuilder = new SubActionButton.Builder(this);
+//        itemBuilder.setBackgroundDrawable(getResources().getDrawable(R.drawable.selector_sub_button_gray));
+//
+//
+//        //build the sub buttons
+//        SubActionButton buttonSortName = itemBuilder.setContentView(iconSortName).build();
+//        SubActionButton buttonSortDate = itemBuilder.setContentView(iconSortDate).build();
+//        SubActionButton buttonSortRatings = itemBuilder.setContentView(iconSortRatings).build();
+//
+//        //to determine which button was clicked, set Tags on each button
+//        buttonSortName.setTag(TAG_SORT_NAME);
+//        buttonSortDate.setTag(TAG_SORT_DATE);
+//        buttonSortRatings.setTag(TAG_SORT_RATINGS);
+//
+//        buttonSortName.setOnClickListener(this);
+//        buttonSortDate.setOnClickListener(this);
+//        buttonSortRatings.setOnClickListener(this);
+//
+//        //add the sub buttons to the main floating action button
+//        mFABMenu = new FloatingActionMenu.Builder(this)
+//                .addSubActionView(buttonSortName)
+//                .addSubActionView(buttonSortDate)
+//                .addSubActionView(buttonSortRatings)
+//                .attachTo(mFAB)
+//                .build();
     }
 
     @Override

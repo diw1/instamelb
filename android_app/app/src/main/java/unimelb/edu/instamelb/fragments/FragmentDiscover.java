@@ -167,8 +167,9 @@ public class FragmentDiscover extends Fragment {
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {;
-                return false;
+            public boolean onQueryTextChange(String newText) {
+                updateFeedData(newText);
+                return true;
             }
         });
 

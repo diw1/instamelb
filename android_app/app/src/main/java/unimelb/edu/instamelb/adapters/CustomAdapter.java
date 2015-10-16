@@ -100,7 +100,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         // Create a new view.
         View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.discover_item, viewGroup, false);
+                .inflate(R.layout.search_item, viewGroup, false);
 
         return new ViewHolder(v);
     }
@@ -116,7 +116,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         String[] parts = mDataSet[position].split("\\|");
         //Log.d("USER>>>>>>>>>>>>", parts[1]);
         viewHolder.getTextView().setText(parts[0]);
-        viewHolder.textComment.setText("");
+        //viewHolder.textComment.setText("");
         UrlImageViewHelper.setUrlDrawable(viewHolder.imageView, parts[1], R.drawable.ic_contact_picture);
     }
     // END_INCLUDE(recyclerViewOnBindViewHolder)
